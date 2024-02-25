@@ -1,4 +1,4 @@
-# Welcome to ZOMBIE 🧟🧟‍♀️
+# Welcome to ZOMBIE 🧟
 First Quick Response Game
 
 Get ready for action! You will face hordes of bloodthirsty undead. Your mission is to survive and fight against the waves of zombies that stand in your way. 
@@ -17,3 +17,5 @@ Get ready for action! You will face hordes of bloodthirsty undead. Your mission 
 Get ready for an exciting experience full of horror, action and strategy in the ZOMBIE game! Are you ready to face the challenge? Good luck!
 
 ## DOWNLOAD BINARY EYE app
+
+[BINARY EYE](https://play.google.com/store/apps/details?id=de.markusfisch.android.binaryeye)
