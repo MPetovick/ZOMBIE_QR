@@ -1,2 +1,2 @@
-# ZOMBIE-QR
+# ZOMBIE
 First Quick Response Game
