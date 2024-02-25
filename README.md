@@ -13,6 +13,6 @@ Get ready for action! You will face hordes of bloodthirsty undead. Your mission 
 
 **Cooperative:** Play with friends to increase your chances of survival and face the zombie threat together. 
 
-DOWNLOAD BINARY EYE app
+# DOWNLOAD BINARY EYE app
 
 Get ready for an exciting experience full of horror, action and strategy in the ZOMBIE game! Are you ready to face the challenge? Good luck!
