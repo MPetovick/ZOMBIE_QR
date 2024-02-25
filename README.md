@@ -22,5 +22,5 @@ Get ready for an exciting experience full of horror, action and strategy in the 
 ### DOWNLOAD [BINARY EYE](https://play.google.com/store/apps/details?id=de.markusfisch.android.binaryeye)
 
 
-# PRINT & PLAY 
+# PRINT & PLAY 🧟🧟‍♀️🧟‍♂️
 
