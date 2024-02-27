@@ -18,11 +18,12 @@ Get ready for action! You will face hordes of bloodthirsty undead. Your mission 
 
 Get ready for an exciting experience full of horror, action and strategy in the ZOMBIE game! Are you ready to face the challenge? Good luck!
 
+![KIT](/images/KIT.png) ![KIT-QR](/images/KIT-SURVIVE.png) 
 
 [ZOMBIE GUIDE](https://t.me/ZOMBIE_QR)
 
 ### DOWNLOAD [BINARY EYE](https://play.google.com/store/apps/details?id=de.markusfisch.android.binaryeye)
 
 
-# PRINT & PLAY 🧟🧟‍♀️🧟‍♂️
+# PRINT & PLAY 
 
