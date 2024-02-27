@@ -47,7 +47,7 @@ The game is played in turns with 3 moves:
 
 The last survivor wins!
 
-
+![PvP](/images/1vs1.png) 
 
 ### DOWNLOAD [BINARY EYE](https://play.google.com/store/apps/details?id=de.markusfisch.android.binaryeye)
 
