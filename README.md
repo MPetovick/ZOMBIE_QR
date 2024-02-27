@@ -18,10 +18,10 @@ Get ready for action! You will face hordes of bloodthirsty undead. Your mission 
 
 Get ready for an exciting experience full of horror, action and strategy in the ZOMBIE game! Are you ready to face the challenge? Good luck!
 
-## SURVIVAL KIT CARD
+## SURVIVAL KIT CARD standard
 ![KIT](/images/KIT.png) ![KIT-QR](/images/KIT-SURVIVE.png)    
 
-## ZOMBIE CARD
+## ZOMBIE CARD standard
 ![ZOMBIE](/images/ZOMBIE.png) ![ZOMBIES](/images/ZOMBIES.png) 
 
 [ZOMBIE GUIDE](https://t.me/ZOMBIE_QR)
