@@ -1,3 +1,5 @@
+![ZOMBIE](/images/logo.png)
+
 # Welcome to ZOMBIE 🧟
 First Quick Response Game
 
