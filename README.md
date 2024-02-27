@@ -44,7 +44,9 @@ The game is played in turns with 3 moves:
 - If you don't defeat the zombie, you lose 1 health
 
 
-The last survivor wins! 🧟‍♂️🧟‍♀️
+The last survivor wins!
+
+
 
 
 ### DOWNLOAD [BINARY EYE](https://play.google.com/store/apps/details?id=de.markusfisch.android.binaryeye)
