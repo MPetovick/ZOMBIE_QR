@@ -25,6 +25,7 @@ Get ready for an exciting experience full of horror, action and strategy in the 
 ![ZOMBIE](/images/ZOMBIE.png) ![ZOMBIES](/images/ZOMBIES.png) 
 
 ## HOW TO PLAY
+![how2play](/images/how2play.png) 
 
 Each player starts with:
 - 3 lives
