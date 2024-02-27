@@ -1,7 +1,4 @@
-![ZOMBIE](/images/logo.png)
-
-# Welcome to ZOMBIE 🧟
-First Quick Response Game
+![ZOMBIE](/images/logo.png) First Quick Response Game
 
 Get ready for action! You will face hordes of bloodthirsty undead. Your mission is to survive and fight against the waves of zombies that stand in your way. 
 
