@@ -2,7 +2,7 @@
 
 # Get ready for action! You will face hordes of bloodthirsty undead. Your mission is to survive and fight against the waves of zombies that stand in your way. 
 
-**Game Features:**
+## **Game Features:**
 
 **Survival mode:** Face endless waves of zombies and see how long you can last. 
 
