@@ -26,7 +26,26 @@ Get ready for an exciting experience full of horror, action and strategy in the 
 
 ## HOW TO PLAY
 
-[ZOMBIE GUIDE](https://t.me/ZOMBIE_QR)
+Each player starts with:
+- 3 lives
+- 0 weapons
+
+Each player will place:
+- Their SURVIVAL KIT card face up with the SCAN ME towards themselves.
+- Their ZOMBIE card face up with the SCAN ME facing an opponent.
+
+The game is played in turns with 3 moves:
+1. Scan your SURVIVAL KIT card
+2. Scan all your ZOMBIE cards
+3. Move the ZOMBIE card if there are multiple players
+
+- Weapon durability ratio is 1:1
+- Maximum health is 7
+- If you don't defeat the zombie, you lose 1 health
+
+
+The last survivor wins! 🧟‍♂️🧟‍♀️
+
 
 ### DOWNLOAD [BINARY EYE](https://play.google.com/store/apps/details?id=de.markusfisch.android.binaryeye)
 
