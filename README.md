@@ -24,6 +24,8 @@ Get ready for an exciting experience full of horror, action and strategy in the 
 ## ZOMBIE CARD standard
 ![ZOMBIE](/images/ZOMBIE.png) ![ZOMBIES](/images/ZOMBIES.png) 
 
+![HOW TO PLAY](/images/ZOMBIES.png) 
+
 [ZOMBIE GUIDE](https://t.me/ZOMBIE_QR)
 
 ### DOWNLOAD [BINARY EYE](https://play.google.com/store/apps/details?id=de.markusfisch.android.binaryeye)
