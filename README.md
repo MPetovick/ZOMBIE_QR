@@ -40,7 +40,7 @@ The game is played in turns with 3 moves:
 2. Scan all your ZOMBIE cards
 3. Move the ZOMBIE card if there are multiple players
 
-* The entire area must be scanned for it to be a valid move.
+The entire area must be scanned for it to be a valid move.
 
 - Weapon durability ratio is 1:1
 - Maximum health is 7
