@@ -1,1 +1,1 @@
-### Resources to main page
+### Resources of main page
