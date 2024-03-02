@@ -15,6 +15,8 @@
 # Dependencies Segno and Pillow: <pip install segno pillow>
 #
 # To use code just: <python ZOMBIE.py>
+#
+# TELEGRAM @ZOMBIE_QR
 
 import segno
 from PIL import Image
