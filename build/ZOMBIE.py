@@ -12,7 +12,7 @@
 #
 # The code focuses on the layout of the cards and the value of the QR codes on each one.
 #
-# Dependencies Segno and Pillow: <pip install segno, pillow>
+# Dependencies Segno and Pillow: <pip install segno pillow>
 #
 # To use code just: <python ZOMBIE.py>
 
