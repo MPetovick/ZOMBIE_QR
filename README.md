@@ -15,16 +15,6 @@
 
 **Cooperative:** Play with friends to increase your chances of survival and face the zombie threat together. 
 
-
-
-Get ready for an exciting experience full of horror, action and strategy in the ZOMBIE game! Are you ready to face the challenge? Good luck!
-
-## SURVIVAL KIT CARD standard
-![KIT](/images/KIT.png) ![KIT-QR](/images/KIT-SURVIVE.png)    
-
-## ZOMBIE CARD standard
-![ZOMBIE](/images/ZOMBIE.png) ![ZOMBIES](/images/ZOMBIES.png) 
-
 ![how2play](/images/how2play.png) 
 
 Each player will place:
@@ -44,6 +34,11 @@ The entire QR area must be scanned for it to be a valid move.
 
 The last survivor wins!
 
+## SURVIVAL KIT CARD standard
+![KIT](/images/KIT.png) ![KIT-QR](/images/KIT-SURVIVE.png)    
+
+## ZOMBIE CARD standard
+![ZOMBIE](/images/ZOMBIE.png) ![ZOMBIES](/images/ZOMBIES.png) 
 
 ![PvP](/images/1vs1.png) 
 
