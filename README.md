@@ -54,6 +54,7 @@ The last survivor wins!
 
 ### [BINARY EYE](https://play.google.com/store/apps/details?id=de.markusfisch.android.binaryeye) compatible
 
-### [PRINT&PLAY](https://github.com/MPetovick/ZOMBIE_QR/blob/main/Print-1player.pdf)
+### [TELEGRAM](https://t.me/ZOMBIE_QR)
+
 
 
