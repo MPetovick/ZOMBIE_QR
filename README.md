@@ -1,4 +1,6 @@
 ![ZOMBIE](/images/logo.png) 
+### [TELEGRAM](https://t.me/ZOMBIE_QR)  ### [BINARY EYE](https://play.google.com/store/apps/details?id=de.markusfisch.android.binaryeye) compatible
+
 
 Get ready for action! You will face hordes of bloodthirsty undead. Your mission is to survive and fight against the waves of zombies that stand in your way. 
 
@@ -52,9 +54,8 @@ The last survivor wins!
 
 ![PvP](/images/1vs1.png) 
 
-### [BINARY EYE](https://play.google.com/store/apps/details?id=de.markusfisch.android.binaryeye) compatible
 
-### [TELEGRAM](https://t.me/ZOMBIE_QR)
+
 
 
 
