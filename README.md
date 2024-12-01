@@ -2,7 +2,7 @@
 ### [CHANNEL](https://t.me/ZOMBIE_QR) --- [SURVIVOR ARMY](https://t.me/SURVIVOR_ARMY) --- [ZCANER](https://t.me/ZOMBIEQR_bot) --- [$ZMB](https://t.me/blum/app?startapp=memepadjetton_ZMB_qazah-ref_t4h4ymyIgR)
 
 
-Get ready for action! You will face hordes of bloodthirsty undead. Your mission is to survive and fight against the waves of zombies that stand in your way. 
+### Get ready for action! You will face hordes of bloodthirsty undead. Your mission is to survive and fight against the waves of zombies that stand in your way. 
 
 
 **Game Features:**
@@ -25,12 +25,7 @@ Get ready for an exciting experience full of horror, action and strategy in the 
 ## ZOMBIE CARD standard
 ![ZOMBIE](/images/ZOMBIE.png) ![ZOMBIES](/images/ZOMBIES.png) 
 
-##
 ![how2play](/images/how2play.png) 
-
-Each player starts with:
-- 3 lives
-- 0 weapons
 
 Each player will place:
 - Their SURVIVAL KIT card face up with the SCAN ME towards themselves.
@@ -39,14 +34,13 @@ Each player will place:
 The game is played in turns with 3 moves:
 1. Scan your SURVIVAL KIT card
 2. Scan all your ZOMBIE cards
-3. Move the ZOMBIE card if there are multiple players
+3. Write down your lives and weapons each day you survive in your SURVIVAL PLAN
 
-The entire area must be scanned for it to be a valid move.
+The entire QR area must be scanned for it to be a valid move.
 
 - Weapon durability ratio is 1:1
 - Maximum health is 7
 - If you don't defeat the zombie, you lose 1 health
-
 
 The last survivor wins!
 
