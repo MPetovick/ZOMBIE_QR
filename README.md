@@ -1,5 +1,5 @@
 ![ZOMBIE](/images/logo.png) 
-### [TELEGRAM](https://t.me/ZOMBIE_QR)   [TOKEN ZMB](https://t.me/blum/app?startapp=memepadjetton_ZMB_qazah-ref_t4h4ymyIgR)
+### [TELEGRAM](https://t.me/ZOMBIE_QR)         [TOKEN ZMB](https://t.me/blum/app?startapp=memepadjetton_ZMB_qazah-ref_t4h4ymyIgR)
 
 
 Get ready for action! You will face hordes of bloodthirsty undead. Your mission is to survive and fight against the waves of zombies that stand in your way. 
