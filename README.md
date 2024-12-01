@@ -40,6 +40,7 @@ The last survivor wins!
 ## ZOMBIE CARD standard
 ![ZOMBIE](/images/ZOMBIE.png) ![ZOMBIES](/images/ZOMBIES.png) 
 
+## GAMEPLAY 1vs1
 ![PvP](/images/1vs1.png) 
 
 
