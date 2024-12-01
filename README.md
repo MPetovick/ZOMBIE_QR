@@ -45,8 +45,7 @@ The last survivor wins!
 ## GAMEPLAY 1vs1
 ![PvP](/images/1vs1.png) 
 
-DONATIONS: zombie-qr.tom
-           mikepetovick.ton
+DONATIONS:  zombie-qr.ton  mikepetovick.ton
 
 
 
