@@ -6,255 +6,96 @@
 # In this zombie game based on QR codes, players delve into a post-apocalyptic world infested with zombies.
 # Using their mobile devices, players scan QR codes scattered throughout the environment to unlock weapons,
 # supplies, and the last survivor wins!
-#
-# For now, it is only compatible with Android mobile devices.
-# To use the QR code reader on Android devices, it only works with the open-source Binary Eye app.
-#
-# The code focuses on the layout of the cards and the value of the QR codes on each one.
-#
-# Dependencies Segno and Pillow: <pip install segno pillow>
-#
-# To use code just: <python ZOMBIE.py>
-#
-# TELEGRAM @ZOMBIE_QR
 
 import segno
 from PIL import Image
+import os
+import tempfile
+import shutil
 
-"""
-SURVIVAL KIT CARD ˢᵗᵃⁿᵈᵃʳᵈ
+# Function to generate QR codes and save them as temporary images
+def generate_qr(data, temp_dir):
+    qr = segno.make_qr(data, error='h')
+    filename = os.path.join(temp_dir, f'{data}.png')  # Use data as part of the filename
+    qr.save(filename, scale=2, border=1, light='white')
+    return filename
 
-❤️ Health  = x6❤️ x2❤️❤️ x1❤️❤️❤️
-⛏ Weapon  = x6⛏ x2⛏ ⛏  x1⛏ ⛏ ⛏ 
-⚡️ Skip move  = x3⚡️
-✘ Empty  = x4✘
-"""
+# Function to create QR code cards (SURVIVAL-KIT QRs)
+def kit_card():
+    # Define the data for the QR codes and their filenames
+    qr_data = [
+        ('❤', 'wd1.png'), ('+2⛏', 'wd2.png'), ('✘', 'wd3.png'), ('+1⛏', 'wd4.png'), 
+        ('2❤', 'wd5.png'), ('+1⛏', 'wd6.png'), ('⚡', 'wd7.png'), ('✘', 'wd8.png'), 
+        ('3❤', 'wd9.png'), ('❤', 'wd10.png'), ('❤', 'wd11.png'), ('+2⛏', 'wd12.png'),
+        ('+1⛏', 'wd13.png'), ('⚡', 'wd14.png'), ('❤', 'wd15.png'), ('2❤', 'wd16.png'),
+        ('✘', 'wd17.png'), ('+1⛏', 'wd18.png'), ('❤', 'wd19.png'), ('+1⛏', 'wd20.png'),
+        ('+3⛏', 'wd21.png'), ('⚡', 'wd22.png'), ('+1⛏', 'wd23.png'), ('✘', 'wd24.png'),
+        ('❤', 'wd25.png')
+    ]
 
+    # Create a temporary directory for the QR images
+    with tempfile.TemporaryDirectory() as temp_dir:
+        # Generate the QR codes and save them as temporary images
+        qr_files = [generate_qr(data, temp_dir) for data, _ in qr_data]
 
-def kit_card():  # Create SURVIVAL-KIT QRs
-    wd1 = segno.make_qr('❤', error='h')
-    wd1.save('wd1.png', scale=2, border=1, light='white')
-    wd2 = segno.make_qr('+2⛏', error='h')
-    wd2.save('wd2.png', scale=2, border=1, light='white')
-    wd3 = segno.make_qr('✘', error='h')
-    wd3.save('wd3.png', scale=2, border=1, light='white')
-    wd4 = segno.make_qr('+1⛏', error='h')
-    wd4.save('wd4.png', scale=2, border=1, light='white')
-    wd5 = segno.make_qr('2❤', error='h')
-    wd5.save('wd5.png', scale=2, border=1, light='white')
-    wd6 = segno.make_qr('+1⛏', error='h')
-    wd6.save('wd6.png', scale=2, border=1, light='white')
-    wd7 = segno.make_qr('⚡', error='h')
-    wd7.save('wd7.png', scale=2, border=1, light='white')
-    wd8 = segno.make_qr('✘', error='h')
-    wd8.save('wd8.png', scale=2, border=1, light='white')
-    wd9 = segno.make_qr('3❤', error='h')
-    wd9.save('wd9.png', scale=2, border=1, light='white')
-    wd10 = segno.make_qr('❤', error='h')
-    wd10.save('wd10.png', scale=2, border=1, light='white')
-    wd11 = segno.make_qr('❤', error='h')
-    wd11.save('wd11.png', scale=2, border=1, light='white')
-    wd12 = segno.make_qr('+2⛏', error='h')
-    wd12.save('wd12.png', scale=2, border=1, light='white')
-    wd13 = segno.make_qr('+1⛏', error='h')
-    wd13.save('wd13.png', scale=2, border=1, light='white')
-    wd14 = segno.make_qr('⚡', error='h')
-    wd14.save('wd14.png', scale=2, border=1, light='white')
-    wd15 = segno.make_qr('❤', error='h')
-    wd15.save('wd15.png', scale=2, border=1, light='white')
-    wd16 = segno.make_qr('2❤', error='h')
-    wd16.save('wd16.png', scale=2, border=1, light='white')
-    wd17 = segno.make_qr('✘', error='h')
-    wd17.save('wd17.png', scale=2, border=1, light='white')
-    wd18 = segno.make_qr('+1⛏', error='h')
-    wd18.save('wd18.png', scale=2, border=1, light='white')
-    wd19 = segno.make_qr('❤', error='h')
-    wd19.save('wd19.png', scale=2, border=1, light='white')
-    wd20 = segno.make_qr('+1⛏', error='h')
-    wd20.save('wd20.png', scale=2, border=1, light='white')
-    wd21 = segno.make_qr('+3⛏', error='h')
-    wd21.save('wd21.png', scale=2, border=1, light='white')
-    wd22 = segno.make_qr('⚡', error='h')
-    wd22.save('wd22.png', scale=2, border=1, light='white')
-    wd23 = segno.make_qr('+1⛏', error='h')
-    wd23.save('wd23.png', scale=2, border=1, light='white')
-    wd24 = segno.make_qr('✘', error='h')
-    wd24.save('wd24.png', scale=2, border=1, light='white')
-    wd25 = segno.make_qr('❤', error='h')
-    wd25.save('wd25.png', scale=2, border=1, light='white')
+        card = Image.new('RGB', (274, 357))  # create layout
+        background = Image.open('background.png')
 
-    card = Image.new('RGB', (274, 357))  # create layout
-    background = Image.open('background.png')
-    qr1 = Image.open('wd1.png')
-    qr2 = Image.open('wd2.png')
-    qr3 = Image.open('wd3.png')
-    qr4 = Image.open('wd4.png')
-    qr5 = Image.open('wd5.png')
-    qr6 = Image.open('wd6.png')
-    qr7 = Image.open('wd7.png')
-    qr8 = Image.open('wd8.png')
-    qr9 = Image.open('wd9.png')
-    qr10 = Image.open('wd10.png')
-    qr11 = Image.open('wd11.png')
-    qr12 = Image.open('wd12.png')
-    qr13 = Image.open('wd13.png')
-    qr14 = Image.open('wd14.png')
-    qr15 = Image.open('wd15.png')
-    qr16 = Image.open('wd16.png')
-    qr17 = Image.open('wd17.png')
-    qr18 = Image.open('wd18.png')
-    qr19 = Image.open('wd19.png')
-    qr20 = Image.open('wd20.png')
-    qr21 = Image.open('wd20.png')
-    qr22 = Image.open('wd20.png')
-    qr23 = Image.open('wd20.png')
-    qr24 = Image.open('wd20.png')
-    qr25 = Image.open('wd20.png')
-    card.paste(background, (0, 0))  # Position background
-    card.paste(qr1, (16, 16))  # Row 1
-    card.paste(qr2, (66, 16))
-    card.paste(qr3, (114, 16))
-    card.paste(qr4, (162, 16))
-    card.paste(qr5, (212, 16))
-    card.paste(qr6, (16, 64))  # Row 2
-    card.paste(qr7, (66, 64))
-    card.paste(qr8, (114, 64))
-    card.paste(qr9, (162, 64))
-    card.paste(qr10, (212, 64))
-    card.paste(qr11, (16, 112))  # Row 3
-    card.paste(qr12, (66, 112))
-    card.paste(qr13, (114, 112))
-    card.paste(qr14, (162, 112))
-    card.paste(qr15, (212, 112))
-    card.paste(qr16, (16, 160))  # Row 4
-    card.paste(qr17, (65, 160))
-    card.paste(qr18, (114, 160))
-    card.paste(qr19, (162, 160))
-    card.paste(qr20, (212, 160))
-    card.paste(qr21, (16, 208))  # Row 5
-    card.paste(qr22, (65, 208))
-    card.paste(qr23, (114, 208))
-    card.paste(qr24, (162, 208))
-    card.paste(qr25, (212, 208))
-    card.save('SURVIVAL_KIT-sideB.png')
+        # Load all QR images dynamically
+        qr_images = [Image.open(filename) for filename in qr_files]
+        
+        # Position of the QR codes on the card (calculated automatically)
+        positions = [(x * 50 + 16, y * 48 + 16) for y in range(5) for x in range(5)]
 
+        card.paste(background, (0, 0))  # Position background
 
-"""
-ZOMBIE CARD ˢᵗᵃⁿᵈᵃʳᵈ
+        # Paste each QR code in the corresponding position
+        for qr_img, position in zip(qr_images, positions):
+            card.paste(qr_img, position)
 
-Z️ 1-3  = x10Z x5Z x3Z
-☠️ Horde = x2☠️
-✔ Clean = x5✔
-"""
+        # Save the final image
+        card.save('SURVIVAL_KIT-sideB.png')
 
+        # No need to manually delete the temporary files, as they are cleaned up when the context ends
 
-def zombie_card():  # Create ZOMBIE QRs
-    wd1 = segno.make_qr('1', error='h')
-    wd1.save('wd1.png', scale=2, border=1, light='white')
-    wd2 = segno.make_qr('1', error='h')
-    wd2.save('wd2.png', scale=2, border=1, light='white')
-    wd3 = segno.make_qr('3', error='h')
-    wd3.save('wd3.png', scale=2, border=1, light='white')
-    wd4 = segno.make_qr('2', error='h')
-    wd4.save('wd4.png', scale=2, border=1, light='white')
-    wd5 = segno.make_qr('✔', error='h')
-    wd5.save('wd5.png', scale=2, border=1, light='white')
-    wd6 = segno.make_qr('1', error='h')
-    wd6.save('wd6.png', scale=2, border=1, light='white')
-    wd7 = segno.make_qr('☠', error='h')
-    wd7.save('wd7.png', scale=2, border=1, light='white')
-    wd8 = segno.make_qr('2', error='h')
-    wd8.save('wd8.png', scale=2, border=1, light='white')
-    wd9 = segno.make_qr('✔', error='h')
-    wd9.save('wd9.png', scale=2, border=1, light='white')
-    wd10 = segno.make_qr('1', error='h')
-    wd10.save('wd10.png', scale=2, border=1, light='white')
-    wd11 = segno.make_qr('3', error='h')
-    wd11.save('wd11.png', scale=2, border=1, light='white')
-    wd12 = segno.make_qr('2', error='h')
-    wd12.save('wd12.png', scale=2, border=1, light='white')
-    wd13 = segno.make_qr('✔', error='h')
-    wd13.save('wd13.png', scale=2, border=1, light='white')
-    wd14 = segno.make_qr('1', error='h')
-    wd14.save('wd14.png', scale=2, border=1, light='white')
-    wd15 = segno.make_qr('1', error='h')
-    wd15.save('wd15.png', scale=2, border=1, light='white')
-    wd16 = segno.make_qr('2', error='h')
-    wd16.save('wd16.png', scale=2, border=1, light='white')
-    wd17 = segno.make_qr('✔', error='h')
-    wd17.save('wd17.png', scale=2, border=1, light='white')
-    wd18 = segno.make_qr('1', error='h')
-    wd18.save('wd18.png', scale=2, border=1, light='white')
-    wd19 = segno.make_qr('1', error='h')
-    wd19.save('wd19.png', scale=2, border=1, light='white')
-    wd20 = segno.make_qr('✔', error='h')
-    wd20.save('wd20.png', scale=2, border=1, light='white')
-    wd21 = segno.make_qr('1', error='h')
-    wd21.save('wd21.png', scale=2, border=1, light='white')
-    wd22 = segno.make_qr('1', error='h')
-    wd22.save('wd22.png', scale=2, border=1, light='white')
-    wd23 = segno.make_qr('☠', error='h')
-    wd23.save('wd23.png', scale=2, border=1, light='white')
-    wd24 = segno.make_qr('3', error='h')
-    wd24.save('wd24.png', scale=2, border=1, light='white')
-    wd25 = segno.make_qr('2', error='h')
-    wd25.save('wd25.png', scale=2, border=1, light='white')
+# Function to create ZOMBIE cards (ZOMBIE QRs)
+def zombie_card():
+    # Define the data for the QR codes and their filenames
+    qr_data = [
+        ('1', 'wd1.png'), ('1', 'wd2.png'), ('3', 'wd3.png'), ('2', 'wd4.png'),
+        ('✔', 'wd5.png'), ('1', 'wd6.png'), ('☠', 'wd7.png'), ('2', 'wd8.png'),
+        ('✔', 'wd9.png'), ('1', 'wd10.png'), ('3', 'wd11.png'), ('2', 'wd12.png'),
+        ('✔', 'wd13.png'), ('1', 'wd14.png'), ('1', 'wd15.png'), ('2', 'wd16.png'),
+        ('✔', 'wd17.png'), ('1', 'wd18.png'), ('1', 'wd19.png'), ('✔', 'wd20.png'),
+        ('1', 'wd21.png'), ('1', 'wd22.png'), ('☠', 'wd23.png'), ('3', 'wd24.png'),
+        ('2', 'wd25.png')
+    ]
 
-    card = Image.new('RGB', (274, 357))  # create layout
-    background = Image.open('background.png')
-    qr1 = Image.open('wd1.png')
-    qr2 = Image.open('wd2.png')
-    qr3 = Image.open('wd3.png')
-    qr4 = Image.open('wd4.png')
-    qr5 = Image.open('wd5.png')
-    qr6 = Image.open('wd6.png')
-    qr7 = Image.open('wd7.png')
-    qr8 = Image.open('wd8.png')
-    qr9 = Image.open('wd9.png')
-    qr10 = Image.open('wd10.png')
-    qr11 = Image.open('wd11.png')
-    qr12 = Image.open('wd12.png')
-    qr13 = Image.open('wd13.png')
-    qr14 = Image.open('wd14.png')
-    qr15 = Image.open('wd15.png')
-    qr16 = Image.open('wd16.png')
-    qr17 = Image.open('wd17.png')
-    qr18 = Image.open('wd18.png')
-    qr19 = Image.open('wd19.png')
-    qr20 = Image.open('wd20.png')
-    qr21 = Image.open('wd20.png')
-    qr22 = Image.open('wd20.png')
-    qr23 = Image.open('wd20.png')
-    qr24 = Image.open('wd20.png')
-    qr25 = Image.open('wd20.png')
-    card.paste(background, (0, 0))  # Position background
-    card.paste(qr1, (16, 16))  # Row 1
-    card.paste(qr2, (66, 16))
-    card.paste(qr3, (114, 16))
-    card.paste(qr4, (162, 16))
-    card.paste(qr5, (212, 16))
-    card.paste(qr6, (16, 64))  # Row 2
-    card.paste(qr7, (66, 64))
-    card.paste(qr8, (114, 64))
-    card.paste(qr9, (162, 64))
-    card.paste(qr10, (212, 64))
-    card.paste(qr11, (16, 112))  # Row 3
-    card.paste(qr12, (66, 112))
-    card.paste(qr13, (114, 112))
-    card.paste(qr14, (162, 112))
-    card.paste(qr15, (212, 112))
-    card.paste(qr16, (16, 160))  # Row 4
-    card.paste(qr17, (65, 160))
-    card.paste(qr18, (114, 160))
-    card.paste(qr19, (162, 160))
-    card.paste(qr20, (212, 160))
-    card.paste(qr21, (16, 208))  # Row 5
-    card.paste(qr22, (65, 208))
-    card.paste(qr23, (114, 208))
-    card.paste(qr24, (162, 208))
-    card.paste(qr25, (212, 208))
-    card.save('ZOMBIE-sideB.png')
+    # Create a temporary directory for the QR images
+    with tempfile.TemporaryDirectory() as temp_dir:
+        # Generate the QR codes and save them as temporary images
+        qr_files = [generate_qr(data, temp_dir) for data, _ in qr_data]
 
+        card = Image.new('RGB', (274, 357))  # create layout
+        background = Image.open('background.png')
 
+        # Load all QR images dynamically
+        qr_images = [Image.open(filename) for filename in qr_files]
+        
+        # Position of the QR codes on the card (calculated automatically)
+        positions = [(x * 50 + 16, y * 48 + 16) for y in range(5) for x in range(5)]
+
+        card.paste(background, (0, 0))  # Position background
+
+        # Paste each QR code in the corresponding position
+        for qr_img, position in zip(qr_images, positions):
+            card.paste(qr_img, position)
+
+        # Save the final image
+        card.save('ZOMBIE-sideB.png')
+
+        # Temporary files are deleted automatically when the context ends
+
+# Run both functions to generate the cards
 kit_card()
 zombie_card()
