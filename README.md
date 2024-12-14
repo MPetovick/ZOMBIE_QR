@@ -1,6 +1,6 @@
 ![ZOMBIE](/images/logo.png) 
 ## FIRST QUICK RESPONSE GAME
-### [CHANNEL](https://t.me/ZOMBIE_QR) --- [SURVIVOR ARMY](https://t.me/SURVIVOR_ARMY) --- [ZCAM](https://t.me/ZOMBIEQR_bot) --- [$ZMB](https://t.me/blum/app?startapp=memepadjetton_ZMB_qazah-ref_t4h4ymyIgR) --- [X](https://x.com/iZOMBIE_QR)
+### [CHANNEL](https://t.me/ZOMBIE_QR) --- [SURVIVOR ARMY](https://t.me/SURVIVOR_ARMY) --- [SURVIVAL](https://t.me/ZOMBIEQR_bot) --- [$ZMB](https://t.me/blum/app?startapp=memepadjetton_ZMB_qazah-ref_t4h4ymyIgR) --- [X](https://x.com/iZOMBIE_QR)
 
 
 
