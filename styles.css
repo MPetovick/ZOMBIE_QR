@@ -1,1 +1,123 @@
+/* Estilos generales */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #ffffff;
+    color: #8b0000; /* Rojo sangre */
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-image: url('assets/background.jpg');
+    background-size: cover;
+    background-position: center;
+}
 
+.container {
+    max-width: 800px;
+    width: 90%;
+    padding: 20px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
+}
+
+h1 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    color: #8b0000; /* Rojo sangre */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.stats {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+}
+
+.stats p {
+    margin: 5px 0;
+}
+
+#scanned-status {
+    color: #8b0000; /* Rojo sangre */
+    font-weight: bold;
+}
+
+.cards {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+}
+
+.card {
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.card img {
+    width: 150px;
+    height: 150px;
+    margin-bottom: 10px;
+    filter: grayscale(100%); /* Imágenes en blanco y negro */
+}
+
+.card button {
+    background-color: #8b0000; /* Rojo sangre */
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.card button:hover {
+    background-color: #6b0000; /* Rojo sangre más oscuro */
+}
+
+#log {
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: left;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+#log-entries {
+    list-style-type: none;
+    padding: 0;
+}
+
+#log-entries li {
+    margin-bottom: 10px;
+    color: #8b0000; /* Rojo sangre */
+}
+
+/* Animaciones */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.card img {
+    animation: pulse 2s infinite;
+}
+
+.stats p {
+    margin: 5px 0;
+    font-size: 1.1rem;
+}
+
+#day {
+    font-weight: bold;
+    color: #8b0000; /* Rojo sangre */
+}
