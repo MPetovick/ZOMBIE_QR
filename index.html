@@ -5,16 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ZOMBIE QR Game</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Estilos adicionales para el logo */
+        h1 img {
+            max-width: 300px;
+            height: auto;
+            margin: 20px 0;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <h1>ZOMBIE QR Game</h1>
+        <h1><img src="/images/logo.png" alt="ZOMBIE QR Game"></h1>
+        
         <div class="stats">
             <p>📅 Día: <span id="day">1</span></p>
             <p>❤️ Vidas: <span id="lives">3</span></p>
             <p>⛏ Armas: <span id="weapons">0</span></p>
             <p>🔄 Survival Kit escaneado: <span id="scanned-status">No</span></p>
         </div>
+        
         <div class="cards">
             <div class="card" id="survival-kit">
                 <img src="assets/survival-kit.png" alt="Survival Kit">
@@ -25,11 +35,13 @@
                 <button onclick="scanZombieCard()">Enfrentar Zombie</button>
             </div>
         </div>
+        
         <div id="log">
             <h2>Registro del Día</h2>
             <ul id="log-entries"></ul>
         </div>
     </div>
+    
     <script src="script.js"></script>
 </body>
 </html>
