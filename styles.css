@@ -1,11 +1,3 @@
-/* Reset básico */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-/* Paleta de colores */
 :root {
     --rojo: #FF0000;
     --negro: #000000;
@@ -13,8 +5,15 @@
     --gris: #333333;
 }
 
+/* Estilos base y reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Arial', sans-serif;
     background: var(--negro);
     color: var(--blanco);
     line-height: 1.4;
@@ -23,132 +22,145 @@ body {
 .container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 0 1rem;
 }
 
-/* Header */
+/* Header y controles de usuario */
 .header {
+    position: relative;
+    padding: 1rem 0;
     text-align: center;
-    padding: 20px 0;
+}
+
+.user-controls {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+}
+
+.login-icon {
+    color: var(--rojo);
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: opacity 0.3s;
+}
+
+.login-icon:hover {
+    opacity: 0.8;
 }
 
 .logo {
     max-width: 250px;
     height: auto;
+    margin: 0 auto;
 }
 
-/* Stats */
-.stats {
+/* Stats compactos */
+.compact-stats {
     display: flex;
     justify-content: center;
-    gap: 20px;
-    margin: 30px 0;
+    gap: 1.5rem;
+    margin: 1rem 0;
     flex-wrap: wrap;
 }
 
-.stat {
-    background: var(--gris);
-    padding: 15px 25px;
-    border-radius: 8px;
-    text-align: center;
-    min-width: 120px;
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
 }
 
-.stat-label {
-    display: block;
-    font-size: 0.9em;
+.stat-icon {
     color: var(--rojo);
-    margin-bottom: 5px;
 }
 
-.stat-value {
-    font-size: 1.8em;
-    font-weight: bold;
+/* Modal de login */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
 }
 
-/* Cards */
-.actions {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 30px;
-    margin-bottom: 40px;
+.modal-content {
+    background: var(--negro);
+    margin: 15% auto;
+    padding: 1.5rem;
+    width: 90%;
+    max-width: 350px;
+    border: 1px solid var(--rojo);
+    border-radius: 8px;
+    position: relative;
 }
 
-.card {
-    background: var(--gris);
-    border: 2px solid var(--rojo);
-    border-radius: 10px;
-    padding: 20px;
+.close {
+    color: var(--rojo);
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.modal h3 {
+    margin-bottom: 1rem;
     text-align: center;
+}
+
+.modal input {
+    width: 100%;
+    padding: 0.8rem;
+    margin-bottom: 1rem;
+    background: var(--gris);
+    border: 1px solid var(--rojo);
+    color: var(--blanco);
+    border-radius: 4px;
+}
+
+/* Resto de estilos se mantienen similares pero más compactos */
+.actions-grid {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
 }
 
 .card-image {
-    width: 100%;
-    max-width: 180px;
-    height: auto;
-    margin-bottom: 15px;
+    max-width: 160px;
 }
 
-/* Botones */
 .btn {
-    background: var(--rojo);
-    color: var(--blanco);
-    border: none;
-    padding: 12px 25px;
-    border-radius: 5px;
-    font-size: 1.1em;
-    cursor: pointer;
-    width: 100%;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    transition: filter 0.2s;
+    padding: 0.8rem;
+    font-size: 0.9rem;
 }
 
-.btn:hover {
-    filter: brightness(1.2);
-}
-
-/* Log */
-.log {
-    background: var(--gris);
-    padding: 20px;
-    border-radius: 10px;
-}
-
-.log-title {
-    color: var(--rojo);
-    margin-bottom: 15px;
-    text-align: center;
+.log-container {
+    margin-top: 1.5rem;
+    padding: 1rem;
 }
 
 .log-entries {
-    list-style: none;
+    max-height: 150px;
 }
 
-.log-entries li {
-    padding: 10px;
-    background: rgba(255, 255, 255, 0.05);
-    margin-bottom: 8px;
-    border-left: 3px solid var(--rojo);
+.log-entry {
+    padding: 0.6rem;
+    font-size: 0.85rem;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-    .container {
-        padding: 15px;
+@media (max-width: 480px) {
+    .stat-item {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.8rem;
     }
     
-    .stat {
-        padding: 10px 15px;
-        min-width: 90px;
-    }
-    
-    .stat-value {
-        font-size: 1.4em;
-    }
-    
-    .btn {
-        padding: 10px 15px;
-        font-size: 1em;
+    .logo {
+        max-width: 200px;
     }
 }
