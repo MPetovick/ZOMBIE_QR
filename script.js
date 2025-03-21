@@ -1,9 +1,9 @@
-class GameManager {
+class ZombieSurvival {
     static config = {
         initialLives: 5,
         maxLives: 7,
         baseZombieProb: 25,
-        probIncreasePerDay: 2,
+        probIncreasePerDay: 3,
         gridSize: 8,
         initialWeapons: 3
     };
@@ -13,20 +13,29 @@ class GameManager {
         weapons: this.config.initialWeapons,
         day: 1,
         zombiesKilled: 0,
-        currentGrid: [],
         log: [],
-        gameActive: true
+        gameActive: true,
+        kitUsed: false
     };
 
     static init() {
-        this.generateNewGrid();
+        this.bindEvents();
+        this.generateGrid();
         this.updateUI();
-        this.setupEventListeners();
+        this.showHelp();
     }
 
-    static generateNewGrid() {
-        const gridContainer = document.getElementById('zombieGrid');
-        gridContainer.innerHTML = '';
+    static bindEvents() {
+        document.getElementById('useKit').addEventListener('click', () => this.useKit());
+        document.getElementById('useRadar').addEventListener('click', () => this.useRadar());
+        document.getElementById('helpBtn').addEventListener('click', () => this.showHelp());
+        document.querySelector('.close').addEventListener('click', () => this.closeModal());
+        window.addEventListener('click', (e) => this.handleOutsideClick(e));
+    }
+
+    static generateGrid() {
+        const grid = document.getElementById('zombieGrid');
+        grid.innerHTML = '';
         
         const zombieProb = this.config.baseZombieProb + 
                          (this.state.day * this.config.probIncreasePerDay);
@@ -34,29 +43,26 @@ class GameManager {
         for(let y = 0; y < this.config.gridSize; y++) {
             for(let x = 0; x < this.config.gridSize; x++) {
                 const tile = document.createElement('div');
-                tile.className = 'grid-tile';
+                tile.className = 'grid-tile locked';
                 
                 const distanceFromCenter = Math.abs(x - 3.5) + Math.abs(y - 3.5);
-                const finalProb = Math.max(zombieProb - (distanceFromCenter * 3), 10);
+                const finalProb = Math.max(zombieProb - (distanceFromCenter * 3), 15);
                 
                 tile.dataset.prob = finalProb;
                 tile.addEventListener('click', () => this.handleTileClick(tile));
-                gridContainer.appendChild(tile);
+                grid.appendChild(tile);
             }
         }
     }
 
     static handleTileClick(tile) {
-        if (!this.state.gameActive || tile.classList.contains('revealed')) return;
+        if (!this.state.gameActive || tile.classList.contains('revealed') || !this.state.kitUsed) return;
         
         tile.classList.add('revealed');
+        tile.classList.remove('locked');
         const isZombie = Math.random() * 100 < tile.dataset.prob;
 
-        if (isZombie) {
-            this.handleZombieEncounter(tile);
-        } else {
-            this.handleSafeZone();
-        }
+        isZombie ? this.handleZombieEncounter(tile) : this.handleSafeZone();
     }
 
     static handleZombieEncounter(tile) {
@@ -68,8 +74,8 @@ class GameManager {
         this.state.weapons -= defense;
         this.state.zombiesKilled += defense;
         
-        this.addLogEntry(
-            `Día ${this.state.day}: ¡${zombieCount} zombies! ` +
+        this.addLog(
+            `Día ${this.state.day}: ${zombieCount} zombies! ` +
             `(Defensa: ${defense}, Daño: ${zombieCount - defense})`
         );
         
@@ -78,36 +84,31 @@ class GameManager {
 
     static handleSafeZone() {
         this.state.day++;
-        this.addLogEntry(`Día ${this.state.day}: Zona segura encontrada`);
+        this.state.kitUsed = false;
+        this.addLog(`Día ${this.state.day}: Zona segura encontrada`);
+        this.lockGrid();
+        this.generateGrid();
         this.updateUI();
     }
 
     static useKit() {
-        if (this.state.day === 1 || !this.state.gameActive) return;
+        if (this.state.kitUsed || !this.state.gameActive) return;
         
-        const resources = {
-            weapons: Math.floor(Math.random() * 3) + 1,
-            health: Math.random() > 0.7 ? 1 : 0
-        };
+        const weaponsGained = Math.floor(Math.random() * 2) + 1;
+        const healthGained = Math.random() > 0.8 ? 1 : 0;
         
-        this.state.weapons += resources.weapons;
-        this.state.lives = Math.min(
-            this.state.lives + resources.health, 
-            this.config.maxLives
-        );
+        this.state.weapons += weaponsGained;
+        this.state.lives = Math.min(this.state.lives + healthGained, this.config.maxLives);
+        this.state.kitUsed = true;
         
-        this.addLogEntry(
-            `Kit usado: +${resources.weapons} armas` + 
-            (resources.health ? ` +${resources.health} vida` : '')
-        );
-        
-        this.generateNewGrid();
+        this.unlockGrid();
+        this.addLog(`Kit usado: +${weaponsGained} armas` + (healthGained ? ` +${healthGained} vida` : ''));
         this.updateUI();
     }
 
     static useRadar() {
         if (this.state.weapons < 3 || !this.state.gameActive) {
-            this.showMessage('¡No tienes suficientes armas!');
+            this.showMessage('¡No hay suficientes armas!');
             return;
         }
         
@@ -115,13 +116,34 @@ class GameManager {
         const tiles = document.querySelectorAll('.grid-tile:not(.revealed)');
         const randomTile = tiles[Math.floor(Math.random() * tiles.length)];
         
-        randomTile.style.backgroundColor = '#330000';
-        setTimeout(() => {
-            randomTile.style.backgroundColor = '';
-        }, 1000);
-        
-        this.addLogEntry(`Radar usado: ${randomTile.dataset.prob}% de peligro`);
+        this.addLog(`Radar: Casilla [${randomTile.dataset.prob}%] de peligro`);
+        this.highlightTile(randomTile);
         this.updateUI();
+    }
+
+    static highlightTile(tile) {
+        tile.style.transform = 'scale(1.1)';
+        tile.style.boxShadow = '0 0 15px var(--rojo)';
+        setTimeout(() => {
+            tile.style.transform = '';
+            tile.style.boxShadow = '';
+        }, 1000);
+    }
+
+    static unlockGrid() {
+        document.querySelectorAll('.grid-tile').forEach(tile => {
+            if (!tile.classList.contains('revealed')) {
+                tile.classList.remove('locked');
+            }
+        });
+    }
+
+    static lockGrid() {
+        document.querySelectorAll('.grid-tile').forEach(tile => {
+            if (!tile.classList.contains('revealed')) {
+                tile.classList.add('locked');
+            }
+        });
     }
 
     static checkGameState() {
@@ -131,10 +153,28 @@ class GameManager {
         }
         
         this.state.gameActive = false;
-        this.showMessage(
-            `¡GAME OVER! Días: ${this.state.day} | Zombies: ${this.state.zombiesKilled}`,
-            true
-        );
+        this.showMessage(`¡GAME OVER! Sobreviviste ${this.state.day} días`, true);
+        this.lockGrid();
+    }
+
+    static showHelp() {
+        document.getElementById('helpModal').style.display = 'block';
+    }
+
+    static closeModal() {
+        document.getElementById('helpModal').style.display = 'none';
+    }
+
+    static handleOutsideClick(e) {
+        const modal = document.getElementById('helpModal');
+        if (e.target === modal) {
+            this.closeModal();
+        }
+    }
+
+    static startNewGame() {
+        this.closeModal();
+        this.resetGame();
     }
 
     static resetGame() {
@@ -143,17 +183,18 @@ class GameManager {
             weapons: this.config.initialWeapons,
             day: 1,
             zombiesKilled: 0,
-            currentGrid: [],
             log: [],
-            gameActive: true
+            gameActive: true,
+            kitUsed: false
         };
         
-        this.generateNewGrid();
+        this.generateGrid();
         this.updateUI();
+        this.showMessage("¡Nuevo juego comenzado!");
     }
 
-    static addLogEntry(message) {
-        this.state.log.unshift(message);
+    static addLog(message) {
+        this.state.log.unshift(`<li class="log-entry">${message}</li>`);
         if (this.state.log.length > 8) this.state.log.pop();
     }
 
@@ -163,9 +204,10 @@ class GameManager {
         document.getElementById('day').textContent = this.state.day;
         document.getElementById('zombies-killed').textContent = this.state.zombiesKilled;
         
-        document.getElementById('log-entries').innerHTML = this.state.log
-            .map(entry => `<li class="log-entry">${entry}</li>`)
-            .join('');
+        document.getElementById('log-entries').innerHTML = this.state.log.join('');
+        
+        document.getElementById('useKit').disabled = !this.state.gameActive || this.state.kitUsed;
+        document.getElementById('useRadar').disabled = !this.state.gameActive || this.state.weapons < 3;
     }
 
     static showMessage(text, isGameOver = false) {
@@ -174,22 +216,23 @@ class GameManager {
         message.textContent = text;
         
         if (isGameOver) {
-            message.style.color = 'var(--rojo)';
-            message.style.fontSize = '1.5rem';
-            message.style.padding = '1rem';
-            message.style.border = '2px solid var(--rojo)';
+            message.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: var(--negro);
+                padding: 2rem;
+                border: 3px solid var(--rojo);
+                border-radius: 10px;
+                font-size: 1.5rem;
+                z-index: 1000;
+            `;
         }
         
         document.body.appendChild(message);
-        setTimeout(() => message.remove(), isGameOver ? 5000 : 2500);
-    }
-
-    static setupEventListeners() {
-        document.getElementById('useKit').addEventListener('click', () => this.useKit());
-        document.getElementById('useRadar').addEventListener('click', () => this.useRadar());
-        document.getElementById('resetGame').addEventListener('click', () => this.resetGame());
+        setTimeout(() => message.remove(), isGameOver ? 5000 : 3000);
     }
 }
 
-// Inicializar el juego al cargar la página
-window.addEventListener('DOMContentLoaded', () => GameManager.init());
+window.addEventListener('DOMContentLoaded', () => ZombieSurvival.init());
