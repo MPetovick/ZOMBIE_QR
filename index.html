@@ -11,9 +11,9 @@
     <div class="container">
         <header class="header">
             <div class="user-controls">
-                <i class="fas fa-redo-alt" id="resetGame"></i>
+                <i class="fas fa-question-circle" id="helpBtn"></i>
             </div>
-            <img src="assets/logo.png" alt="Zombie Survival" class="logo">
+            <img src="logo.png" alt="Zombie Survival" class="logo">
         </header>
 
         <div class="compact-stats">
@@ -52,6 +52,37 @@
 
         <div class="log-container">
             <ul id="log-entries" class="log-entries"></ul>
+        </div>
+
+        <!-- Modal de Instrucciones -->
+        <div id="helpModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>¿Cómo Jugar?</h2>
+                <div class="instructions">
+                    <div class="instruction-item">
+                        <i class="fas fa-first-aid"></i>
+                        <p>Usa el <strong>Kit</strong> cada día para explorar nuevas zonas</p>
+                    </div>
+                    <div class="instruction-item">
+                        <i class="fas fa-satellite"></i>
+                        <p>El <strong>Radar</strong> (cuesta 3 armas) revela el peligro de una casilla</p>
+                    </div>
+                    <div class="instruction-item">
+                        <i class="fas fa-skull"></i>
+                        <p>Casillas rojas = ¡Zombies! Defiéndete con tus armas</p>
+                    </div>
+                    <div class="instruction-item">
+                        <i class="fas fa-check"></i>
+                        <p>Casillas verdes = Zona segura para avanzar al siguiente día</p>
+                    </div>
+                    <div class="instruction-item">
+                        <i class="fas fa-heart"></i>
+                        <p>Administra cuidadosamente tus vidas y armas</p>
+                    </div>
+                    <button class="btn btn-start" onclick="ZombieSurvival.startNewGame()">Comenzar Juego</button>
+                </div>
+            </div>
         </div>
     </div>
 
