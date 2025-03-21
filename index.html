@@ -11,50 +11,43 @@
     <div class="container">
         <header class="header">
             <div class="user-controls">
-                <i class="fas fa-user-circle login-icon" id="loginBtn"></i>
+                <i class="fas fa-redo-alt" id="resetGame"></i>
             </div>
-            <img src="images/logo.png" alt="Zombie Survival" class="logo">
+            <img src="logo.png" alt="Zombie Survival" class="logo">
         </header>
-
-        <!-- Login Modal -->
-        <div id="loginModal" class="modal">
-            <div class="modal-content">
-                <span class="close">&times;</span>
-                <h3>Guardar progreso</h3>
-                <input type="text" id="nickname" placeholder="Tu nickname">
-                <button class="btn" onclick="saveProgress()">Guardar</button>
-            </div>
-        </div>
 
         <div class="compact-stats">
             <div class="stat-item">
-                <span class="stat-icon">❤️</span>
-                <span id="lives">3</span>
+                <i class="fas fa-heart"></i>
+                <span id="lives">5</span>
             </div>
             <div class="stat-item">
-                <span class="stat-icon">⛏</span>
-                <span id="weapons">0</span>
+                <i class="fas fa-shield-alt"></i>
+                <span id="weapons">3</span>
             </div>
             <div class="stat-item">
-                <span class="stat-icon">☠️</span>
+                <i class="fas fa-skull"></i>
                 <span id="zombies-killed">0</span>
             </div>
             <div class="stat-item">
-                <span class="stat-icon">📅</span>
+                <i class="fas fa-calendar-day"></i>
                 <span id="day">1</span>
             </div>
         </div>
 
-        <div class="actions-grid">
-            <div class="action-card">
-                <img src="assets/kit.png" alt="Survival Kit" class="card-image">
-                <button class="btn" onclick="GameActions.useKit()">Abrir Kit</button>
-            </div>
-            
-            <div class="action-card">
-                <img src="assets/zombie.png" alt="Zombie" class="card-image">
-                <button class="btn btn-danger" onclick="GameActions.fightZombie()">Combatir</button>
-            </div>
+        <div class="grid-container">
+            <div class="grid" id="zombieGrid"></div>
+        </div>
+
+        <div class="actions-container">
+            <button class="action-button" id="useKit">
+                <i class="fas fa-first-aid"></i>
+                <span>Usar Kit</span>
+            </button>
+            <button class="action-button" id="useRadar">
+                <i class="fas fa-satellite"></i>
+                <span>Radar (3)</span>
+            </button>
         </div>
 
         <div class="log-container">
