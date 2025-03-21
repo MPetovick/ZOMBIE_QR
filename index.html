@@ -3,47 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zombie QR Game</title>
+    <title>Zombie Survival</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
         <header class="header">
-            <img src="images/logo.png" alt="Zombie QR Game" class="logo">
+            <div class="user-controls">
+                <i class="fas fa-user-circle login-icon" id="loginBtn"></i>
+            </div>
+            <img src="images/logo.png" alt="Zombie Survival" class="logo">
         </header>
 
-        <div class="stats">
-            <div class="stat">
-                <span class="stat-label">📅 DÍA</span>
-                <span class="stat-value" id="day">1</span>
-            </div>
-            <div class="stat">
-                <span class="stat-label">❤️ VIDAS</span>
-                <span class="stat-value" id="lives">3</span>
-            </div>
-            <div class="stat">
-                <span class="stat-label">⛏ ARMAS</span>
-                <span class="stat-value" id="weapons">0</span>
+        <!-- Login Modal -->
+        <div id="loginModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h3>Guardar progreso</h3>
+                <input type="text" id="nickname" placeholder="Tu nickname">
+                <button class="btn" onclick="saveProgress()">Guardar</button>
             </div>
         </div>
 
-        <main class="actions">
-            <div class="card">
-                <img src="assets/survival-kit.png" alt="Survival Kit" class="card-image">
-                <button class="btn" onclick="scanSurvivalKit()">USAR KIT</button>
+        <div class="compact-stats">
+            <div class="stat-item">
+                <span class="stat-icon">❤️</span>
+                <span id="lives">3</span>
             </div>
-            <div class="card">
-                <img src="assets/zombie-card.png" alt="Zombie" class="card-image">
-                <button class="btn btn-danger" onclick="scanZombieCard()">COMBATIR</button>
+            <div class="stat-item">
+                <span class="stat-icon">⛏</span>
+                <span id="weapons">0</span>
             </div>
-        </main>
+            <div class="stat-item">
+                <span class="stat-icon">☠️</span>
+                <span id="zombies-killed">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-icon">📅</span>
+                <span id="day">1</span>
+            </div>
+        </div>
 
-        <section class="log">
-            <h2 class="log-title">REGISTRO</h2>
-            <ul class="log-entries" id="log-entries"></ul>
-        </section>
+        <div class="actions-grid">
+            <div class="action-card">
+                <img src="assets/kit.png" alt="Survival Kit" class="card-image">
+                <button class="btn" onclick="GameActions.useKit()">Abrir Kit</button>
+            </div>
+            
+            <div class="action-card">
+                <img src="assets/zombie.png" alt="Zombie" class="card-image">
+                <button class="btn btn-danger" onclick="GameActions.fightZombie()">Combatir</button>
+            </div>
+        </div>
+
+        <div class="log-container">
+            <ul id="log-entries" class="log-entries"></ul>
+        </div>
     </div>
-    
+
     <script src="script.js"></script>
 </body>
 </html>
