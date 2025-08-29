@@ -11,6 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <meta name="theme-color" content="#0e1a2b">
     <style>
+        /* Estilos anteriores (se mantienen igual) */
         :root {
             --zombie-green: #4a7c59;
             --zombie-dark: #2d4d3d;
@@ -806,6 +807,7 @@
         .skill-name {
             font-weight: 600;
             margin-bottom: 4px;
+            font-size: 14px;
         }
 
         .skill-level {
@@ -821,6 +823,7 @@
             color: var(--text-dark);
             font-weight: 600;
             cursor: pointer;
+            font-size: 12px;
         }
 
         /* Leyenda del mapa */
@@ -1443,6 +1446,11 @@
                 elements.startBtn.disabled = true;
                 elements.stopBtn.disabled = false;
                 showToast('¡Juego iniciado! Muévete para encontrar suministros');
+                
+                // Generar elementos en el mapa si no existen
+                if (state.lastPosition && (state.zombies.length === 0 || state.supplies.length === 0)) {
+                    generateMapElements(state.lastPosition.lat, state.lastPosition.lng);
+                }
             }
 
             // Pausar juego
@@ -1477,13 +1485,16 @@
                     icon.className = 'fas fa-volume-mute';
                     showToast('Sonido desactivado');
                 }
+                
+                // Guardar configuración
+                localStorage.setItem('paczombie_settings', JSON.stringify(state.settings));
             }
 
             // Iniciar geolocalización
             function startGeolocation() {
                 if (navigator.geolocation) {
                     // Actualizar indicador GPS
-                    elements.gpsIndicator.className = 'gps-indicator poor';
+                    updateGpsIndicator('searching');
                     
                     state.watchId = navigator.geolocation.watchPosition(
                         handleGeolocationSuccess,
@@ -1497,9 +1508,17 @@
                 }
             }
 
-            // Manejar éxito de geolocalización
-            function handleGeolocationSuccess(position) {
-                const { latitude, longitude, accuracy } = position.coords;
+            // Actualizar indicador GPS según la precisión
+            function updateGpsIndicator(status, accuracy = null) {
+                if (status === 'searching') {
+                    elements.gpsIndicator.className = 'gps-indicator poor';
+                    return;
+                }
+                
+                if (status === 'error') {
+                    elements.gpsIndicator.className = 'gps-indicator none';
+                    return;
+                }
                 
                 // Mejorar indicador GPS según la precisión
                 if (accuracy < 10) {
@@ -1509,18 +1528,30 @@
                 } else {
                     elements.gpsIndicator.className = 'gps-indicator poor';
                 }
+            }
+
+            // Manejar éxito de geolocalización
+            function handleGeolocationSuccess(position) {
+                const { latitude, longitude, accuracy } = position.coords;
+                
+                // Actualizar indicador GPS
+                updateGpsIndicator('success', accuracy);
                 
                 // Actualizar posición del marcador
                 state.userMarker.setLatLng([latitude, longitude]);
                 state.userMarker.setOpacity(1);
                 
-                // Centrar mapa en la posición actual (solo la primera vez)
-                if (!state.lastPosition) {
+                // Centrar mapa en la posición actual (solo la primera vez o si está muy lejos)
+                if (!state.lastPosition || calculateDistance(
+                    state.lastPosition.lat, 
+                    state.lastPosition.lng, 
+                    latitude, 
+                    longitude
+                ) > 500) {
                     state.map.setView([latitude, longitude], 16);
                     
                     // Generar zombies y suministros alrededor
-                    generateZombies(latitude, longitude, 500);
-                    generateSupplies(latitude, longitude, 300);
+                    generateMapElements(latitude, longitude);
                 }
                 
                 // Calcular distancia recorrida
@@ -1550,11 +1581,23 @@
                 if (state.isGameRunning) {
                     checkCollisions(state.lastPosition);
                 }
+                
+                // Recuperar energía si no hay movimiento
+                if (!state.isGameRunning && state.player.stamina < state.player.maxStamina) {
+                    state.player.stamina = Math.min(state.player.maxStamina, state.player.stamina + CONFIG.STAMINA_RECOVER_RATE);
+                    updateUI();
+                }
+            }
+
+            // Generar elementos en el mapa (zombies y suministros)
+            function generateMapElements(centerLat, centerLng) {
+                generateZombies(centerLat, centerLng, 500);
+                generateSupplies(centerLat, centerLng, 300);
             }
 
             // Manejar error de geolocalización
             function handleGeolocationError(error) {
-                elements.gpsIndicator.className = 'gps-indicator none';
+                updateGpsIndicator('error');
                 
                 switch(error.code) {
                     case error.PERMISSION_DENIED:
@@ -1593,7 +1636,7 @@
             // Generar zombies
             function generateZombies(centerLat, centerLng, radius = 500) {
                 // Limpiar zombies existentes
-                state.zombies.forEach(zombie => state.map.removeLayer(zombie));
+                clearMapElements(state.zombies);
                 state.zombies = [];
                 
                 // Generar nuevos zombies
@@ -1623,7 +1666,7 @@
             // Generar suministros
             function generateSupplies(centerLat, centerLng, radius = 300) {
                 // Limpiar suministros existentes
-                state.supplies.forEach(supply => state.map.removeLayer(supply));
+                clearMapElements(state.supplies);
                 state.supplies = [];
                 
                 // Generar nuevos suministros
@@ -1653,6 +1696,15 @@
                 showToast(`${supplyCount} suministros generados en el área`);
             }
 
+            // Limpiar elementos del mapa
+            function clearMapElements(elements) {
+                elements.forEach(element => {
+                    if (element && state.map.hasLayer(element)) {
+                        state.map.removeLayer(element);
+                    }
+                });
+            }
+
             // Verificar colisiones
             function checkCollisions(currentPosition) {
                 // Verificar proximidad de zombies
@@ -1677,7 +1729,15 @@
                 });
                 
                 // Actualizar UI de proximidad de zombies
-                if (zombiesInDanger) {
+                updateZombieProximity(zombiesNearby, zombiesInDanger);
+                
+                // Verificar recolección de suministros
+                checkSupplyCollection(currentPosition);
+            }
+
+            // Actualizar UI de proximidad de zombies
+            function updateZombieProximity(nearby, danger) {
+                if (danger) {
                     elements.zombieProximity.className = 'zombie-proximity show danger';
                     showToast('¡Zombies muy cerca! ¡Huye!', 'error');
                     
@@ -1686,13 +1746,15 @@
                         state.player.hp = Math.max(0, state.player.hp - CONFIG.DAMAGE_RATE);
                         updateUI();
                     }
-                } else if (zombiesNearby) {
+                } else if (nearby) {
                     elements.zombieProximity.className = 'zombie-proximity show';
                 } else {
                     elements.zombieProximity.className = 'zombie-proximity';
                 }
-                
-                // Verificar recolección de suministros
+            }
+
+            // Verificar recolección de suministros
+            function checkSupplyCollection(currentPosition) {
                 state.supplies.forEach((supply, index) => {
                     const supplyPos = supply.getLatLng();
                     const distance = calculateDistance(
@@ -1720,6 +1782,19 @@
             // Actualizar UI
             function updateUI() {
                 // Actualizar HP
+                updateHealthUI();
+                
+                // Actualizar energía
+                updateStaminaUI();
+                
+                // Actualizar otros valores
+                elements.zombiesDefeated.textContent = state.player.zombiesDefeated;
+                elements.playerLevel.textContent = state.player.level;
+                elements.scoreValue.textContent = state.player.score;
+            }
+
+            // Actualizar UI de salud
+            function updateHealthUI() {
                 elements.hpText.textContent = `${Math.round(state.player.hp)}/${state.player.maxHp}`;
                 const hpPercent = (state.player.hp / state.player.maxHp) * 100;
                 elements.hpBar.style.width = `${hpPercent}%`;
@@ -1733,17 +1808,14 @@
                 } else {
                     elements.hpText.className = 'resource-value hp-value low';
                 }
-                
-                // Actualizar energía
+            }
+
+            // Actualizar UI de energía
+            function updateStaminaUI() {
                 elements.staminaText.textContent = `${Math.round(state.player.stamina)}/${state.player.maxStamina}`;
                 const staminaPercent = (state.player.stamina / state.player.maxStamina) * 100;
                 elements.staminaBar.style.width = `${staminaPercent}%`;
                 elements.staminaPercent.textContent = `${Math.round(staminaPercent)}%`;
-                
-                // Actualizar otros valores
-                elements.zombiesDefeated.textContent = state.player.zombiesDefeated;
-                elements.playerLevel.textContent = state.player.level;
-                elements.scoreValue.textContent = state.player.score;
             }
 
             // Mostrar notificación toast
@@ -1808,6 +1880,12 @@
                     const icon = elements.soundControl.querySelector('i');
                     icon.className = state.settings.soundEffects ? 'fas fa-volume-up' : 'fas fa-volume-mute';
                 }
+            }
+
+            // Cargar datos del juego
+            function loadGameData() {
+                loadGame();
+                loadSettings();
             }
 
             // API pública
