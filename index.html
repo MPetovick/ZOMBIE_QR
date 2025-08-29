@@ -3,2271 +3,692 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZACMAN - Survival Geogame</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <meta name="theme-color" content="#0e1a2b">
+    <title>ZACMAN - Survival Zombie Game</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <style>
-        :root {
-            --zombie-green: #4a7c59;
-            --zombie-dark: #2d4d3d;
-            --blood-red: #8c2f2f;
-            --blood-dark: #5c1f1f;
-            --pacman-yellow: #ffcc00;
-            --pacman-dark: #b38f00;
-            --dot-blue: #4a72ff;
-            --dot-dark: #304ab3;
-            --powerup-pink: #ff00ff;
-            --powerup-dark: #b300b3;
-            --apocalypse-gray: #3a3a3a;
-            --apocalypse-dark: #1f1f1f;
-            --text-light: #f1e6c9;
-            --text-dark: #2b2b2b;
-            --background: var(--apocalypse-dark);
-            --accent: var(--pacman-yellow);
-            --border-radius: 12px;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.6), 0 2px 4px -1px rgba(0, 0, 0, 0.5);
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            --hp-full: #4ade80;
-            --hp-medium: #fbbf24;
-            --hp-low: #ef4444;
-            --stamina: #60a5fa;
-            --gps-excellent: #4ade80;
-            --gps-good: #fbbf24;
-            --gps-poor: #ef4444;
-            --gps-none: #8a8d93;
-        }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
         }
-
-        html, body {
-            height: 100%;
-            width: 100%;
+        
+        body {
+            background-color: #0a0a0a;
+            color: #f0f0f0;
             overflow: hidden;
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(180deg, #1f1f1f 0%, #2d2d2d 100%);
-            color: var(--text-light);
-            font-size: 16px;
+            height: 100vh;
         }
-
-        .app-container {
+        
+        .container {
             display: flex;
             flex-direction: column;
             height: 100vh;
-            width: 100%;
-            position: relative;
         }
-
-        /* SPLASH SCREEN con tema ZACMAN */
-        .splash-screen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--apocalypse-dark);
-            z-index: 2000;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            transition: opacity 0.5s ease;
-            padding: 20px;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%231f1f1f"/><path d="M10,10 C40,30 60,10 90,30 C60,50 40,70 10,50 C40,30 60,50 90,30" stroke="%232d4d3d" stroke-width="2" fill="none"/></svg>');
-            background-size: 200px;
-        }
-
-        .splash-screen.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .splash-image {
-            width: 100%;
-            height: 40vh;
-            max-height: 300px;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="%23ffcc00"/><path d="M30,40 Q50,30 70,40 Q65,50 70,60 Q50,70 30,60 Q35,50 30,40" fill="%23333"/><circle cx="40" cy="45" r="5" fill="white"/><circle cx="60" cy="45" r="5" fill="white"/><circle cx="40" cy="45" r="2" fill="black"/><circle cx="60" cy="45" r="2" fill="black"/><path d="M45,65 Q50,70 55,65" stroke="%23333" stroke-width="2" fill="none"/></svg>') no-repeat center center;
-            background-size: contain;
-            margin-bottom: 20px;
-            filter: drop-shadow(0 0 10px var(--pacman-yellow));
-        }
-
-        .splash-title {
-            font-size: 3rem;
-            font-weight: 800;
-            color: var(--pacman-yellow);
-            text-shadow: 0 0 10px var(--blood-red);
-            margin-bottom: 10px;
+        
+        header {
+            background-color: #111;
+            padding: 15px;
             text-align: center;
+            border-bottom: 2px solid #ff0000;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+        }
+        
+        .logo {
+            font-family: 'Impact', sans-serif;
+            font-size: 2.5rem;
+            color: #ff0000;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
             letter-spacing: 2px;
         }
-
-        .splash-subtitle {
-            font-size: 1.2rem;
-            color: var(--text-light);
-            margin-bottom: 30px;
-            text-align: center;
-            max-width: 80%;
-        }
-
-        .splash-buttons {
+        
+        .game-container {
             display: flex;
-            flex-direction: column;
-            gap: 15px;
-            width: 100%;
-            max-width: 300px;
-        }
-
-        .splash-btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: var(--border-radius);
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            background: linear-gradient(180deg, var(--pacman-yellow) 0%, var(--pacman-dark) 100%);
-            color: var(--text-dark);
-            box-shadow: 0 0 8px rgba(255, 204, 0, 0.4);
-        }
-
-        .splash-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0 12px rgba(255, 204, 0, 0.6);
-        }
-
-        .splash-btn:disabled {
-            background: linear-gradient(180deg, #5a5c61 0%, #3b3d42 100%);
-            color: var(--text-light);
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .sound-control {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 10;
-            border: 1px solid var(--pacman-yellow);
-        }
-
-        /* HEADER con tema ZACMAN */
-        .app-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 12px;
-            background: linear-gradient(90deg, #2d2d2d 0%, #3a3a3a 100%);
-            border-bottom: 2px solid var(--zombie-green);
-            box-shadow: var(--shadow);
-            z-index: 1000;
-            flex-shrink: 0;
-            min-height: 56px;
-        }
-
-        .player-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
             flex: 1;
-            min-width: 0;
-        }
-
-        .player-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            border: 2px solid var(--pacman-dark);
-            box-shadow: 0 0 6px rgba(255, 204, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            background: var(--apocalypse-dark);
-            flex-shrink: 0;
-        }
-
-        .player-details {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-            min-width: 0;
-            flex: 1;
-        }
-
-        .player-name {
-            font-weight: 600;
-            font-size: 14px;
-            color: var(--text-light);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 140px;
-        }
-
-        .player-resources {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-top: 2px;
-        }
-
-        .resource {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 11px;
-        }
-
-        .resource-icon {
-            font-size: 12px;
-        }
-
-        .resource-value {
-            font-size: 11px;
-            font-weight: 600;
-            padding: 2px 4px;
-            border-radius: 3px;
-            background: rgba(0, 0, 0, 0.3);
-            min-width: 40px;
-            text-align: center;
-        }
-
-        .hp-value.full {
-            color: var(--hp-full);
-        }
-
-        .hp-value.medium {
-            color: var(--hp-medium);
-        }
-
-        .hp-value.low {
-            color: var(--hp-low);
-        }
-
-        .stamina-value {
-            color: var(--stamina);
-        }
-
-        .score-display {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            margin-left: 4px;
-            font-size: 11px;
-            color: var(--pacman-yellow);
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 6px;
-            align-items: center;
-            flex-shrink: 0;
-        }
-
-        .icon-btn {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            border: none;
-            background: linear-gradient(180deg, #5a5c61 0%, #3b3d42 100%);
-            border: 1px solid var(--zombie-green);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: var(--transition);
-            color: var(--text-light);
-            font-size: 12px;
-        }
-
-        .icon-btn:hover {
-            background: linear-gradient(180deg, #8a8d93 0%, #5a5c61 100%);
-        }
-
-        .gps-indicator {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background: rgba(0, 0, 0, 0.3);
             position: relative;
         }
-
-        .gps-icon {
-            font-size: 14px;
-            transition: var(--transition);
-        }
-
-        .gps-indicator.excellent .gps-icon {
-            color: var(--gps-excellent);
-            animation: pulse 2s infinite;
-        }
-
-        .gps-indicator.good .gps-icon {
-            color: var(--gps-good);
-            animation: pulse 3s infinite;
-        }
-
-        .gps-indicator.poor .gps-icon {
-            color: var(--gps-poor);
-            animation: pulse 4s infinite;
-        }
-
-        .gps-indicator.none .gps-icon {
-            color: var(--gps-none);
-        }
-
-        /* MAIN CONTENT - Mapa y panel */
-        .main-content {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-            position: relative;
-            width: 100%;
-            height: 100%;
-        }
-
+        
         #map {
             flex: 1;
-            width: 100%;
             height: 100%;
             z-index: 1;
         }
-
-        .side-panel {
+        
+        .hud {
             position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 40vh;
-            max-height: 400px;
-            background: linear-gradient(180deg, #3a3a3a 0%, #2d2d2d 100%);
-            border-top: 1px solid var(--zombie-green);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            transition: transform 0.3s ease;
-            z-index: 10;
-            box-shadow: var(--shadow);
-            will-change: transform;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #ff0000;
+            min-width: 200px;
         }
-
-        .side-panel.collapsed {
-            transform: translateY(calc(100% - 60px));
+        
+        .stats {
+            margin-bottom: 15px;
         }
-
-        .panel-handle {
-            height: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            background: var(--apocalypse-gray);
-            border-bottom: 1px solid var(--zombie-green);
-        }
-
-        .handle-icon {
-            width: 40px;
-            height: 4px;
-            background: var(--zombie-green);
-            border-radius: 2px;
-        }
-
-        .tab-navigation {
-            display: flex;
-            border-bottom: 1px solid var(--zombie-green);
-            background: var(--apocalypse-gray);
-            flex-shrink: 0;
-        }
-
-        .tab-btn {
-            flex: 1;
-            padding: 14px;
-            text-align: center;
-            border: none;
-            background: transparent;
-            cursor: pointer;
-            font-weight: 500;
-            color: var(--text-light);
-            transition: var(--transition);
-            position: relative;
-            font-size: 14px;
-        }
-
-        .tab-btn.active {
-            color: var(--pacman-yellow);
-            text-shadow: 0 0 6px rgba(255, 204, 0, 0.6);
-            font-weight: 600;
-        }
-
-        .tab-btn.active::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: var(--pacman-yellow);
-        }
-
-        .tab-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 16px;
-        }
-
-        .tab-pane {
-            display: none;
-        }
-
-        .tab-pane.active {
-            display: block;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-
-        .stat-card {
-            background: linear-gradient(180deg, #4a4a4a 0%, #3a3a3a 100%);
-            box-shadow: inset 0 1px 2px rgba(255,255,255,0.05), 0 2px 6px rgba(0,0,0,0.5);
-            border-radius: var(--border-radius);
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            transition: var(--transition);
-            border: 1px solid var(--zombie-green);
-        }
-
-        .stat-card:hover {
-            transform: translateY(-2px);
-            box-shadow: inset 0 1px 2px rgba(255,255,255,0.1), 0 4px 12px rgba(0,0,0,0.6);
-        }
-
-        .stat-value {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--text-light);
-        }
-
-        .stat-label {
-            font-size: 12px;
-            color: var(--zombie-green);
-            margin-top: 4px;
-        }
-
-        .stat-icon {
-            width: 24px;
-            height: 24px;
-            background: linear-gradient(180deg, var(--pacman-yellow) 0%, var(--pacman-dark) 100%);
-            box-shadow: 0 0 6px rgba(255, 204, 0, 0.5);
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-dark);
-            margin-bottom: 8px;
-            font-size: 12px;
-        }
-
-        .progress-container {
-            margin: 16px 0;
-        }
-
-        .progress-label {
+        
+        .stat {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 6px;
-            font-size: 14px;
-            color: var(--text-light);
+            margin-bottom: 8px;
         }
-
-        .progress-bar {
-            height: 8px;
-            background: var(--apocalypse-gray);
-            border: 1px solid var(--zombie-green);
-            border-radius: 6px;
+        
+        .health-bar {
+            height: 20px;
+            background-color: #333;
+            border-radius: 10px;
             overflow: hidden;
-            box-shadow: inset 0 1px 2px rgba(0,0,0,0.3), 0 0 4px rgba(139, 69, 19, 0.2);
+            margin-bottom: 15px;
         }
-
-        .progress-fill.hp {
+        
+        .health-fill {
             height: 100%;
-            background: linear-gradient(90deg, #ff4040 0%, #ff8c00 100%);
-            box-shadow: 0 0 8px rgba(255,69,0,0.7);
-            border-radius: 5px;
-            transition: width 0.5s ease;
-            animation: pulse-hp 2s ease-in-out infinite;
+            background-color: #ff0000;
+            width: 100%;
+            transition: width 0.3s;
         }
-
-        .progress-fill.stamina {
-            height: 100%;
-            background: linear-gradient(90deg, #2563eb 0%, #3b82f6 100%);
-            box-shadow: 0 0 8px rgba(59, 130, 246, 0.7);
-            border-radius: 5px;
-            transition: width 0.5s ease;
-            animation: pulse-stamina 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse-hp {
-            0% { box-shadow: 0 0 8px rgba(255,69,0,0.7); }
-            50% { box-shadow: 0 0 12px rgba(255,69,0,1); }
-            100% { box-shadow: 0 0 8px rgba(255,69,0,0.7); }
-        }
-
-        @keyframes pulse-stamina {
-            0% { box-shadow: 0 0 8px rgba(59, 130, 246, 0.7); }
-            50% { box-shadow: 0 0 12px rgba(59, 130, 246, 1); }
-            100% { box-shadow: 0 0 8px rgba(59, 130, 246, 0.7); }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .action-buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin: 16px 0;
-        }
-
-        .btn {
-            padding: 12px 16px;
-            border-radius: var(--border-radius);
-            border: none;
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            font-size: 14px;
-            user-select: none;
-        }
-
-        .btn-primary {
-            background: linear-gradient(180deg, var(--pacman-yellow) 0%, var(--pacman-dark) 100%);
-            box-shadow: 0 0 8px rgba(255, 204, 0, 0.4);
-            color: var(--text-dark);
-        }
-
-        .btn-primary:hover {
-            box-shadow: 0 0 12px rgba(255, 204, 0, 0.6);
-            transform: translateY(-2px);
-        }
-
-        .btn-danger {
-            background: linear-gradient(180deg, #5a5c61 0%, #3b3d42 100%);
-            border: 1px solid var(--zombie-green);
-            color: var(--text-light);
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .btn-danger:hover {
-            background: linear-gradient(180deg, #8a8d93 0%, #5a5c61 100%);
-            transform: translateY(-2px);
-        }
-
-        .inventory-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 8px;
-            margin-top: 16px;
-        }
-
-        .inventory-item {
-            background: linear-gradient(180deg, #4a4a4a 0%, #3a3a3a 100%);
-            box-shadow: inset 0 1px 2px rgba(255,255,255,0.05), 0 2px 6px rgba(0,0,0,0.5);
-            border-radius: var(--border-radius);
-            padding: 8px;
-            text-align: center;
-            cursor: pointer;
-            transition: var(--transition);
-            position: relative;
-            aspect-ratio: 1/1;
-            border: 1px solid var(--zombie-green);
-        }
-
-        .inventory-item:hover {
-            transform: translateY(-2px);
-            box-shadow: inset 0 1px 2px rgba(255,255,255,0.05), 0 4px 8px rgba(0,0,0,0.6);
-        }
-
-        .item-icon {
-            font-size: 20px;
-            margin-bottom: 4px;
-        }
-
-        .item-name {
-            font-size: 10px;
-            color: var(--text-light);
-            margin-bottom: 2px;
-            line-height: 1.2;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-        }
-
-        .item-count {
+        
+        .controls {
             position: absolute;
-            top: 4px;
-            right: 4px;
-            background: linear-gradient(180deg, var(--pacman-yellow) 0%, var(--pacman-dark) 100%);
-            color: var(--text-dark);
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            font-size: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-        }
-
-        .game-alert {
-            position: fixed;
-            top: 70px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--blood-red);
-            color: white;
-            padding: 10px 20px;
-            border-radius: var(--border-radius);
-            z-index: 1000;
-            font-weight: 600;
-            box-shadow: var(--shadow);
-            display: none;
-        }
-
-        .game-alert.show {
-            display: block;
-            animation: alertPulse 0.5s ease-in-out;
-        }
-
-        @keyframes alertPulse {
-            0% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
-            50% { opacity: 1; transform: translateX(-50%) translateY(0); }
-            100% { opacity: 1; transform: translateX(-50%) translateY(0); }
-        }
-
-        .zombie-proximity {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            background: rgba(139, 0, 0, 0.7);
-            padding: 10px 15px;
-            border-radius: var(--border-radius);
-            z-index: 400;
-            font-size: 14px;
-            display: none;
-            border: 1px solid var(--blood-red);
-        }
-
-        .zombie-proximity.show {
-            display: block;
-        }
-
-        .zombie-proximity.danger {
-            background: rgba(139, 0, 0, 0.9);
-            animation: dangerPulse 1s infinite;
-        }
-
-        @keyframes dangerPulse {
-            0% { box-shadow: 0 0 0 0 rgba(139, 0, 0, 0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(139, 0, 0, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(139, 0, 0, 0); }
-        }
-
-        /* Estilos para marcadores del mapa */
-        .player-marker {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(180deg, var(--pacman-yellow) 0%, var(--pacman-dark) 100%);
-            border-radius: 50%;
-            box-shadow: 0 0 10px rgba(255, 204, 0, 0.7);
-            font-size: 24px;
-            color: var(--text-dark);
-            transition: all 0.3s ease;
-            animation: pulsePlayer 2s infinite;
-        }
-
-        @keyframes pulsePlayer {
-            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 204, 0, 0.7); }
-            50% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(255, 204, 0, 0); }
-            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 204, 0, 0); }
-        }
-
-        .zombie-marker {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 30px;
-            height: 30px;
-            background: linear-gradient(180deg, var(--zombie-green) 0%, var(--zombie-dark) 100%);
-            border-radius: 50%;
-            box-shadow: 0 0 8px rgba(74, 124, 89, 0.7);
-            font-size: 20px;
-            color: white;
-            animation: zombieMove 3s infinite alternate;
-        }
-
-        @keyframes zombieMove {
-            0% { transform: translateX(0) translateY(0); }
-            100% { transform: translateX(5px) translateY(5px); }
-        }
-
-        .dot-marker {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 12px;
-            height: 12px;
-            background: linear-gradient(180deg, var(--dot-blue) 0%, var(--dot-dark) 100%);
-            border-radius: 50%;
-            box-shadow: 0 0 8px rgba(74, 114, 255, 0.7);
-            animation: pulseDot 2s infinite;
-        }
-
-        @keyframes pulseDot {
-            0% { transform: scale(1); opacity: 0.8; }
-            50% { transform: scale(1.2); opacity: 1; }
-            100% { transform: scale(1); opacity: 0.8; }
-        }
-
-        .powerup-marker {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 20px;
-            height: 20px;
-            background: linear-gradient(180deg, var(--powerup-pink) 0%, var(--powerup-dark) 100%);
-            border-radius: 50%;
-            box-shadow: 0 0 10px rgba(255, 0, 255, 0.7);
-            font-size: 12px;
-            color: white;
-            animation: pulsePowerup 1.5s infinite;
-        }
-
-        @keyframes pulsePowerup {
-            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 0, 255, 0.7); }
-            70% { transform: scale(1.2); box-shadow: 0 0 0 8px rgba(255, 0, 255, 0); }
-            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 0, 255, 0); }
-        }
-
-        /* Estilos para habilidades */
-        .skills-list {
-            margin-top: 16px;
-        }
-
-        .skill-item {
-            display: flex;
-            align-items: center;
-            background: linear-gradient(180deg, #4a4a4a 0%, #3a3a3a 100%);
-            border-radius: var(--border-radius);
-            padding: 12px;
-            margin-bottom: 8px;
-            border: 1px solid var(--zombie-green);
-        }
-
-        .skill-icon {
-            font-size: 24px;
-            margin-right: 12px;
-        }
-
-        .skill-info {
-            flex: 1;
-        }
-
-        .skill-name {
-            font-weight: 600;
-            margin-bottom: 4px;
-            font-size: 14px;
-        }
-
-        .skill-level {
-            font-size: 12px;
-            color: var(--zombie-green);
-        }
-
-        .btn-improve {
-            background: linear-gradient(180deg, var(--pacman-yellow) 0%, var(--pacman-dark) 100%);
-            border: none;
-            border-radius: var(--border-radius);
-            padding: 8px 12px;
-            color: var(--text-dark);
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 12px;
-        }
-
-        /* Leyenda del mapa */
-        .map-legend {
-            margin-top: 16px;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        .legend-color {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            margin-right: 8px;
-        }
-
-        .player-legend {
-            background: linear-gradient(180deg, var(--pacman-yellow) 0%, var(--pacman-dark) 100%);
-        }
-
-        .zombie-legend {
-            background: linear-gradient(180deg, var(--zombie-green) 0%, var(--zombie-dark) 100%);
-        }
-
-        .dot-legend {
-            background: linear-gradient(180deg, var(--dot-blue) 0%, var(--dot-dark) 100%);
-        }
-
-        .powerup-legend {
-            background: linear-gradient(180deg, var(--powerup-pink) 0%, var(--powerup-dark) 100%);
-        }
-
-        .legend-label {
-            font-size: 14px;
-        }
-
-        /* Toast notifications */
-        .toast {
-            position: fixed;
             bottom: 20px;
             right: 20px;
-            background: var(--apocalypse-gray);
-            color: var(--text-light);
-            padding: 12px 16px;
-            border-radius: var(--border-radius);
             z-index: 1000;
-            box-shadow: var(--shadow);
-            display: none;
-            max-width: 300px;
-            border-left: 4px solid var(--pacman-yellow);
+            display: flex;
+            gap: 10px;
         }
-
-        .toast.show {
-            display: block;
-            animation: toastIn 0.3s ease, toastOut 0.3s ease 2.7s forwards;
+        
+        button {
+            background-color: #ff0000;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
         }
-
-        @keyframes toastIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+        
+        button:hover {
+            background-color: #ff3333;
         }
-
-        @keyframes toastOut {
-            from { transform: translateX(0); opacity: 1; }
-            to { transform: translateX(100%); opacity: 0; }
-        }
-
-        /* Game Over Screen */
-        .game-over-screen {
+        
+        .modal {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            z-index: 3000;
+            background-color: rgba(0, 0, 0, 0.9);
             display: flex;
             flex-direction: column;
-            align-items: center;
             justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        
+        .modal-content {
+            background-color: #111;
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid #ff0000;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        .modal h2 {
+            color: #ff0000;
+            margin-bottom: 20px;
+            font-size: 2rem;
+        }
+        
+        .modal p {
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        .score-display {
+            font-size: 3rem;
+            color: #ff0000;
+            margin: 20px 0;
+        }
+        
+        .hidden {
             display: none;
         }
-
-        .game-over-content {
-            background: linear-gradient(180deg, #3a3a3a 0%, #2d2d2d 100%);
-            border-radius: var(--border-radius);
-            padding: 30px;
-            text-align: center;
-            max-width: 90%;
-            width: 400px;
-            border: 2px solid var(--blood-red);
-            box-shadow: var(--shadow);
+        
+        .item-marker {
+            border-radius: 50%;
+            background-color: #ffcc00;
+            width: 12px;
+            height: 12px;
+            box-shadow: 0 0 10px #ffcc00;
         }
-
-        .game-over-title {
-            font-size: 2.5rem;
-            color: var(--blood-red);
-            margin-bottom: 20px;
-            text-shadow: 0 0 10px rgba(139, 0, 0, 0.7);
+        
+        .zombie-marker {
+            border-radius: 50%;
+            background-color: #00cc00;
+            width: 16px;
+            height: 16px;
+            box-shadow: 0 0 10px #00cc00;
+            animation: pulse 1.5s infinite;
         }
-
-        .game-over-stats {
-            margin: 20px 0;
-            text-align: left;
+        
+        .player-marker {
+            border-radius: 50%;
+            background-color: #ff0000;
+            width: 20px;
+            height: 20px;
+            box-shadow: 0 0 15px #ff0000;
+            animation: pulse 2s infinite;
         }
-
-        .game-over-stat {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            padding-bottom: 5px;
-            border-bottom: 1px solid var(--zombie-green);
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
         }
-
-        .game-over-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 20px;
+        
+        .powerup-marker {
+            border-radius: 50%;
+            background-color: #0066ff;
+            width: 14px;
+            height: 14px;
+            box-shadow: 0 0 10px #0066ff;
+            animation: rotate 3s infinite linear;
         }
-
-        /* MEDIA QUERIES */
-        @media (max-width: 360px) {
-            .splash-title {
-                font-size: 2.2rem;
-            }
-            
-            .splash-subtitle {
-                font-size: 1rem;
-            }
-            
-            .player-name {
-                max-width: 100px;
-            }
-            
-            .inventory-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-            
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 8px;
-            }
-            
-            .stat-card {
-                padding: 8px;
-            }
-            
-            .stat-value {
-                font-size: 16px;
-            }
-            
-            .tab-btn {
-                padding: 10px 8px;
-                font-size: 12px;
-            }
-            
-            .splash-buttons {
-                max-width: 250px;
-            }
-            
-            .splash-btn {
-                padding: 10px 20px;
-                font-size: 14px;
-            }
+        
+        @keyframes rotate {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.2); }
+            100% { transform: rotate(360deg) scale(1); }
         }
-
-        @media (max-width: 480px) {
-            .splash-title {
-                font-size: 2.5rem;
+        
+        @media (max-width: 768px) {
+            .hud {
+                top: 10px;
+                left: 10px;
+                padding: 10px;
+                min-width: 160px;
             }
             
-            .splash-subtitle {
-                font-size: 1.1rem;
+            .controls {
+                bottom: 10px;
+                right: 10px;
             }
             
-            .player-name {
-                max-width: 120px;
-            }
-            
-            .inventory-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-        }
-
-        @media (min-width: 768px) {
-            .side-panel {
-                width: 380px;
-                height: 100%;
-                right: unset;
-                border-top: none;
-                border-left: 1px solid var(--zombie-green);
-                transform: none;
-            }
-            
-            .side-panel.collapsed {
-                transform: translateX(calc(100% - 60px));
-            }
-            
-            .panel-handle {
-                display: none;
-            }
-            
-            .player-name {
-                max-width: 180px;
-            }
-            
-            .stats-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-            
-            .splash-buttons {
-                max-width: 350px;
-            }
-            
-            .splash-btn {
-                padding: 14px 28px;
-                font-size: 18px;
-            }
-        }
-
-        @media (min-width: 1024px) {
-            .side-panel {
-                width: 420px;
-            }
-            
-            .player-name {
-                font-size: 16px;
-                max-width: 200px;
-            }
-            
-            .splash-buttons {
-                max-width: 400px;
-            }
-            
-            .splash-btn {
-                padding: 16px 32px;
-                font-size: 20px;
-            }
-        }
-
-        @media (min-width: 1440px) {
-            .side-panel {
-                width: 480px;
-            }
-            
-            .stat-value {
-                font-size: 24px;
+            .logo {
+                font-size: 2rem;
             }
         }
     </style>
 </head>
 <body>
-    <div class="app-container">
-        <!-- Splash Screen con tema ZACMAN -->
-        <div class="splash-screen" id="splash-screen">
-            <div class="splash-image"></div>
-            <h1 class="splash-title">ZACMAN</h1>
-            <p class="splash-subtitle">¡Recolecta puntos y evade zombies en el mundo real!</p>
-            <div class="splash-buttons">
-                <button class="splash-btn" id="new-game-btn">Nueva Partida</button>
-                <button class="splash-btn" id="continue-btn" disabled>Continuar</button>
-            </div>
-            <div class="sound-control" id="sound-control">
-                <i class="fas fa-volume-up"></i>
-            </div>
-        </div>
-
-        <header class="app-header">
-            <div class="player-info">
-                <div class="player-avatar" id="player-avatar">😎</div>
-                <div class="player-details">
-                    <div class="player-name-container">
-                        <span class="player-name" id="player-name">ZACMAN</span>
-                    </div>
-                    <div class="player-resources">
-                        <div class="resource">
-                            <span class="resource-icon">❤️</span>
-                            <span class="resource-value hp-value full" id="hp-text">100/100</span>
-                        </div>
-                        <div class="resource">
-                            <span class="resource-icon">⚡</span>
-                            <span class="resource-value stamina-value" id="stamina-text">100/100</span>
-                        </div>
-                        <div class="score-display">
-                            <span class="resource-icon">⭐</span>
-                            <span class="score-value" id="score-value">0</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="header-actions">
-                <div class="gps-indicator none" id="gps-indicator">
-                    <i class="fas fa-satellite gps-icon"></i>
-                </div>
-                <button class="icon-btn" id="menu-btn"><i class="fas fa-bars"></i></button>
-            </div>
+    <div class="container">
+        <header>
+            <div class="logo">ZACMAN</div>
         </header>
-
-        <div class="main-content">
+        
+        <div class="game-container">
             <div id="map"></div>
-            <div class="zombie-proximity" id="zombie-proximity">
-                <i class="fas fa-exclamation-triangle"></i> Zombies cercanos!
-            </div>
-            <div class="game-alert" id="game-alert"></div>
-            <div class="side-panel">
-                <div class="panel-handle" id="panel-handle">
-                    <div class="handle-icon"></div>
-                </div>
-                <div class="tab-navigation">
-                    <button class="tab-btn active" data-tab="game">Juego</button>
-                    <button class="tab-btn" data-tab="inventory">Inventario</button>
-                    <button class="tab-btn" data-tab="skills">Habilidades</button>
-                    <button class="tab-btn" data-tab="map-view">Mapa</button>
-                </div>
-                <div class="tab-content">
-                    <div class="tab-pane active" id="game-tab">
-                        <div class="stats-grid">
-                            <div class="stat-card">
-                                <div class="stat-icon"><i class="fas fa-skull"></i></div>
-                                <div class="stat-value" id="zombies-avoided">0</div>
-                                <div class="stat-label">Zombies Evadidos</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-icon"><i class="fas fa-medal"></i></div>
-                                <div class="stat-value" id="player-level">1</div>
-                                <div class="stat-label">Nivel</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-icon"><i class="fas fa-star"></i></div>
-                                <div class="stat-value" id="dots-collected">0</div>
-                                <div class="stat-label">Puntos</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-icon"><i class="fas fa-walking"></i></div>
-                                <div class="stat-value" id="distance-traveled">0</div>
-                                <div class="stat-label">Metros</div>
-                            </div>
-                        </div>
-                        <div class="progress-container">
-                            <div class="progress-label">
-                                <span>HP</span>
-                                <span id="hp-percent">100%</span>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill hp" id="hp-bar" style="width: 100%"></div>
-                            </div>
-                        </div>
-                        <div class="progress-container">
-                            <div class="progress-label">
-                                <span>Energía</span>
-                                <span id="stamina-percent">100%</span>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill stamina" id="stamina-bar" style="width: 100%"></div>
-                            </div>
-                        </div>
-                        <div class="action-buttons">
-                            <button class="btn btn-primary" id="start-btn"><i class="fas fa-play"></i> Iniciar</button>
-                            <button class="btn btn-danger" id="stop-btn" disabled><i class="fas fa-stop"></i> Pausar</button>
-                        </div>
-                    </div>
-                    <div class="tab-pane" id="inventory-tab">
-                        <h3>Power-ups</h3>
-                        <div class="inventory-grid" id="inventory-grid">
-                            <!-- Los elementos del inventario se generarán dinámicamente -->
-                        </div>
-                    </div>
-                    <div class="tab-pane" id="skills-tab">
-                        <h3>Habilidades de Supervivencia</h3>
-                        <div class="skills-list" id="skills-list">
-                            <div class="skill-item">
-                                <div class="skill-icon">🏃</div>
-                                <div class="skill-info">
-                                    <div class="skill-name">Velocidad</div>
-                                    <div class="skill-level">Nivel 1</div>
-                                </div>
-                                <button class="btn-improve">Mejorar</button>
-                            </div>
-                            <div class="skill-item">
-                                <div class="skill-icon">🥊</div>
-                                <div class="skill-info">
-                                    <div class="skill-name">Combate</div>
-                                    <div class="skill-level">Nivel 1</div>
-                                </div>
-                                <button class="btn-improve">Mejorar</button>
-                            </div>
-                            <div class="skill-item">
-                                <div class="skill-icon">🧠</div>
-                                <div class="skill-info">
-                                    <div class="skill-name">Inteligencia</div>
-                                    <div class="skill-level">Nivel 1</div>
-                                </div>
-                                <button class="btn-improve">Mejorar</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="tab-pane" id="map-view-tab">
-                        <h3>Vista del Mapa</h3>
-                        <div class="map-legend">
-                            <div class="legend-item">
-                                <div class="legend-color player-legend"></div>
-                                <div class="legend-label">Tú (ZACMAN)</div>
-                            </div>
-                            <div class="legend-item">
-                                <div class="legend-color zombie-legend"></div>
-                                <div class="legend-label">Zombies</div>
-                            </div>
-                            <div class="legend-item">
-                                <div class="legend-color dot-legend"></div>
-                                <div class="legend-label">Puntos</div>
-                            </div>
-                            <div class="legend-item">
-                                <div class="legend-color powerup-legend"></div>
-                                <div class="legend-label">Power-ups</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Game Over Screen -->
-        <div class="game-over-screen" id="game-over-screen">
-            <div class="game-over-content">
-                <h2 class="game-over-title">GAME OVER</h2>
-                <p>Los zombies te han atrapado...</p>
-                
-                <div class="game-over-stats">
-                    <div class="game-over-stat">
+            
+            <div class="hud">
+                <div class="stats">
+                    <div class="stat">
                         <span>Puntuación:</span>
-                        <span id="final-score">0</span>
+                        <span id="score">0</span>
                     </div>
-                    <div class="game-over-stat">
-                        <span>Puntos recolectados:</span>
-                        <span id="final-dots">0</span>
+                    <div class="stat">
+                        <span>Suministros:</span>
+                        <span id="supplies">0</span>
                     </div>
-                    <div class="game-over-stat">
-                        <span>Zombies evadidos:</span>
-                        <span id="final-zombies">0</span>
-                    </div>
-                    <div class="game-over-stat">
-                        <span>Distancia recorrida:</span>
-                        <span id="final-distance">0 m</span>
+                    <div class="stat">
+                        <span>Zombies:</span>
+                        <span id="zombieCount">0</span>
                     </div>
                 </div>
                 
-                <div class="game-over-buttons">
-                    <button class="btn btn-primary" id="restart-btn"><i class="fas fa-redo"></i> Reintentar</button>
-                    <button class="btn btn-danger" id="menu-btn-gameover"><i class="fas fa-home"></i> Menú Principal</button>
+                <div class="health-bar">
+                    <div class="health-fill" id="healthBar"></div>
+                </div>
+                
+                <div id="powerupInfo">No hay power-ups activos</div>
+            </div>
+            
+            <div class="controls">
+                <button id="startBtn">Iniciar Juego</button>
+                <button id="mockBtn">Modo Mock</button>
+            </div>
+            
+            <div id="startModal" class="modal">
+                <div class="modal-content">
+                    <h2>ZACMAN</h2>
+                    <p>¡Sobrevive en un mundo infestado de zombies! Recolecta suministros, evita a los zombies y utiliza power-ups para aumentar tus posibilidades de supervivencia.</p>
+                    <p>Tu ubicación se utilizará para crear el mapa de juego. ¡Moverse en la vida real te moverá en el juego!</p>
+                    <button id="startGameBtn">Comenzar</button>
+                </div>
+            </div>
+            
+            <div id="gameOverModal" class="modal hidden">
+                <div class="modal-content">
+                    <h2>¡Game Over!</h2>
+                    <p>Los zombies te han atrapado...</p>
+                    <div class="score-display" id="finalScore">0</div>
+                    <button id="restartBtn">Reintentar</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="toast" id="toast"></div>
-
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script>
-        // Constantes y configuración para el juego ZACMAN
-        const CONFIG = {
-            ZOMBIE_SPAWN_RATE: 0.0005,
-            DOT_SPAWN_RATE: 0.002,
-            POWERUP_SPAWN_RATE: 0.0001,
-            ZOMBIE_DETECTION_RADIUS: 50,
-            ZOMBIE_DANGER_RADIUS: 15,
-            DOT_COLLECTION_RADIUS: 10,
-            DAMAGE_RATE: 2,
-            STAMINA_DRAIN_RATE: 0.2,
-            STAMINA_RECOVER_RATE: 0.1,
-            POWERUP_DURATION: 15000,
-            ZOMBIE_MOVE_INTERVAL: 3000,
-            AUTO_SAVE_INTERVAL: 30000,
-            DEBOUNCE_DELAY: 500,
-            GPS_OPTIONS: {
-                enableHighAccuracy: true,
-                timeout: 10000,
-                maximumAge: 2000,
-                distanceFilter: 5
-            }
-        };
-
-        // Estado inicial del juego ZACMAN
-        const initialState = {
-            map: null,
-            userMarker: null,
-            isGameRunning: false,
-            watchId: null,
-            lastPosition: null,
-            totalDistance: 0,
-            zombies: [],
-            dots: [],
-            powerUps: [],
-            zombieMoveInterval: null,
-            gameTime: 0,
-            player: {
-                name: "ZACMAN",
-                avatar: "😎",
-                level: 1,
-                xp: 0,
-                xpToNextLevel: 100,
-                hp: 100,
-                maxHp: 100,
-                stamina: 100,
-                maxStamina: 100,
-                score: 0,
-                dotsCollected: 0,
-                zombiesAvoided: 0,
-                skills: {
-                    speed: 1,
-                    combat: 1,
-                    intelligence: 1
-                }
-            },
-            inventory: [
-                { id: 1, name: "Bate", icon: "🏏", count: 1, description: "Aturde zombies por 5 segundos" },
-                { id: 2, name: "Bebida energética", icon: "🥤", count: 1, description: "Restaura 40 puntos de energía" },
-                { id: 3, name: "Zapatillas", icon: "👟", count: 1, description: "Aumenta velocidad por 10 segundos" }
-            ],
-            activePowerUps: [],
-            settings: {
-                mapStyle: 'standard',
-                distanceUnit: 'm',
-                accuracyFilter: 20,
-                soundEffects: true,
-                music: true
-            },
-            gameState: {
-                zombiesNearby: false,
-                zombiesInDangerZone: false,
-                powerUpActive: false
-            }
-        };
-
-        // Implementación del juego ZACMAN
-        const ZacmanGame = (() => {
-            let state = {...initialState};
+        // Variables globales
+        let map, playerMarker, playerLocation;
+        let zombies = [];
+        let supplies = [];
+        let powerups = [];
+        let gameActive = false;
+        let score = 0;
+        let health = 100;
+        let suppliesCollected = 0;
+        let activePowerup = null;
+        let powerupTimer = null;
+        
+        // Elementos DOM
+        const startModal = document.getElementById('startModal');
+        const gameOverModal = document.getElementById('gameOverModal');
+        const startBtn = document.getElementById('startBtn');
+        const mockBtn = document.getElementById('mockBtn');
+        const startGameBtn = document.getElementById('startGameBtn');
+        const restartBtn = document.getElementById('restartBtn');
+        const scoreDisplay = document.getElementById('score');
+        const suppliesDisplay = document.getElementById('supplies');
+        const zombieCountDisplay = document.getElementById('zombieCount');
+        const healthBar = document.getElementById('healthBar');
+        const powerupInfo = document.getElementById('powerupInfo');
+        const finalScore = document.getElementById('finalScore');
+        
+        // Inicializar el mapa
+        function initMap(lat, lng) {
+            map = L.map('map').setView([lat, lng], 16);
             
-            // Cache de elementos DOM
-            const elements = {
-                splashScreen: document.getElementById('splash-screen'),
-                newGameBtn: document.getElementById('new-game-btn'),
-                continueBtn: document.getElementById('continue-btn'),
-                soundControl: document.getElementById('sound-control'),
-                playerAvatar: document.getElementById('player-avatar'),
-                playerName: document.getElementById('player-name'),
-                hpText: document.getElementById('hp-text'),
-                staminaText: document.getElementById('stamina-text'),
-                scoreValue: document.getElementById('score-value'),
-                gpsIndicator: document.getElementById('gps-indicator'),
-                menuBtn: document.getElementById('menu-btn'),
-                map: document.getElementById('map'),
-                zombieProximity: document.getElementById('zombie-proximity'),
-                gameAlert: document.getElementById('game-alert'),
-                panelHandle: document.getElementById('panel-handle'),
-                tabBtns: document.querySelectorAll('.tab-btn'),
-                tabPanes: document.querySelectorAll('.tab-pane'),
-                zombiesAvoided: document.getElementById('zombies-avoided'),
-                playerLevel: document.getElementById('player-level'),
-                dotsCollected: document.getElementById('dots-collected'),
-                distanceTraveled: document.getElementById('distance-traveled'),
-                hpPercent: document.getElementById('hp-percent'),
-                staminaPercent: document.getElementById('stamina-percent'),
-                hpBar: document.getElementById('hp-bar'),
-                staminaBar: document.getElementById('stamina-bar'),
-                startBtn: document.getElementById('start-btn'),
-                stopBtn: document.getElementById('stop-btn'),
-                inventoryGrid: document.getElementById('inventory-grid'),
-                toast: document.getElementById('toast'),
-                gameOverScreen: document.getElementById('game-over-screen'),
-                finalScore: document.getElementById('final-score'),
-                finalDots: document.getElementById('final-dots'),
-                finalZombies: document.getElementById('final-zombies'),
-                finalDistance: document.getElementById('final-distance'),
-                restartBtn: document.getElementById('restart-btn'),
-                menuBtnGameOver: document.getElementById('menu-btn-gameover')
-            };
-
-            // Inicialización del juego
-            function init() {
-                initMap();
-                initEventListeners();
-                loadGameData();
-                
-                // Verificar si hay partida guardada
-                const hasSave = localStorage.getItem('zacman_save');
-                elements.continueBtn.disabled = !hasSave;
-                
-                // Mostrar elementos del inventario
-                renderInventory();
-                
-                // Inicializar sistema de pestañas
-                initTabs();
-            }
-
-            // Inicializar el mapa
-            function initMap() {
-                // Crear mapa centrado en una ubicación por defecto
-                state.map = L.map('map').setView([40.4168, -3.7038], 13);
-                
-                // Añadir capa de tiles
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                }).addTo(state.map);
-                
-                // Añadir marcador del usuario
-                state.userMarker = L.marker([0, 0], {
-                    icon: L.divIcon({
-                        className: 'player-marker',
-                        html: state.player.avatar,
-                        iconSize: [40, 40]
-                    })
-                }).addTo(state.map);
-                
-                // Ocultar marcador inicialmente
-                state.userMarker.setOpacity(0);
-            }
-
-            // Inicializar event listeners
-            function initEventListeners() {
-                // Botones de la pantalla de splash
-                elements.newGameBtn.addEventListener('click', startNewGame);
-                elements.continueBtn.addEventListener('click', continueGame);
-                elements.soundControl.addEventListener('click', toggleSound);
-                
-                // Botones del juego
-                elements.startBtn.addEventListener('click', startGame);
-                elements.stopBtn.addEventListener('click', pauseGame);
-                elements.menuBtn.addEventListener('click', toggleMenu);
-                elements.panelHandle.addEventListener('click', togglePanel);
-                
-                // Botones de game over
-                elements.restartBtn.addEventListener('click', restartGame);
-                elements.menuBtnGameOver.addEventListener('click', backToMenu);
-                
-                // Sistema de pestañas
-                elements.tabBtns.forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        const tab = btn.dataset.tab;
-                        switchTab(tab);
-                    });
-                });
-            }
-
-            // Inicializar sistema de pestañas
-            function initTabs() {
-                switchTab('game');
-            }
-
-            // Cambiar pestaña
-            function switchTab(tabName) {
-                // Desactivar todas las pestañas
-                elements.tabBtns.forEach(btn => {
-                    btn.classList.remove('active');
-                });
-                
-                elements.tabPanes.forEach(pane => {
-                    pane.classList.remove('active');
-                });
-                
-                // Activar la pestaña seleccionada
-                document.querySelector(`.tab-btn[data-tab="${tabName}"]`).classList.add('active');
-                document.getElementById(`${tabName}-tab`).classList.add('active');
-            }
-
-            // Renderizar inventario
-            function renderInventory() {
-                elements.inventoryGrid.innerHTML = '';
-                
-                state.inventory.forEach(item => {
-                    const itemElement = document.createElement('div');
-                    itemElement.className = 'inventory-item';
-                    itemElement.innerHTML = `
-                        <div class="item-icon">${item.icon}</div>
-                        <div class="item-name">${item.name}</div>
-                        <div class="item-count">${item.count}</div>
-                    `;
-                    itemElement.title = item.description;
-                    
-                    // Añadir evento para usar el ítem
-                    itemElement.addEventListener('click', () => {
-                        useItem(item.id);
-                    });
-                    
-                    elements.inventoryGrid.appendChild(itemElement);
-                });
-            }
-
-            // Usar un ítem del inventario
-            function useItem(itemId) {
-                const itemIndex = state.inventory.findIndex(item => item.id === itemId);
-                
-                if (itemIndex !== -1 && state.inventory[itemIndex].count > 0) {
-                    const item = state.inventory[itemIndex];
-                    
-                    // Aplicar efecto del ítem
-                    switch(itemId) {
-                        case 1: // Bate
-                            activatePowerUp('stun', 5000);
-                            showToast('¡Zombies aturdidos por 5 segundos!');
-                            break;
-                        case 2: // Bebida energética
-                            state.player.stamina = Math.min(state.player.maxStamina, state.player.stamina + 40);
-                            updateUI();
-                            showToast('Energía recuperada +40');
-                            break;
-                        case 3: // Zapatillas
-                            activatePowerUp('speed', 10000);
-                            showToast('¡Velocidad aumentada por 10 segundos!');
-                            break;
-                    }
-                    
-                    // Reducir la cantidad del ítem
-                    state.inventory[itemIndex].count--;
-                    
-                    // Si se acaba, eliminarlo del inventario
-                    if (state.inventory[itemIndex].count <= 0) {
-                        state.inventory.splice(itemIndex, 1);
-                    }
-                    
-                    // Actualizar inventario
-                    renderInventory();
-                }
-            }
-
-            // Activar un power-up
-            function activatePowerUp(type, duration) {
-                // Añadir a power-ups activos
-                state.activePowerUps.push({
-                    type: type,
-                    endTime: Date.now() + duration
-                });
-                
-                // Aplicar efecto inmediato
-                applyPowerUpEffect(type, true);
-                
-                // Programar la finalización del power-up
-                setTimeout(() => {
-                    removePowerUp(type);
-                }, duration);
-            }
-
-            // Aplicar efecto de power-up
-            function applyPowerUpEffect(type, activate) {
-                switch(type) {
-                    case 'stun':
-                        // Los zombies se detienen
-                        if (activate) {
-                            clearInterval(state.zombieMoveInterval);
-                        } else {
-                            startZombieMovement();
-                        }
-                        break;
-                    case 'speed':
-                        // Aumentar velocidad de movimiento (se refleja en el GPS)
-                        if (activate) {
-                            CONFIG.STAMINA_DRAIN_RATE *= 0.7; // Reducir consumo de energía
-                        } else {
-                            CONFIG.STAMINA_DRAIN_RATE /= 0.7; // Restaurar consumo
-                        }
-                        break;
-                }
-            }
-
-            // Remover power-up
-            function removePowerUp(type) {
-                const index = state.activePowerUps.findIndex(p => p.type === type);
-                if (index !== -1) {
-                    state.activePowerUps.splice(index, 1);
-                    applyPowerUpEffect(type, false);
-                }
-            }
-
-            // Iniciar nuevo juego
-            function startNewGame() {
-                // Ocultar pantalla de splash
-                elements.splashScreen.classList.add('hidden');
-                
-                // Reiniciar estado del juego
-                state = {...initialState};
-                
-                // Actualizar UI
-                updateUI();
-                
-                // Iniciar geolocalización
-                startGeolocation();
-                
-                // Mostrar mensaje de bienvenida
-                showToast('¡Bienvenido a ZACMAN! Recolecta puntos y evade zombies.');
-            }
-
-            // Continuar partida
-            function continueGame() {
-                elements.splashScreen.classList.add('hidden');
-                loadGame();
-                startGeolocation();
-                showToast('Partida cargada correctamente');
-            }
-
-            // Iniciar juego
-            function startGame() {
-                state.isGameRunning = true;
-                elements.startBtn.disabled = true;
-                elements.stopBtn.disabled = false;
-                
-                // Iniciar movimiento de zombies
-                startZombieMovement();
-                
-                showToast('¡Juego iniciado! Recolecta puntos y evade zombies');
-                
-                // Generar elementos en el mapa si no existen
-                if (state.lastPosition && (state.zombies.length === 0 || state.dots.length === 0)) {
-                    generateMapElements(state.lastPosition.lat, state.lastPosition.lng);
-                }
-            }
-
-            // Iniciar movimiento de zombies
-            function startZombieMovement() {
-                if (state.zombieMoveInterval) {
-                    clearInterval(state.zombieMoveInterval);
-                }
-                
-                state.zombieMoveInterval = setInterval(() => {
-                    if (state.isGameRunning && state.lastPosition) {
-                        moveZombies();
-                    }
-                }, CONFIG.ZOMBIE_MOVE_INTERVAL);
-            }
-
-            // Mover zombies hacia el jugador
-            function moveZombies() {
-                state.zombies.forEach(zombie => {
-                    const zombiePos = zombie.getLatLng();
-                    const playerPos = state.lastPosition;
-                    
-                    // Calcular dirección hacia el jugador
-                    const latDiff = playerPos.lat - zombiePos.lat;
-                    const lngDiff = playerPos.lng - zombiePos.lng;
-                    
-                    // Mover zombie ligeramente hacia el jugador
-                    const moveDistance = 0.0001; // Ajustar para controlar velocidad
-                    const newLat = zombiePos.lat + (latDiff * moveDistance);
-                    const newLng = zombiePos.lng + (lngDiff * moveDistance);
-                    
-                    zombie.setLatLng([newLat, newLng]);
-                });
-                
-                // Verificar colisiones después de mover
-                if (state.lastPosition) {
-                    checkCollisions(state.lastPosition);
-                }
-            }
-
-            // Pausar juego
-            function pauseGame() {
-                state.isGameRunning = false;
-                elements.startBtn.disabled = false;
-                elements.stopBtn.disabled = true;
-                
-                // Detener movimiento de zombies
-                clearInterval(state.zombieMoveInterval);
-                
-                showToast('Juego pausado');
-            }
-
-            // Alternar menú
-            function toggleMenu() {
-                // Implementar lógica del menú
-                showToast('Menú abierto');
-            }
-
-            // Alternar panel
-            function togglePanel() {
-                const panel = document.querySelector('.side-panel');
-                panel.classList.toggle('collapsed');
-            }
-
-            // Alternar sonido
-            function toggleSound() {
-                state.settings.soundEffects = !state.settings.soundEffects;
-                const icon = elements.soundControl.querySelector('i');
-                
-                if (state.settings.soundEffects) {
-                    icon.className = 'fas fa-volume-up';
-                    showToast('Sonido activado');
-                } else {
-                    icon.className = 'fas fa-volume-mute';
-                    showToast('Sonido desactivado');
-                }
-                
-                // Guardar configuración
-                localStorage.setItem('zacman_settings', JSON.stringify(state.settings));
-            }
-
-            // Iniciar geolocalización
-            function startGeolocation() {
-                if (navigator.geolocation) {
-                    // Actualizar indicador GPS
-                    updateGpsIndicator('searching');
-                    
-                    state.watchId = navigator.geolocation.watchPosition(
-                        handleGeolocationSuccess,
-                        handleGeolocationError,
-                        CONFIG.GPS_OPTIONS
-                    );
-                    
-                    showToast('Buscando señal GPS...');
-                } else {
-                    showToast('Geolocalización no soportada', 'error');
-                }
-            }
-
-            // Actualizar indicador GPS según la precisión
-            function updateGpsIndicator(status, accuracy = null) {
-                if (status === 'searching') {
-                    elements.gpsIndicator.className = 'gps-indicator poor';
-                    return;
-                }
-                
-                if (status === 'error') {
-                    elements.gpsIndicator.className = 'gps-indicator none';
-                    return;
-                }
-                
-                // Mejorar indicador GPS según la precisión
-                if (accuracy < 10) {
-                    elements.gpsIndicator.className = 'gps-indicator excellent';
-                } else if (accuracy < 25) {
-                    elements.gpsIndicator.className = 'gps-indicator good';
-                } else {
-                    elements.gpsIndicator.className = 'gps-indicator poor';
-                }
-            }
-
-            // Manejar éxito de geolocalización
-            function handleGeolocationSuccess(position) {
-                const { latitude, longitude, accuracy } = position.coords;
-                
-                // Actualizar indicador GPS
-                updateGpsIndicator('success', accuracy);
-                
-                // Actualizar posición del marcador
-                state.userMarker.setLatLng([latitude, longitude]);
-                state.userMarker.setOpacity(1);
-                
-                // Centrar mapa en la posición actual (solo la primera vez o si está muy lejos)
-                if (!state.lastPosition || calculateDistance(
-                    state.lastPosition.lat, 
-                    state.lastPosition.lng, 
-                    latitude, 
-                    longitude
-                ) > 500) {
-                    state.map.setView([latitude, longitude], 16);
-                    
-                    // Generar zombies y puntos alrededor
-                    generateMapElements(latitude, longitude);
-                }
-                
-                // Calcular distancia recorrida
-                if (state.lastPosition) {
-                    const distance = calculateDistance(
-                        state.lastPosition.lat,
-                        state.lastPosition.lng,
-                        latitude,
-                        longitude
-                    );
-                    
-                    if (distance > 1 && distance < 100) { // Filtrar valores erróneos
-                        state.totalDistance += distance;
-                        elements.distanceTraveled.textContent = Math.round(state.totalDistance);
-                        
-                        // Reducir energía por movimiento
-                        if (state.isGameRunning) {
-                            state.player.stamina = Math.max(0, state.player.stamina - (distance * CONFIG.STAMINA_DRAIN_RATE));
-                            updateUI();
-                        }
-                    }
-                }
-                
-                state.lastPosition = { lat: latitude, lng: longitude };
-                
-                // Verificar colisiones y proximidad
-                if (state.isGameRunning) {
-                    checkCollisions(state.lastPosition);
-                }
-                
-                // Recuperar energía si no hay movimiento
-                if (!state.isGameRunning && state.player.stamina < state.player.maxStamina) {
-                    state.player.stamina = Math.min(state.player.maxStamina, state.player.stamina + CONFIG.STAMINA_RECOVER_RATE);
-                    updateUI();
-                }
-            }
-
-            // Generar elementos en el mapa (zombies, puntos y power-ups)
-            function generateMapElements(centerLat, centerLng) {
-                generateZombies(centerLat, centerLng, 500);
-                generateDots(centerLat, centerLng, 300);
-                generatePowerUps(centerLat, centerLng, 400);
-            }
-
-            // Manejar error de geolocalización
-            function handleGeolocationError(error) {
-                updateGpsIndicator('error');
-                
-                switch(error.code) {
-                    case error.PERMISSION_DENIED:
-                        showToast('Permiso de ubicación denegado', 'error');
-                        break;
-                    case error.POSITION_UNAVAILABLE:
-                        showToast('Ubicación no disponible', 'error');
-                        break;
-                    case error.TIMEOUT:
-                        showToast('Tiempo de espera agotado', 'error');
-                        break;
-                    default:
-                        showToast('Error desconocido en geolocalización', 'error');
-                        break;
-                }
-            }
-
-            // Calcular distancia entre dos puntos
-            function calculateDistance(lat1, lon1, lat2, lon2) {
-                const R = 6371000; // Radio de la Tierra en metros
-                const dLat = deg2rad(lat2 - lat1);
-                const dLon = deg2rad(lon2 - lon1);
-                const a = 
-                    Math.sin(dLat/2) * Math.sin(dLat/2) +
-                    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
-                    Math.sin(dLon/2) * Math.sin(dLon/2);
-                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-                const distance = R * c; // Distancia en metros
-                return distance;
-            }
-
-            function deg2rad(deg) {
-                return deg * (Math.PI/180);
-            }
-
-            // Generar zombies
-            function generateZombies(centerLat, centerLng, radius = 500) {
-                // Limpiar zombies existentes
-                clearMapElements(state.zombies);
-                state.zombies = [];
-                
-                // Generar nuevos zombies
-                const zombieCount = Math.floor(Math.random() * 4) + 3; // 3-6 zombies
-                
-                for (let i = 0; i < zombieCount; i++) {
-                    const distance = Math.random() * radius;
-                    const angle = Math.random() * Math.PI * 2;
-                    
-                    const lat = centerLat + (distance * Math.cos(angle) / 111320);
-                    const lng = centerLng + (distance * Math.sin(angle) / (111320 * Math.cos(deg2rad(centerLat))));
-                    
-                    const zombie = L.marker([lat, lng], {
-                        icon: L.divIcon({
-                            className: 'zombie-marker',
-                            html: '🧟',
-                            iconSize: [30, 30]
-                        })
-                    }).addTo(state.map);
-                    
-                    state.zombies.push(zombie);
-                }
-                
-                showToast(`${zombieCount} zombies generados en el área`);
-            }
-
-            // Generar puntos
-            function generateDots(centerLat, centerLng, radius = 300) {
-                // Limpiar puntos existentes
-                clearMapElements(state.dots);
-                state.dots = [];
-                
-                // Generar nuevos puntos
-                const dotCount = Math.floor(Math.random() * 15) + 10; // 10-24 puntos
-                
-                for (let i = 0; i < dotCount; i++) {
-                    const distance = Math.random() * radius;
-                    const angle = Math.random() * Math.PI * 2;
-                    
-                    const lat = centerLat + (distance * Math.cos(angle) / 111320);
-                    const lng = centerLng + (distance * Math.sin(angle) / (111320 * Math.cos(deg2rad(centerLat))));
-                    
-                    const dot = L.marker([lat, lng], {
-                        icon: L.divIcon({
-                            className: 'dot-marker',
-                            html: '',
-                            iconSize: [12, 12]
-                        })
-                    }).addTo(state.map);
-                    
-                    state.dots.push({
-                        marker: dot,
-                        collected: false
-                    });
-                }
-                
-                showToast(`${dotCount} puntos generados en el área`);
-            }
-
-            // Generar power-ups
-            function generatePowerUps(centerLat, centerLng, radius = 400) {
-                // Limpiar power-ups existentes
-                clearMapElements(state.powerUps);
-                state.powerUps = [];
-                
-                // Generar nuevos power-ups (menos frecuentes)
-                const powerUpCount = Math.floor(Math.random() * 2) + 1; // 1-2 power-ups
-                
-                for (let i = 0; i < powerUpCount; i++) {
-                    const distance = Math.random() * radius;
-                    const angle = Math.random() * Math.PI * 2;
-                    
-                    const lat = centerLat + (distance * Math.cos(angle) / 111320);
-                    const lng = centerLng + (distance * Math.sin(angle) / (111320 * Math.cos(deg2rad(centerLat))));
-                    
-                    const powerUpTypes = ['🏏', '👟', '⚡'];
-                    const randomType = powerUpTypes[Math.floor(Math.random() * powerUpTypes.length)];
-                    
-                    const powerUp = L.marker([lat, lng], {
-                        icon: L.divIcon({
-                            className: 'powerup-marker',
-                            html: randomType,
-                            iconSize: [20, 20]
-                        })
-                    }).addTo(state.map);
-                    
-                    state.powerUps.push({
-                        marker: powerUp,
-                        type: randomType
-                    });
-                }
-                
-                if (powerUpCount > 0) {
-                    showToast(`${powerUpCount} power-ups generados en el área`);
-                }
-            }
-
-            // Limpiar elementos del mapa
-            function clearMapElements(elements) {
-                elements.forEach(element => {
-                    if (element && element.marker && state.map.hasLayer(element.marker)) {
-                        state.map.removeLayer(element.marker);
-                    } else if (element && state.map.hasLayer(element)) {
-                        state.map.removeLayer(element);
-                    }
-                });
-            }
-
-            // Verificar colisiones
-            function checkCollisions(currentPosition) {
-                // Verificar proximidad de zombies
-                let zombiesNearby = false;
-                let zombiesInDanger = false;
-                
-                state.zombies.forEach(zombie => {
-                    const zombiePos = zombie.getLatLng();
-                    const distance = calculateDistance(
-                        currentPosition.lat,
-                        currentPosition.lng,
-                        zombiePos.lat,
-                        zombiePos.lng
-                    );
-                    
-                    if (distance < CONFIG.ZOMBIE_DANGER_RADIUS) {
-                        zombiesInDanger = true;
-                        zombiesNearby = true;
-                        
-                        // Aplicar daño al jugador
-                        if (state.isGameRunning) {
-                            state.player.hp = Math.max(0, state.player.hp - CONFIG.DAMAGE_RATE);
-                            updateUI();
-                            
-                            // Verificar game over
-                            if (state.player.hp <= 0) {
-                                gameOver();
-                                return;
-                            }
-                        }
-                    } else if (distance < CONFIG.ZOMBIE_DETECTION_RADIUS) {
-                        zombiesNearby = true;
-                    }
-                });
-                
-                // Actualizar UI de proximidad de zombies
-                updateZombieProximity(zombiesNearby, zombiesInDanger);
-                
-                // Verificar recolección de puntos
-                checkDotCollection(currentPosition);
-                
-                // Verificar recolección de power-ups
-                checkPowerUpCollection(currentPosition);
-            }
-
-            // Actualizar UI de proximidad de zombies
-            function updateZombieProximity(nearby, danger) {
-                if (danger) {
-                    elements.zombieProximity.className = 'zombie-proximity show danger';
-                    showToast('¡Zombies muy cerca! ¡Huye!', 'error');
-                } else if (nearby) {
-                    elements.zombieProximity.className = 'zombie-proximity show';
-                    // Contar como zombie evitado
-                    if (state.isGameRunning) {
-                        state.player.zombiesAvoided++;
-                        elements.zombiesAvoided.textContent = state.player.zombiesAvoided;
-                    }
-                } else {
-                    elements.zombieProximity.className = 'zombie-proximity';
-                }
-            }
-
-            // Verificar recolección de puntos
-            function checkDotCollection(currentPosition) {
-                state.dots.forEach((dot, index) => {
-                    if (dot.collected) return;
-                    
-                    const dotPos = dot.marker.getLatLng();
-                    const distance = calculateDistance(
-                        currentPosition.lat,
-                        currentPosition.lng,
-                        dotPos.lat,
-                        dotPos.lng
-                    );
-                    
-                    if (distance < CONFIG.DOT_COLLECTION_RADIUS) {
-                        // Recolectar punto
-                        state.map.removeLayer(dot.marker);
-                        dot.collected = true;
-                        state.player.dotsCollected++;
-                        state.player.score += 10;
-                        
-                        elements.dotsCollected.textContent = state.player.dotsCollected;
-                        elements.scoreValue.textContent = state.player.score;
-                        
-                        showToast('¡Punto recolectado! +10 puntos');
-                    }
-                });
-            }
-
-            // Verificar recolección de power-ups
-            function checkPowerUpCollection(currentPosition) {
-                state.powerUps.forEach((powerUp, index) => {
-                    const powerUpPos = powerUp.marker.getLatLng();
-                    const distance = calculateDistance(
-                        currentPosition.lat,
-                        currentPosition.lng,
-                        powerUpPos.lat,
-                        powerUpPos.lng
-                    );
-                    
-                    if (distance < CONFIG.DOT_COLLECTION_RADIUS) {
-                        // Recolectar power-up
-                        state.map.removeLayer(powerUp.marker);
-                        state.powerUps.splice(index, 1);
-                        
-                        // Aplicar efecto del power-up
-                        switch(powerUp.type) {
-                            case '🏏':
-                                activatePowerUp('stun', CONFIG.POWERUP_DURATION);
-                                showToast('¡Power-up: Zombies aturdidos!');
-                                break;
-                            case '👟':
-                                activatePowerUp('speed', CONFIG.POWERUP_DURATION);
-                                showToast('¡Power-up: Velocidad aumentada!');
-                                break;
-                            case '⚡':
-                                state.player.stamina = state.player.maxStamina;
-                                updateUI();
-                                showToast('¡Power-up: Energía al máximo!');
-                                break;
-                        }
-                    }
-                });
-            }
-
-            // Actualizar UI
-            function updateUI() {
-                // Actualizar HP
-                updateHealthUI();
-                
-                // Actualizar energía
-                updateStaminaUI();
-                
-                // Actualizar otros valores
-                elements.zombiesAvoided.textContent = state.player.zombiesAvoided;
-                elements.playerLevel.textContent = state.player.level;
-                elements.dotsCollected.textContent = state.player.dotsCollected;
-                elements.scoreValue.textContent = state.player.score;
-            }
-
-            // Actualizar UI de salud
-            function updateHealthUI() {
-                elements.hpText.textContent = `${Math.round(state.player.hp)}/${state.player.maxHp}`;
-                const hpPercent = (state.player.hp / state.player.maxHp) * 100;
-                elements.hpBar.style.width = `${hpPercent}%`;
-                elements.hpPercent.textContent = `${Math.round(hpPercent)}%`;
-                
-                // Actualizar clase de color para HP
-                if (hpPercent > 70) {
-                    elements.hpText.className = 'resource-value hp-value full';
-                } else if (hpPercent > 30) {
-                    elements.hpText.className = 'resource-value hp-value medium';
-                } else {
-                    elements.hpText.className = 'resource-value hp-value low';
-                }
-            }
-
-            // Actualizar UI de energía
-            function updateStaminaUI() {
-                elements.staminaText.textContent = `${Math.round(state.player.stamina)}/${state.player.maxStamina}`;
-                const staminaPercent = (state.player.stamina / state.player.maxStamina) * 100;
-                elements.staminaBar.style.width = `${staminaPercent}%`;
-                elements.staminaPercent.textContent = `${Math.round(staminaPercent)}%`;
-            }
-
-            // Mostrar notificación toast
-            function showToast(message, type = 'info') {
-                elements.toast.textContent = message;
-                elements.toast.className = 'toast';
-                
-                if (type === 'error') {
-                    elements.toast.style.borderLeftColor = 'var(--blood-red)';
-                } else if (type === 'success') {
-                    elements.toast.style.borderLeftColor = 'var(--zombie-green)';
-                } else {
-                    elements.toast.style.borderLeftColor = 'var(--pacman-yellow)';
-                }
-                
-                elements.toast.classList.add('show');
-                
-                // Ocultar después de 3 segundos
-                setTimeout(() => {
-                    elements.toast.classList.remove('show');
-                }, 3000);
-            }
-
-            // Game Over
-            function gameOver() {
-                pauseGame();
-                
-                // Mostrar pantalla de game over
-                elements.finalScore.textContent = state.player.score;
-                elements.finalDots.textContent = state.player.dotsCollected;
-                elements.finalZombies.textContent = state.player.zombiesAvoided;
-                elements.finalDistance.textContent = `${Math.round(state.totalDistance)} m`;
-                
-                elements.gameOverScreen.style.display = 'flex';
-                
-                // Guardar puntuación máxima
-                const highScore = localStorage.getItem('zacman_highscore') || 0;
-                if (state.player.score > highScore) {
-                    localStorage.setItem('zacman_highscore', state.player.score);
-                    showToast('¡Nuevo récord!', 'success');
-                }
-            }
-
-            // Reiniciar juego
-            function restartGame() {
-                elements.gameOverScreen.style.display = 'none';
-                startNewGame();
-            }
-
-            // Volver al menú principal
-            function backToMenu() {
-                elements.gameOverScreen.style.display = 'none';
-                elements.splashScreen.classList.remove('hidden');
-            }
-
-            // Guardar partida
-            function saveGame() {
-                const saveData = {
-                    player: state.player,
-                    inventory: state.inventory,
-                    totalDistance: state.totalDistance,
-                    gameTime: state.gameTime
-                };
-                
-                localStorage.setItem('zacman_save', JSON.stringify(saveData));
-                showToast('Partida guardada');
-            }
-
-            // Cargar partida
-            function loadGame() {
-                const saveData = localStorage.getItem('zacman_save');
-                
-                if (saveData) {
-                    const parsedData = JSON.parse(saveData);
-                    
-                    state.player = {...state.player, ...parsedData.player};
-                    state.inventory = parsedData.inventory;
-                    state.totalDistance = parsedData.totalDistance;
-                    state.gameTime = parsedData.gameTime;
-                    
-                    updateUI();
-                    renderInventory();
-                }
-            }
-
-            // Cargar configuración
-            function loadSettings() {
-                const savedSettings = localStorage.getItem('zacman_settings');
-                
-                if (savedSettings) {
-                    state.settings = {...state.settings, ...JSON.parse(savedSettings)};
-                    
-                    // Actualizar UI según configuración
-                    const icon = elements.soundControl.querySelector('i');
-                    icon.className = state.settings.soundEffects ? 'fas fa-volume-up' : 'fas fa-volume-mute';
-                }
-            }
-
-            // Cargar datos del juego
-            function loadGameData() {
-                loadGame();
-                loadSettings();
-            }
-
-            // API pública
-            return {
-                init,
-                startGame,
-                pauseGame,
-                saveGame,
-                loadGame
-            };
-        })();
-
-        // Inicializar el juego cuando el DOM esté listo
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', ZacmanGame.init);
-        } else {
-            ZacmanGame.init();
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map);
+            
+            // Crear marcador del jugador
+            playerMarker = L.marker([lat, lng], {
+                icon: L.divIcon({
+                    className: 'player-marker',
+                    iconSize: [20, 20]
+                })
+            }).addTo(map);
+            
+            // Centrar el mapa en el jugador
+            map.setView([lat, lng], 16);
         }
+        
+        // Iniciar juego con geolocalización real
+        function startGame() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        playerLocation = {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude
+                        };
+                        
+                        initMap(playerLocation.lat, playerLocation.lng);
+                        startModal.classList.add('hidden');
+                        gameActive = true;
+                        
+                        // Generar elementos del juego
+                        generateGameElements();
+                        
+                        // Iniciar el bucle del juego
+                        gameLoop();
+                    },
+                    function(error) {
+                        alert('Error obteniendo la ubicación. Usando ubicación por defecto.');
+                        // Ubicación por defecto (Plaza Mayor de Madrid)
+                        playerLocation = { lat: 40.415363, lng: -3.707398 };
+                        initMap(playerLocation.lat, playerLocation.lng);
+                        startModal.classList.add('hidden');
+                        gameActive = true;
+                        generateGameElements();
+                        gameLoop();
+                    }
+                );
+            } else {
+                alert('Geolocalización no soportada por tu navegador. Usando ubicación por defecto.');
+                playerLocation = { lat: 40.415363, lng: -3.707398 };
+                initMap(playerLocation.lat, playerLocation.lng);
+                startModal.classList.add('hidden');
+                gameActive = true;
+                generateGameElements();
+                gameLoop();
+            }
+        }
+        
+        // Iniciar juego en modo mock (para escritorio)
+        function startMockMode() {
+            playerLocation = { lat: 40.415363, lng: -3.707398 };
+            initMap(playerLocation.lat, playerLocation.lng);
+            startModal.classList.add('hidden');
+            gameActive = true;
+            
+            // Agregar controles de teclado para modo mock
+            initKeyboardControls();
+            
+            generateGameElements();
+            gameLoop();
+        }
+        
+        // Generar zombies, suministros y power-ups
+        function generateGameElements() {
+            // Generar zombies (5-10)
+            const zombieCount = 5 + Math.floor(Math.random() * 6);
+            for (let i = 0; i < zombieCount; i++) {
+                const offsetLat = (Math.random() - 0.5) * 0.01;
+                const offsetLng = (Math.random() - 0.5) * 0.01;
+                
+                const zombie = L.marker([playerLocation.lat + offsetLat, playerLocation.lng + offsetLng], {
+                    icon: L.divIcon({
+                        className: 'zombie-marker',
+                        iconSize: [16, 16]
+                    })
+                }).addTo(map);
+                
+                zombies.push({
+                    marker: zombie,
+                    lat: playerLocation.lat + offsetLat,
+                    lng: playerLocation.lng + offsetLng,
+                    speed: 0.00002 + Math.random() * 0.00002
+                });
+            }
+            
+            // Generar suministros (15-25)
+            const suppliesCount = 15 + Math.floor(Math.random() * 11);
+            for (let i = 0; i < suppliesCount; i++) {
+                const offsetLat = (Math.random() - 0.5) * 0.02;
+                const offsetLng = (Math.random() - 0.5) * 0.02;
+                
+                const supply = L.marker([playerLocation.lat + offsetLat, playerLocation.lng + offsetLng], {
+                    icon: L.divIcon({
+                        className: 'item-marker',
+                        iconSize: [12, 12]
+                    })
+                }).addTo(map);
+                
+                supplies.push({
+                    marker: supply,
+                    lat: playerLocation.lat + offsetLat,
+                    lng: playerLocation.lng + offsetLng,
+                    collected: false
+                });
+            }
+            
+            // Generar power-ups (2-4)
+            const powerupCount = 2 + Math.floor(Math.random() * 3);
+            for (let i = 0; i < powerupCount; i++) {
+                const offsetLat = (Math.random() - 0.5) * 0.015;
+                const offsetLng = (Math.random() - 0.5) * 0.015;
+                
+                const powerup = L.marker([playerLocation.lat + offsetLat, playerLocation.lng + offsetLng], {
+                    icon: L.divIcon({
+                        className: 'powerup-marker',
+                        iconSize: [14, 14]
+                    })
+                }).addTo(map);
+                
+                powerups.push({
+                    marker: powerup,
+                    lat: playerLocation.lat + offsetLat,
+                    lng: playerLocation.lng + offsetLng,
+                    type: Math.random() > 0.5 ? 'weapon' : 'speed',
+                    collected: false
+                });
+            }
+            
+            // Actualizar contador de zombies
+            zombieCountDisplay.textContent = zombieCount;
+        }
+        
+        // Bucle principal del juego
+        function gameLoop() {
+            if (!gameActive) return;
+            
+            // Mover zombies hacia el jugador
+            moveZombies();
+            
+            // Comprobar colisiones
+            checkCollisions();
+            
+            // Actualizar la ubicación real si no estamos en modo mock
+            if (!mockMode) {
+                updateRealLocation();
+            }
+            
+            // Continuar el bucle
+            setTimeout(gameLoop, 1000);
+        }
+        
+        // Mover zombies hacia la posición del jugador
+        function moveZombies() {
+            zombies.forEach(zombie => {
+                // Calcular dirección hacia el jugador
+                const latDiff = playerLocation.lat - zombie.lat;
+                const lngDiff = playerLocation.lng - zombie.lng;
+                
+                // Normalizar y aplicar velocidad
+                const distance = Math.sqrt(latDiff * latDiff + lngDiff * lngDiff);
+                const latMove = (latDiff / distance) * zombie.speed;
+                const lngMove = (lngDiff / distance) * zombie.speed;
+                
+                // Actualizar posición del zombie
+                zombie.lat += latMove;
+                zombie.lng += lngMove;
+                
+                // Actualizar marcador en el mapa
+                zombie.marker.setLatLng([zombie.lat, zombie.lng]);
+            });
+        }
+        
+        // Comprobar colisiones con suministros, power-ups y zombies
+        function checkCollisions() {
+            // Colisión con suministros
+            supplies.forEach((supply, index) => {
+                if (!supply.collected) {
+                    const distance = calculateDistance(playerLocation, { lat: supply.lat, lng: supply.lng });
+                    if (distance < 0.0002) { // Radio de colisión
+                        supply.collected = true;
+                        map.removeLayer(supply.marker);
+                        
+                        // Actualizar puntuación y suministros
+                        score += 10;
+                        suppliesCollected += 1;
+                        scoreDisplay.textContent = score;
+                        suppliesDisplay.textContent = suppliesCollected;
+                    }
+                }
+            });
+            
+            // Colisión con power-ups
+            powerups.forEach((powerup, index) => {
+                if (!powerup.collected) {
+                    const distance = calculateDistance(playerLocation, { lat: powerup.lat, lng: powerup.lng });
+                    if (distance < 0.0002) { // Radio de colisión
+                        powerup.collected = true;
+                        map.removeLayer(powerup.marker);
+                        
+                        // Activar power-up
+                        activatePowerup(powerup.type);
+                    }
+                }
+            });
+            
+            // Colisión con zombies
+            zombies.forEach(zombie => {
+                const distance = calculateDistance(playerLocation, { lat: zombie.lat, lng: zombie.lng });
+                if (distance < 0.0003) { // Radio de colisión
+                    // El jugador pierde salud
+                    health -= 10;
+                    healthBar.style.width = health + '%';
+                    
+                    // Comprobar si el juego ha terminado
+                    if (health <= 0) {
+                        gameOver();
+                    }
+                }
+            });
+        }
+        
+        // Activar un power-up
+        function activatePowerup(type) {
+            // Desactivar power-up anterior si existe
+            if (activePowerup) {
+                clearTimeout(powerupTimer);
+            }
+            
+            activePowerup = type;
+            
+            if (type === 'weapon') {
+                powerupInfo.textContent = '¡Arma activada! Zombies más lentos por 15 segundos.';
+                // Hacer zombies más lentos
+                zombies.forEach(zombie => {
+                    zombie.speed *= 0.5;
+                });
+            } else if (type === 'speed') {
+                powerupInfo.textContent = '¡Velocidad aumentada! Movimiento más rápido por 15 segundos.';
+                // Aquí aumentaríamos la velocidad del jugador en modo mock
+            }
+            
+            // Desactivar power-up después de 15 segundos
+            powerupTimer = setTimeout(() => {
+                if (type === 'weapon') {
+                    // Restaurar velocidad de zombies
+                    zombies.forEach(zombie => {
+                        zombie.speed *= 2;
+                    });
+                }
+                activePowerup = null;
+                powerupInfo.textContent = 'No hay power-ups activos';
+            }, 15000);
+        }
+        
+        // Calcular distancia entre dos puntos
+        function calculateDistance(point1, point2) {
+            const latDiff = point1.lat - point2.lat;
+            const lngDiff = point1.lng - point2.lng;
+            return Math.sqrt(latDiff * latDiff + lngDiff * lngDiff);
+        }
+        
+        // Actualizar ubicación real del jugador
+        function updateRealLocation() {
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    playerLocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    
+                    // Actualizar marcador del jugador
+                    playerMarker.setLatLng([playerLocation.lat, playerLocation.lng]);
+                    
+                    // Centrar mapa en el jugador
+                    map.setView([playerLocation.lat, playerLocation.lng]);
+                },
+                function(error) {
+                    console.error('Error updating location:', error);
+                }
+            );
+        }
+        
+        // Inicializar controles de teclado para modo mock
+        function initKeyboardControls() {
+            document.addEventListener('keydown', function(e) {
+                if (!gameActive) return;
+                
+                const moveDistance = 0.0001;
+                
+                switch(e.key) {
+                    case 'w':
+                    case 'ArrowUp':
+                        playerLocation.lat += moveDistance;
+                        break;
+                    case 's':
+                    case 'ArrowDown':
+                        playerLocation.lat -= moveDistance;
+                        break;
+                    case 'a':
+                    case 'ArrowLeft':
+                        playerLocation.lng -= moveDistance;
+                        break;
+                    case 'd':
+                    case 'ArrowRight':
+                        playerLocation.lng += moveDistance;
+                        break;
+                }
+                
+                // Actualizar marcador del jugador
+                playerMarker.setLatLng([playerLocation.lat, playerLocation.lng]);
+                
+                // Centrar mapa en el jugador
+                map.setView([playerLocation.lat, playerLocation.lng]);
+            });
+        }
+        
+        // Finalizar el juego
+        function gameOver() {
+            gameActive = false;
+            finalScore.textContent = score;
+            gameOverModal.classList.remove('hidden');
+        }
+        
+        // Reiniciar el juego
+        function restartGame() {
+            // Limpiar elementos existentes
+            zombies.forEach(zombie => map.removeLayer(zombie.marker));
+            supplies.forEach(supply => map.removeLayer(supply.marker));
+            powerups.forEach(powerup => map.removeLayer(powerup.marker));
+            
+            // Reiniciar variables
+            zombies = [];
+            supplies = [];
+            powerups = [];
+            score = 0;
+            health = 100;
+            suppliesCollected = 0;
+            activePowerup = null;
+            
+            // Actualizar HUD
+            scoreDisplay.textContent = '0';
+            suppliesDisplay.textContent = '0';
+            healthBar.style.width = '100%';
+            powerupInfo.textContent = 'No hay power-ups activos';
+            
+            // Ocultar modal de game over
+            gameOverModal.classList.add('hidden');
+            
+            // Reiniciar juego
+            if (mockMode) {
+                startMockMode();
+            } else {
+                startGame();
+            }
+        }
+        
+        // Event listeners
+        startBtn.addEventListener('click', startGame);
+        mockBtn.addEventListener('click', startMockMode);
+        startGameBtn.addEventListener('click', startGame);
+        restartBtn.addEventListener('click', restartGame);
+        
+        // Iniciar con el modal de inicio visible
+        startModal.classList.remove('hidden');
     </script>
 </body>
 </html>
