@@ -12,28 +12,30 @@
             box-sizing: border-box;
             font-family: 'Arial', sans-serif;
         }
-        
+
         body {
             background-color: #0a0a0a;
             color: #f0f0f0;
             overflow: hidden;
             height: 100vh;
         }
-        
+
         .container {
             display: flex;
             flex-direction: column;
             height: 100vh;
         }
-        
+
         header {
             background-color: #111;
             padding: 15px;
             text-align: center;
             border-bottom: 2px solid #ff0000;
             box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+            position: relative;
+            z-index: 1001;
         }
-        
+
         .logo {
             font-family: 'Impact', sans-serif;
             font-size: 2.5rem;
@@ -41,19 +43,19 @@
             text-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
             letter-spacing: 2px;
         }
-        
+
         .game-container {
             display: flex;
             flex: 1;
             position: relative;
         }
-        
+
         #map {
             flex: 1;
             height: 100%;
             z-index: 1;
         }
-        
+
         .hud {
             position: absolute;
             top: 20px;
@@ -64,33 +66,48 @@
             border-radius: 10px;
             border: 1px solid #ff0000;
             min-width: 200px;
+            backdrop-filter: blur(5px);
         }
-        
+
         .stats {
             margin-bottom: 15px;
         }
-        
+
         .stat {
             display: flex;
             justify-content: space-between;
             margin-bottom: 8px;
         }
-        
+
         .health-bar {
             height: 20px;
             background-color: #333;
             border-radius: 10px;
             overflow: hidden;
             margin-bottom: 15px;
+            position: relative;
         }
-        
+
         .health-fill {
             height: 100%;
-            background-color: #ff0000;
+            background: linear-gradient(to right, #ff0000, #ff5a00);
             width: 100%;
-            transition: width 0.3s;
+            transition: width 0.3s ease;
+            border-radius: 10px;
         }
-        
+
+        .health-text {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 12px;
+            font-weight: bold;
+            text-shadow: 0 0 2px black;
+            line-height: 20px;
+        }
+
         .controls {
             position: absolute;
             bottom: 20px;
@@ -99,7 +116,7 @@
             display: flex;
             gap: 10px;
         }
-        
+
         button {
             background-color: #ff0000;
             color: white;
@@ -108,13 +125,16 @@
             border-radius: 5px;
             cursor: pointer;
             font-weight: bold;
-            transition: background-color 0.3s;
+            transition: all 0.3s;
+            box-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
         }
-        
+
         button:hover {
             background-color: #ff3333;
+            transform: translateY(-2px);
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
         }
-        
+
         .modal {
             position: absolute;
             top: 0;
@@ -128,7 +148,7 @@
             align-items: center;
             z-index: 2000;
         }
-        
+
         .modal-content {
             background-color: #111;
             padding: 30px;
@@ -137,29 +157,32 @@
             text-align: center;
             max-width: 500px;
             width: 90%;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
         }
-        
+
         .modal h2 {
             color: #ff0000;
             margin-bottom: 20px;
             font-size: 2rem;
+            text-shadow: 0 0 5px rgba(255, 0, 0, 0.7);
         }
-        
+
         .modal p {
             margin-bottom: 15px;
             line-height: 1.5;
         }
-        
+
         .score-display {
             font-size: 3rem;
             color: #ff0000;
             margin: 20px 0;
+            text-shadow: 0 0 5px rgba(255, 0, 0, 0.7);
         }
-        
+
         .hidden {
             display: none;
         }
-        
+
         .item-marker {
             border-radius: 50%;
             background-color: #ffcc00;
@@ -167,7 +190,7 @@
             height: 12px;
             box-shadow: 0 0 10px #ffcc00;
         }
-        
+
         .zombie-marker {
             border-radius: 50%;
             background-color: #00cc00;
@@ -176,7 +199,7 @@
             box-shadow: 0 0 10px #00cc00;
             animation: pulse 1.5s infinite;
         }
-        
+
         .player-marker {
             border-radius: 50%;
             background-color: #ff0000;
@@ -185,13 +208,13 @@
             box-shadow: 0 0 15px #ff0000;
             animation: pulse 2s infinite;
         }
-        
+
         @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
+            0% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.8; }
         }
-        
+
         .powerup-marker {
             border-radius: 50%;
             background-color: #0066ff;
@@ -200,13 +223,69 @@
             box-shadow: 0 0 10px #0066ff;
             animation: rotate 3s infinite linear;
         }
-        
+
         @keyframes rotate {
             0% { transform: rotate(0deg) scale(1); }
             50% { transform: rotate(180deg) scale(1.2); }
             100% { transform: rotate(360deg) scale(1); }
         }
-        
+
+        .notification {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            border-left: 4px solid #ff0000;
+            z-index: 1000;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .minimap {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            width: 150px;
+            height: 150px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border: 2px solid #ff0000;
+            border-radius: 10px;
+            z-index: 1000;
+            overflow: hidden;
+            backdrop-filter: blur(5px);
+        }
+
+        .minimap #minimap-container {
+            width: 100%;
+            height: 100%;
+        }
+
+        .powerup-active {
+            color: #0066ff;
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(0, 102, 255, 0.7);
+        }
+
+        .debug-info {
+            position: absolute;
+            bottom: 180px;
+            left: 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
         @media (max-width: 768px) {
             .hud {
                 top: 10px;
@@ -214,14 +293,27 @@
                 padding: 10px;
                 min-width: 160px;
             }
-            
+
             .controls {
                 bottom: 10px;
                 right: 10px;
+                flex-direction: column;
             }
-            
+
             .logo {
                 font-size: 2rem;
+            }
+
+            .minimap {
+                width: 100px;
+                height: 100px;
+                bottom: 10px;
+                left: 10px;
+            }
+
+            .debug-info {
+                bottom: 120px;
+                left: 10px;
             }
         }
     </style>
@@ -231,10 +323,10 @@
         <header>
             <div class="logo">ZACMAN</div>
         </header>
-        
+
         <div class="game-container">
             <div id="map"></div>
-            
+
             <div class="hud">
                 <div class="stats">
                     <div class="stat">
@@ -249,34 +341,76 @@
                         <span>Zombies:</span>
                         <span id="zombieCount">0</span>
                     </div>
+                    <div class="stat">
+                        <span>Nivel:</span>
+                        <span id="level">1</span>
+                    </div>
                 </div>
-                
+
                 <div class="health-bar">
                     <div class="health-fill" id="healthBar"></div>
+                    <div class="health-text" id="healthText">100%</div>
                 </div>
-                
+
                 <div id="powerupInfo">No hay power-ups activos</div>
             </div>
-            
+
+            <div class="minimap">
+                <div id="minimap-container"></div>
+            </div>
+
+            <div class="debug-info">
+                <div>FPS: <span id="fps">0</span></div>
+                <div>Zombies activos: <span id="activeZombies">0</span></div>
+            </div>
+
             <div class="controls">
                 <button id="startBtn">Iniciar Juego</button>
                 <button id="mockBtn">Modo Mock</button>
+                <button id="pauseBtn" class="hidden">Pausar</button>
             </div>
-            
+
+            <div id="notification" class="notification">
+                ¡Encontraste suministros!
+            </div>
+
             <div id="startModal" class="modal">
                 <div class="modal-content">
                     <h2>ZACMAN</h2>
                     <p>¡Sobrevive en un mundo infestado de zombies! Recolecta suministros, evita a los zombies y utiliza power-ups para aumentar tus posibilidades de supervivencia.</p>
                     <p>Tu ubicación se utilizará para crear el mapa de juego. ¡Moverse en la vida real te moverá en el juego!</p>
-                    <button id="startGameBtn">Comenzar</button>
+                    <div class="controls">
+                        <button id="startGameBtn">Comenzar</button>
+                        <button id="instructionsBtn">Instrucciones</button>
+                    </div>
                 </div>
             </div>
-            
+
+            <div id="instructionsModal" class="modal hidden">
+                <div class="modal-content">
+                    <h2>Instrucciones</h2>
+                    <p><strong>Objetivo:</strong> Recolecta suministros y sobrevive el mayor tiempo posible.</p>
+                    <p><strong>Controles:</strong></p>
+                    <ul style="text-align: left; margin-left: 20px; margin-bottom: 15px;">
+                        <li>Moverse físicamente (modo real)</li>
+                        <li>Teclas WASD/Flechas (modo mock)</li>
+                    </ul>
+                    <p><strong>Power-ups:</strong></p>
+                    <ul style="text-align: left; margin-left: 20px;">
+                        <li>Arma: Ralentiza zombies por 15 segundos</li>
+                        <li>Velocidad: Aumenta tu velocidad por 15 segundos</li>
+                    </ul>
+                    <button id="backBtn">Volver</button>
+                </div>
+            </div>
+
             <div id="gameOverModal" class="modal hidden">
                 <div class="modal-content">
                     <h2>¡Game Over!</h2>
                     <p>Los zombies te han atrapado...</p>
                     <div class="score-display" id="finalScore">0</div>
+                    <p>Suministros recolectados: <span id="finalSupplies">0</span></p>
+                    <p>Nivel alcanzado: <span id="finalLevel">1</span></p>
                     <button id="restartBtn">Reintentar</button>
                 </div>
             </div>
@@ -286,39 +420,73 @@
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script>
         // Variables globales
-        let map, playerMarker, playerLocation;
+        let map, playerMarker, playerLocation, minimap, minimapPlayerMarker;
         let zombies = [];
         let supplies = [];
         let powerups = [];
         let gameActive = false;
+        let mockMode = false;
         let score = 0;
         let health = 100;
         let suppliesCollected = 0;
         let activePowerup = null;
         let powerupTimer = null;
-        
+        let gameLevel = 1;
+        let lastTimestamp = 0;
+        let fps = 0;
+        let frameCount = 0;
+        let lastFpsUpdate = 0;
+        let gamePaused = false;
+        let zombieSpawnInterval;
+        let supplySpawnInterval;
+
+        // Configuración del juego
+        const config = {
+            initialZombies: 5,
+            initialSupplies: 15,
+            initialPowerups: 2,
+            zombieSpawnRate: 10000, // 10 segundos
+            supplySpawnRate: 8000,  // 8 segundos
+            playerSpeed: 0.0001,
+            baseZombieSpeed: 0.00002,
+            detectionRadius: 0.005, // Radio para atraer zombies
+            collisionRadius: 0.0003,
+            collectionRadius: 0.0002
+        };
+
         // Elementos DOM
         const startModal = document.getElementById('startModal');
+        const instructionsModal = document.getElementById('instructionsModal');
         const gameOverModal = document.getElementById('gameOverModal');
         const startBtn = document.getElementById('startBtn');
         const mockBtn = document.getElementById('mockBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
         const startGameBtn = document.getElementById('startGameBtn');
+        const instructionsBtn = document.getElementById('instructionsBtn');
+        const backBtn = document.getElementById('backBtn');
         const restartBtn = document.getElementById('restartBtn');
         const scoreDisplay = document.getElementById('score');
         const suppliesDisplay = document.getElementById('supplies');
         const zombieCountDisplay = document.getElementById('zombieCount');
+        const levelDisplay = document.getElementById('level');
         const healthBar = document.getElementById('healthBar');
+        const healthText = document.getElementById('healthText');
         const powerupInfo = document.getElementById('powerupInfo');
         const finalScore = document.getElementById('finalScore');
-        
-        // Inicializar el mapa
+        const finalSupplies = document.getElementById('finalSupplies');
+        const finalLevel = document.getElementById('finalLevel');
+        const notification = document.getElementById('notification');
+        const fpsDisplay = document.getElementById('fps');
+        const activeZombiesDisplay = document.getElementById('activeZombies');
+
+        // Inicializar el mapa principal
         function initMap(lat, lng) {
             map = L.map('map').setView([lat, lng], 16);
-            
+
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; OpenStreetMap contributors'
             }).addTo(map);
-            
+
             // Crear marcador del jugador
             playerMarker = L.marker([lat, lng], {
                 icon: L.divIcon({
@@ -326,13 +494,36 @@
                     iconSize: [20, 20]
                 })
             }).addTo(map);
-            
-            // Centrar el mapa en el jugador
-            map.setView([lat, lng], 16);
+
+            // Inicializar minimapa
+            initMinimap(lat, lng);
         }
-        
+
+        // Inicializar minimapa
+        function initMinimap(lat, lng) {
+            minimap = L.map('minimap-container', {
+                zoomControl: false,
+                attributionControl: false,
+                dragging: false,
+                scrollWheelZoom: false,
+                doubleClickZoom: false,
+                boxZoom: false
+            }).setView([lat, lng], 14);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(minimap);
+            
+            // Marcador del jugador en el minimapa
+            minimapPlayerMarker = L.marker([lat, lng], {
+                icon: L.divIcon({
+                    className: 'player-marker',
+                    iconSize: [12, 12]
+                })
+            }).addTo(minimap);
+        }
+
         // Iniciar juego con geolocalización real
         function startGame() {
+            mockMode = false;
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     function(position) {
@@ -340,16 +531,20 @@
                             lat: position.coords.latitude,
                             lng: position.coords.longitude
                         };
-                        
+
                         initMap(playerLocation.lat, playerLocation.lng);
                         startModal.classList.add('hidden');
                         gameActive = true;
-                        
+                        pauseBtn.classList.remove('hidden');
+
                         // Generar elementos del juego
                         generateGameElements();
-                        
+
                         // Iniciar el bucle del juego
-                        gameLoop();
+                        requestAnimationFrame(gameLoop);
+
+                        // Iniciar generación de elementos
+                        startSpawning();
                     },
                     function(error) {
                         alert('Error obteniendo la ubicación. Usando ubicación por defecto.');
@@ -358,9 +553,12 @@
                         initMap(playerLocation.lat, playerLocation.lng);
                         startModal.classList.add('hidden');
                         gameActive = true;
+                        pauseBtn.classList.remove('hidden');
                         generateGameElements();
-                        gameLoop();
-                    }
+                        requestAnimationFrame(gameLoop);
+                        startSpawning();
+                    },
+                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
                 );
             } else {
                 alert('Geolocalización no soportada por tu navegador. Usando ubicación por defecto.');
@@ -368,204 +566,323 @@
                 initMap(playerLocation.lat, playerLocation.lng);
                 startModal.classList.add('hidden');
                 gameActive = true;
+                pauseBtn.classList.remove('hidden');
                 generateGameElements();
-                gameLoop();
+                requestAnimationFrame(gameLoop);
+                startSpawning();
             }
         }
-        
+
         // Iniciar juego en modo mock (para escritorio)
         function startMockMode() {
+            mockMode = true;
             playerLocation = { lat: 40.415363, lng: -3.707398 };
             initMap(playerLocation.lat, playerLocation.lng);
             startModal.classList.add('hidden');
             gameActive = true;
-            
+            pauseBtn.classList.remove('hidden');
+
             // Agregar controles de teclado para modo mock
             initKeyboardControls();
-            
+
             generateGameElements();
-            gameLoop();
+            requestAnimationFrame(gameLoop);
+            startSpawning();
         }
-        
-        // Generar zombies, suministros y power-ups
+
+        // Iniciar generación periódica de zombies y suministros
+        function startSpawning() {
+            // Generar zombies periódicamente
+            zombieSpawnInterval = setInterval(() => {
+                if (gameActive && !gamePaused) {
+                    spawnZombie();
+                }
+            }, config.zombieSpawnRate);
+
+            // Generar suministros periódicamente
+            supplySpawnInterval = setInterval(() => {
+                if (gameActive && !gamePaused) {
+                    spawnSupply();
+                }
+            }, config.supplySpawnRate);
+        }
+
+        // Generar un zombie en una ubicación aleatoria
+        function spawnZombie() {
+            const angle = Math.random() * Math.PI * 2;
+            const distance = 0.01 + Math.random() * 0.01;
+            
+            const zombie = L.marker([
+                playerLocation.lat + Math.cos(angle) * distance,
+                playerLocation.lng + Math.sin(angle) * distance
+            ], {
+                icon: L.divIcon({
+                    className: 'zombie-marker',
+                    iconSize: [16, 16]
+                })
+            }).addTo(map);
+
+            const newZombie = {
+                marker: zombie,
+                lat: playerLocation.lat + Math.cos(angle) * distance,
+                lng: playerLocation.lng + Math.sin(angle) * distance,
+                speed: config.baseZombieSpeed + Math.random() * 0.00001,
+                active: false
+            };
+            
+            zombies.push(newZombie);
+            zombieCountDisplay.textContent = zombies.length;
+        }
+
+        // Generar un suministro en una ubicación aleatoria
+        function spawnSupply() {
+            const angle = Math.random() * Math.PI * 2;
+            const distance = 0.005 + Math.random() * 0.01;
+            
+            const supply = L.marker([
+                playerLocation.lat + Math.cos(angle) * distance,
+                playerLocation.lng + Math.sin(angle) * distance
+            ], {
+                icon: L.divIcon({
+                    className: 'item-marker',
+                    iconSize: [12, 12]
+                })
+            }).addTo(map);
+
+            supplies.push({
+                marker: supply,
+                lat: playerLocation.lat + Math.cos(angle) * distance,
+                lng: playerLocation.lng + Math.sin(angle) * distance,
+                collected: false
+            });
+        }
+
+        // Generar elementos iniciales del juego
         function generateGameElements() {
-            // Generar zombies (5-10)
-            const zombieCount = 5 + Math.floor(Math.random() * 6);
-            for (let i = 0; i < zombieCount; i++) {
-                const offsetLat = (Math.random() - 0.5) * 0.01;
-                const offsetLng = (Math.random() - 0.5) * 0.01;
-                
-                const zombie = L.marker([playerLocation.lat + offsetLat, playerLocation.lng + offsetLng], {
-                    icon: L.divIcon({
-                        className: 'zombie-marker',
-                        iconSize: [16, 16]
-                    })
-                }).addTo(map);
-                
-                zombies.push({
-                    marker: zombie,
-                    lat: playerLocation.lat + offsetLat,
-                    lng: playerLocation.lng + offsetLng,
-                    speed: 0.00002 + Math.random() * 0.00002
-                });
+            // Generar zombies iniciales
+            for (let i = 0; i < config.initialZombies; i++) {
+                spawnZombie();
             }
-            
-            // Generar suministros (15-25)
-            const suppliesCount = 15 + Math.floor(Math.random() * 11);
-            for (let i = 0; i < suppliesCount; i++) {
-                const offsetLat = (Math.random() - 0.5) * 0.02;
-                const offsetLng = (Math.random() - 0.5) * 0.02;
-                
-                const supply = L.marker([playerLocation.lat + offsetLat, playerLocation.lng + offsetLng], {
-                    icon: L.divIcon({
-                        className: 'item-marker',
-                        iconSize: [12, 12]
-                    })
-                }).addTo(map);
-                
-                supplies.push({
-                    marker: supply,
-                    lat: playerLocation.lat + offsetLat,
-                    lng: playerLocation.lng + offsetLng,
-                    collected: false
-                });
+
+            // Generar suministros iniciales
+            for (let i = 0; i < config.initialSupplies; i++) {
+                spawnSupply();
             }
-            
+
             // Generar power-ups (2-4)
-            const powerupCount = 2 + Math.floor(Math.random() * 3);
+            const powerupCount = config.initialPowerups;
             for (let i = 0; i < powerupCount; i++) {
-                const offsetLat = (Math.random() - 0.5) * 0.015;
-                const offsetLng = (Math.random() - 0.5) * 0.015;
-                
-                const powerup = L.marker([playerLocation.lat + offsetLat, playerLocation.lng + offsetLng], {
+                const angle = Math.random() * Math.PI * 2;
+                const distance = 0.005 + Math.random() * 0.01;
+
+                const powerup = L.marker([
+                    playerLocation.lat + Math.cos(angle) * distance,
+                    playerLocation.lng + Math.sin(angle) * distance
+                ], {
                     icon: L.divIcon({
                         className: 'powerup-marker',
                         iconSize: [14, 14]
                     })
                 }).addTo(map);
-                
+
                 powerups.push({
                     marker: powerup,
-                    lat: playerLocation.lat + offsetLat,
-                    lng: playerLocation.lng + offsetLng,
+                    lat: playerLocation.lat + Math.cos(angle) * distance,
+                    lng: playerLocation.lng + Math.sin(angle) * distance,
                     type: Math.random() > 0.5 ? 'weapon' : 'speed',
                     collected: false
                 });
             }
-            
-            // Actualizar contador de zombies
-            zombieCountDisplay.textContent = zombieCount;
         }
-        
+
         // Bucle principal del juego
-        function gameLoop() {
+        function gameLoop(timestamp) {
             if (!gameActive) return;
+
+            // Calcular FPS
+            calculateFPS(timestamp);
+
+            if (!gamePaused) {
+                // Mover zombies hacia el jugador
+                moveZombies();
+
+                // Comprobar colisiones
+                checkCollisions();
+
+                // Actualizar la ubicación real si no estamos en modo mock
+                if (!mockMode) {
+                    updateRealLocation();
+                }
+
+                // Actualizar minimapa
+                updateMinimap();
+
+                // Actualizar contador de zombies activos
+                updateActiveZombiesCount();
+            }
+
+            // Continuar el bucle
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Calcular y mostrar FPS
+        function calculateFPS(timestamp) {
+            frameCount++;
             
-            // Mover zombies hacia el jugador
-            moveZombies();
-            
-            // Comprobar colisiones
-            checkCollisions();
-            
-            // Actualizar la ubicación real si no estamos en modo mock
-            if (!mockMode) {
-                updateRealLocation();
+            if (timestamp > lastFpsUpdate + 1000) {
+                fps = Math.round((frameCount * 1000) / (timestamp - lastFpsUpdate));
+                fpsDisplay.textContent = fps;
+                frameCount = 0;
+                lastFpsUpdate = timestamp;
             }
             
-            // Continuar el bucle
-            setTimeout(gameLoop, 1000);
+            lastTimestamp = timestamp;
         }
-        
+
         // Mover zombies hacia la posición del jugador
         function moveZombies() {
             zombies.forEach(zombie => {
-                // Calcular dirección hacia el jugador
-                const latDiff = playerLocation.lat - zombie.lat;
-                const lngDiff = playerLocation.lng - zombie.lng;
-                
-                // Normalizar y aplicar velocidad
-                const distance = Math.sqrt(latDiff * latDiff + lngDiff * lngDiff);
-                const latMove = (latDiff / distance) * zombie.speed;
-                const lngMove = (lngDiff / distance) * zombie.speed;
-                
-                // Actualizar posición del zombie
-                zombie.lat += latMove;
-                zombie.lng += lngMove;
-                
-                // Actualizar marcador en el mapa
-                zombie.marker.setLatLng([zombie.lat, zombie.lng]);
+                // Calcular distancia al jugador
+                const distanceToPlayer = calculateDistance(
+                    { lat: zombie.lat, lng: zombie.lng },
+                    playerLocation
+                );
+
+                // Activar zombie si está cerca del jugador
+                if (distanceToPlayer < config.detectionRadius) {
+                    zombie.active = true;
+                }
+
+                // Solo mover zombies activos
+                if (zombie.active) {
+                    // Calcular dirección hacia el jugador
+                    const latDiff = playerLocation.lat - zombie.lat;
+                    const lngDiff = playerLocation.lng - zombie.lng;
+
+                    // Normalizar y aplicar velocidad
+                    const distance = Math.sqrt(latDiff * latDiff + lngDiff * lngDiff);
+                    const latMove = (latDiff / distance) * zombie.speed;
+                    const lngMove = (lngDiff / distance) * zombie.speed;
+
+                    // Actualizar posición del zombie
+                    zombie.lat += latMove;
+                    zombie.lng += lngMove;
+
+                    // Actualizar marcador en el mapa
+                    zombie.marker.setLatLng([zombie.lat, zombie.lng]);
+                }
             });
         }
-        
+
+        // Actualizar contador de zombies activos
+        function updateActiveZombiesCount() {
+            const activeCount = zombies.filter(z => z.active).length;
+            activeZombiesDisplay.textContent = `${activeCount}/${zombies.length}`;
+        }
+
         // Comprobar colisiones con suministros, power-ups y zombies
         function checkCollisions() {
             // Colisión con suministros
             supplies.forEach((supply, index) => {
                 if (!supply.collected) {
                     const distance = calculateDistance(playerLocation, { lat: supply.lat, lng: supply.lng });
-                    if (distance < 0.0002) { // Radio de colisión
+                    if (distance < config.collectionRadius) {
                         supply.collected = true;
                         map.removeLayer(supply.marker);
-                        
+
                         // Actualizar puntuación y suministros
                         score += 10;
                         suppliesCollected += 1;
                         scoreDisplay.textContent = score;
                         suppliesDisplay.textContent = suppliesCollected;
+
+                        // Mostrar notificación
+                        showNotification('¡Suministro recolectado! +10 puntos');
+
+                        // Comprobar si se debe subir de nivel
+                        checkLevelUp();
                     }
                 }
             });
-            
+
             // Colisión con power-ups
             powerups.forEach((powerup, index) => {
                 if (!powerup.collected) {
                     const distance = calculateDistance(playerLocation, { lat: powerup.lat, lng: powerup.lng });
-                    if (distance < 0.0002) { // Radio de colisión
+                    if (distance < config.collectionRadius) {
                         powerup.collected = true;
                         map.removeLayer(powerup.marker);
-                        
+
                         // Activar power-up
                         activatePowerup(powerup.type);
                     }
                 }
             });
-            
+
             // Colisión con zombies
             zombies.forEach(zombie => {
                 const distance = calculateDistance(playerLocation, { lat: zombie.lat, lng: zombie.lng });
-                if (distance < 0.0003) { // Radio de colisión
+                if (distance < config.collisionRadius) {
                     // El jugador pierde salud
-                    health -= 10;
+                    health -= 5;
                     healthBar.style.width = health + '%';
-                    
+                    healthText.textContent = health + '%';
+
+                    // Mostrar notificación
+                    showNotification('¡Zombie te atacó! -5% salud');
+
                     // Comprobar si el juego ha terminado
                     if (health <= 0) {
+                        health = 0;
                         gameOver();
                     }
                 }
             });
         }
-        
+
+        // Comprobar si se debe subir de nivel
+        function checkLevelUp() {
+            const newLevel = Math.floor(suppliesCollected / 5) + 1;
+            if (newLevel > gameLevel) {
+                gameLevel = newLevel;
+                levelDisplay.textContent = gameLevel;
+                
+                // Aumentar dificultad
+                zombies.forEach(zombie => {
+                    zombie.speed += 0.00001;
+                });
+                
+                showNotification(`¡Nivel ${gameLevel} alcanzado! Los zombies son más rápidos.`);
+            }
+        }
+
         // Activar un power-up
         function activatePowerup(type) {
             // Desactivar power-up anterior si existe
             if (activePowerup) {
                 clearTimeout(powerupTimer);
             }
-            
+
             activePowerup = type;
-            
+
             if (type === 'weapon') {
-                powerupInfo.textContent = '¡Arma activada! Zombies más lentos por 15 segundos.';
+                powerupInfo.innerHTML = '<span class="powerup-active">¡Arma activada!</span> Zombies más lentos por 15 segundos.';
+                showNotification('¡Power-up de arma activado!');
+                
                 // Hacer zombies más lentos
                 zombies.forEach(zombie => {
                     zombie.speed *= 0.5;
                 });
             } else if (type === 'speed') {
-                powerupInfo.textContent = '¡Velocidad aumentada! Movimiento más rápido por 15 segundos.';
-                // Aquí aumentaríamos la velocidad del jugador en modo mock
+                powerupInfo.innerHTML = '<span class="powerup-active">¡Velocidad aumentada!</span> Movimiento más rápido por 15 segundos.';
+                showNotification('¡Power-up de velocidad activado!');
+                
+                // Aumentar velocidad del jugador en modo mock
+                if (mockMode) {
+                    config.playerSpeed *= 1.5;
+                }
             }
-            
+
             // Desactivar power-up después de 15 segundos
             powerupTimer = setTimeout(() => {
                 if (type === 'weapon') {
@@ -573,19 +890,34 @@
                     zombies.forEach(zombie => {
                         zombie.speed *= 2;
                     });
+                } else if (type === 'speed' && mockMode) {
+                    // Restaurar velocidad del jugador
+                    config.playerSpeed /= 1.5;
                 }
+                
                 activePowerup = null;
                 powerupInfo.textContent = 'No hay power-ups activos';
+                showNotification('Power-up desactivado');
             }, 15000);
         }
-        
+
+        // Mostrar notificación
+        function showNotification(message) {
+            notification.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
         // Calcular distancia entre dos puntos
         function calculateDistance(point1, point2) {
             const latDiff = point1.lat - point2.lat;
             const lngDiff = point1.lng - point2.lng;
             return Math.sqrt(latDiff * latDiff + lngDiff * lngDiff);
         }
-        
+
         // Actualizar ubicación real del jugador
         function updateRealLocation() {
             navigator.geolocation.getCurrentPosition(
@@ -594,26 +926,33 @@
                         lat: position.coords.latitude,
                         lng: position.coords.longitude
                     };
-                    
+
                     // Actualizar marcador del jugador
                     playerMarker.setLatLng([playerLocation.lat, playerLocation.lng]);
-                    
+
                     // Centrar mapa en el jugador
                     map.setView([playerLocation.lat, playerLocation.lng]);
                 },
                 function(error) {
                     console.error('Error updating location:', error);
-                }
+                },
+                { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
             );
         }
-        
+
+        // Actualizar minimapa
+        function updateMinimap() {
+            minimap.setView([playerLocation.lat, playerLocation.lng], 14);
+            minimapPlayerMarker.setLatLng([playerLocation.lat, playerLocation.lng]);
+        }
+
         // Inicializar controles de teclado para modo mock
         function initKeyboardControls() {
             document.addEventListener('keydown', function(e) {
-                if (!gameActive) return;
-                
-                const moveDistance = 0.0001;
-                
+                if (!gameActive || gamePaused) return;
+
+                const moveDistance = config.playerSpeed;
+
                 switch(e.key) {
                     case 'w':
                     case 'ArrowUp':
@@ -632,29 +971,52 @@
                         playerLocation.lng += moveDistance;
                         break;
                 }
-                
+
                 // Actualizar marcador del jugador
                 playerMarker.setLatLng([playerLocation.lat, playerLocation.lng]);
-                
+
                 // Centrar mapa en el jugador
                 map.setView([playerLocation.lat, playerLocation.lng]);
             });
         }
-        
+
+        // Pausar/reanudar el juego
+        function togglePause() {
+            gamePaused = !gamePaused;
+            pauseBtn.textContent = gamePaused ? 'Reanudar' : 'Pausar';
+            
+            if (gamePaused) {
+                showNotification('Juego pausado');
+            } else {
+                showNotification('Juego reanudado');
+            }
+        }
+
         // Finalizar el juego
         function gameOver() {
             gameActive = false;
+            clearInterval(zombieSpawnInterval);
+            clearInterval(supplySpawnInterval);
+            
             finalScore.textContent = score;
+            finalSupplies.textContent = suppliesCollected;
+            finalLevel.textContent = gameLevel;
+            
             gameOverModal.classList.remove('hidden');
         }
-        
+
         // Reiniciar el juego
         function restartGame() {
             // Limpiar elementos existentes
             zombies.forEach(zombie => map.removeLayer(zombie.marker));
             supplies.forEach(supply => map.removeLayer(supply.marker));
             powerups.forEach(powerup => map.removeLayer(powerup.marker));
-            
+
+            // Limpiar intervalos
+            clearInterval(zombieSpawnInterval);
+            clearInterval(supplySpawnInterval);
+            clearTimeout(powerupTimer);
+
             // Reiniciar variables
             zombies = [];
             supplies = [];
@@ -662,17 +1024,20 @@
             score = 0;
             health = 100;
             suppliesCollected = 0;
+            gameLevel = 1;
             activePowerup = null;
-            
+
             // Actualizar HUD
             scoreDisplay.textContent = '0';
             suppliesDisplay.textContent = '0';
+            levelDisplay.textContent = '1';
             healthBar.style.width = '100%';
+            healthText.textContent = '100%';
             powerupInfo.textContent = 'No hay power-ups activos';
-            
+
             // Ocultar modal de game over
             gameOverModal.classList.add('hidden');
-            
+
             // Reiniciar juego
             if (mockMode) {
                 startMockMode();
@@ -680,13 +1045,22 @@
                 startGame();
             }
         }
-        
+
         // Event listeners
         startBtn.addEventListener('click', startGame);
         mockBtn.addEventListener('click', startMockMode);
         startGameBtn.addEventListener('click', startGame);
+        instructionsBtn.addEventListener('click', () => {
+            startModal.classList.add('hidden');
+            instructionsModal.classList.remove('hidden');
+        });
+        backBtn.addEventListener('click', () => {
+            instructionsModal.classList.add('hidden');
+            startModal.classList.remove('hidden');
+        });
         restartBtn.addEventListener('click', restartGame);
-        
+        pauseBtn.addEventListener('click', togglePause);
+
         // Iniciar con el modal de inicio visible
         startModal.classList.remove('hidden');
     </script>
