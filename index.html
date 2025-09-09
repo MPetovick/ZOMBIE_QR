@@ -627,6 +627,9 @@
         let gameIntervals = [];
         let messagesVisible = false;
         let lastReproductionTime = 0;
+        let lastSpawnTime = 0;
+        let lastUpdateTime = Date.now();
+        let animationFrameId = null;
 
         // Configuración del juego
         const GAME_CONFIG = {
@@ -635,8 +638,8 @@
             criticalInfestation: 40,
             reproductionProbability: 0.7, // 70% de probabilidad de reproducción
             reproductionCooldown: 10000, // 10 segundos de cooldown
-            movementInterval: 2000,
-            ratSpawnInterval: 10000,
+            movementInterval: 50, // Actualización más frecuente para movimiento suave
+            ratSpawnInterval: 5000, // 5 segundos entre generación de ratas
             pointsPerRat: 10,
             pointsPerLevel: 100,
             expansionRate: 0.001,
@@ -652,9 +655,9 @@
 
         // Tipos de ratas
         const RAT_TYPES = {
-            NORMAL: { speed: 0.0001, resistance: 1, fertility: 0.7, color: "default" },
-            FAST: { speed: 0.0002, resistance: 0.8, fertility: 0.5, color: "fast" },
-            ALPHA: { speed: 0.00008, resistance: 2, fertility: 0.9, color: "alpha" }
+            NORMAL: { speed: 0.00015, resistance: 1, fertility: 0.7, color: "default" }, // Más rápido
+            FAST: { speed: 0.00025, resistance: 0.8, fertility: 0.5, color: "fast" }, // Más rápido
+            ALPHA: { speed: 0.00012, resistance: 2, fertility: 0.9, color: "alpha" } // Más rápido
         };
 
         // Inicialización del juego
@@ -668,9 +671,11 @@
             infestationLevel = 0;
             paused = false;
             lastReproductionTime = 0;
+            lastSpawnTime = 0;
 
-            // Limpiar intervalos anteriores
+            // Limpiar intervalos y animation frames anteriores
             clearAllIntervals();
+            cancelAnimationFrame(animationFrameId);
 
             // Mostrar pantalla de carga
             document.getElementById('loading-screen').style.display = 'flex';
@@ -753,14 +758,6 @@
                 })
             }).addTo(map).bindPopup('¡Tu ubicación!').openPopup();
 
-            // Añadir círculo de radio inicial
-            L.circle(userLocation, {
-                color: 'blue',
-                fillColor: '#30a5ff',
-                fillOpacity: 0.2,
-                radius: GAME_CONFIG.initialRadius * 111320 // Convertir grados a metros
-            }).addTo(map);
-
             // Invalidar el tamaño del mapa para asegurar que se renderice correctamente
             setTimeout(() => {
                 map.invalidateSize();
@@ -810,11 +807,13 @@
                 age: 0,
                 pregnant: false,
                 birthCountdown: 0,
-                speed: ratType.speed + (Math.random() * 0.00005),
+                speed: ratType.speed * (0.9 + Math.random() * 0.2), // Variación de velocidad
                 direction: Math.random() * Math.PI * 2,
                 resistance: ratType.resistance,
                 fertility: ratType.fertility,
-                lastReproduction: 0
+                lastReproduction: 0,
+                targetDirection: Math.random() * Math.PI * 2,
+                directionChangeTime: 0
             };
 
             rats.push(rat);
@@ -826,6 +825,7 @@
             // Comprobar si hay demasiadas ratas (condición de derrota)
             if (ratCount >= GAME_CONFIG.criticalInfestation) {
                 endGame();
+                return;
             }
 
             // Añadir evento para eliminar rata al hacer clic
@@ -841,9 +841,11 @@
         // Obtener un tipo de rata aleatorio
         function getRandomRatType() {
             const rand = Math.random();
-            if (rand < 0.7) return RAT_TYPES.NORMAL;      // 70% normales
-            if (rand < 0.9) return RAT_TYPES.FAST;        // 20% rápidas
-            return RAT_TYPES.ALPHA;                       // 10% alfas
+            if (level < 3) return RAT_TYPES.NORMAL; // Solo normales en niveles bajos
+            
+            if (rand < 0.6) return RAT_TYPES.NORMAL;      // 60% normales
+            if (rand < 0.85) return RAT_TYPES.FAST;       // 25% rápidas
+            return RAT_TYPES.ALPHA;                       // 15% alfas
         }
 
         // Eliminar una rata con efecto visual
@@ -879,57 +881,82 @@
             document.getElementById('infestation-level').style.width = `${infestationLevel}%`;
         }
 
-        // Bucle principal del juego
+        // Bucle principal del juego usando requestAnimationFrame
         function startGameLoop() {
-            // Mover ratas periódicamente
-            const moveInterval = setInterval(() => {
-                if (!paused && gameActive) {
-                    moveRats();
-                    checkReproduction();
-                }
-            }, GAME_CONFIG.movementInterval);
-            gameIntervals.push(moveInterval);
-
-            // Generar nuevas ratas periódicamente
-            const spawnInterval = setInterval(() => {
-                if (rats.length < GAME_CONFIG.maxRats && gameActive && !paused) {
-                    spawnRat();
-                }
-            }, GAME_CONFIG.ratSpawnInterval);
-            gameIntervals.push(spawnInterval);
+            lastUpdateTime = Date.now();
+            gameLoop();
         }
 
-        // Limpiar todos los intervalos
+        // Bucle del juego optimizado
+        function gameLoop() {
+            if (!gameActive) return;
+            
+            const now = Date.now();
+            const deltaTime = now - lastUpdateTime;
+            lastUpdateTime = now;
+            
+            if (!paused) {
+                // Mover ratas
+                moveRats(deltaTime);
+                
+                // Verificar reproducción
+                if (now - lastReproductionTime >= GAME_CONFIG.reproductionCooldown) {
+                    checkReproduction();
+                    lastReproductionTime = now;
+                }
+                
+                // Generar nuevas ratas
+                if (now - lastSpawnTime >= GAME_CONFIG.ratSpawnInterval) {
+                    if (rats.length < GAME_CONFIG.maxRats) {
+                        spawnRat();
+                    }
+                    lastSpawnTime = now;
+                }
+            }
+            
+            animationFrameId = requestAnimationFrame(gameLoop);
+        }
+
+        // Limpiar todos los intervalos y animation frames
         function clearAllIntervals() {
             gameIntervals.forEach(interval => clearInterval(interval));
             gameIntervals = [];
+            cancelAnimationFrame(animationFrameId);
         }
 
         // Mover las ratas de forma más realista
-        function moveRats() {
+        function moveRats(deltaTime) {
             const now = Date.now();
+            const moveFactor = deltaTime / 16; // Factor de normalización para 60fps
             
             rats.forEach(rat => {
-                // Cambiar dirección ocasionalmente (menos frecuente que antes)
-                if (Math.random() < 0.05) {
-                    rat.direction = Math.random() * Math.PI * 2;
+                // Cambiar dirección de manera más suave y realista
+                if (now - rat.directionChangeTime > 2000 + Math.random() * 3000) {
+                    // Cambio de dirección más gradual
+                    rat.targetDirection = Math.random() * Math.PI * 2;
+                    rat.directionChangeTime = now;
                 }
-
+                
+                // Suavizar el cambio de dirección
+                const angleDiff = ((rat.targetDirection - rat.direction + Math.PI) % (Math.PI * 2)) - Math.PI;
+                rat.direction += angleDiff * 0.05 * moveFactor;
+                
                 // Mover la rata en su dirección actual
                 const currentPos = rat.marker.getLatLng();
-                const newLat = currentPos.lat + Math.cos(rat.direction) * rat.speed;
-                const newLng = currentPos.lng + Math.sin(rat.direction) * rat.speed;
+                const moveDistance = rat.speed * moveFactor;
+                const newLat = currentPos.lat + Math.cos(rat.direction) * moveDistance;
+                const newLng = currentPos.lng + Math.sin(rat.direction) * moveDistance;
                 
                 // Verificar que no se salga de los límites
                 const newPos = L.latLng(newLat, newLng);
                 if (GAME_CONFIG.bounds.contains(newPos)) {
                     rat.marker.setLatLng([newLat, newLng]);
                 } else {
-                    // Cambiar dirección si se acerca al borde
-                    rat.direction = Math.atan2(
+                    // Cambiar dirección si se acerca al borde (más inteligente)
+                    rat.targetDirection = Math.atan2(
                         userLocation[0] - currentPos.lat,
                         userLocation[1] - currentPos.lng
-                    ) + (Math.random() - 0.5) * 0.5; // Pequeña variación aleatoria
+                    ) + (Math.random() - 0.5) * 0.5;
                 }
                 
                 rat.age++;
@@ -948,32 +975,30 @@
         function checkReproduction() {
             const now = Date.now();
             
-            // Cooldown para evitar explosión de reproducción
-            if (now - lastReproductionTime < GAME_CONFIG.reproductionCooldown) return;
-            
             for (let i = 0; i < rats.length; i++) {
                 const rat = rats[i];
-                if (rat.sex !== 'female' || rat.pregnant) continue;
+                if (rat.sex !== 'female' || rat.pregnant || now - rat.lastReproduction < 15000) continue;
                 
                 for (let j = 0; j < rats.length; j++) {
                     if (i === j) continue;
                     
                     const otherRat = rats[j];
-                    if (otherRat.sex !== 'male') continue;
+                    if (otherRat.sex !== 'male' || now - otherRat.lastReproduction < 15000) continue;
                     
                     // Verificar si están cerca
                     const ratPos = rat.marker.getLatLng();
                     const otherPos = otherRat.marker.getLatLng();
                     const distance = map.distance(ratPos, otherPos);
                     
-                    if (distance < 15) { // 15 metros
+                    if (distance < 20) { // 20 metros
                         // Probabilidad de reproducción considerando la fertilidad de ambos
                         const reproductionChance = GAME_CONFIG.reproductionProbability * rat.fertility * otherRat.fertility;
                         
                         if (Math.random() < reproductionChance) {
                             rat.pregnant = true;
                             rat.birthCountdown = 3; // Tiempo hasta el nacimiento
-                            lastReproductionTime = now;
+                            rat.lastReproduction = now;
+                            otherRat.lastReproduction = now;
                             addMessage('¡Una rata hembra ha quedado preñada!', 'warning');
                             break;
                         }
@@ -1016,25 +1041,29 @@
                         })
                     }).addTo(map);
                     
-                    rats.push({
+                    const newRat = {
                         marker: offspringMarker,
                         sex: sex,
                         type: offspringType,
                         age: 0,
                         pregnant: false,
                         birthCountdown: 0,
-                        speed: offspringType.speed + (Math.random() * 0.00005),
+                        speed: offspringType.speed * (0.9 + Math.random() * 0.2),
                         direction: Math.random() * Math.PI * 2,
                         resistance: offspringType.resistance,
                         fertility: offspringType.fertility,
-                        lastReproduction: 0
-                    });
+                        lastReproduction: 0,
+                        targetDirection: Math.random() * Math.PI * 2,
+                        directionChangeTime: 0
+                    };
+                    
+                    rats.push(newRat);
                     ratCount++;
                     
                     // Añadir evento para eliminar rata al hacer clic
                     offspringMarker.on('click', () => {
                         if (selectedTool === 'insecticide') {
-                            useInsecticideOnRat(rats[rats.length - 1]);
+                            useInsecticideOnRat(newRat);
                         }
                     });
                 }
