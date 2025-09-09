@@ -3,22 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RatHunter Pro - Exterminador de Ratas</title>
+    <title>Cazador de Monstruos</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --primary: #2c3e50;
-            --secondary: #e74c3c;
-            --accent: #3498db;
-            --light: #ecf0f1;
-            --dark: #2c3e50;
-            --success: #2ecc71;
-            --warning: #f39c12;
-            --danger: #e74c3c;
-            --gray: #7f8c8d;
-        }
-
         * {
             margin: 0;
             padding: 0;
@@ -28,7 +16,7 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #1a1a2e;
-            color: var(--light);
+            color: #ecf0f1;
             height: 100vh;
             overflow: hidden;
         }
@@ -38,20 +26,16 @@
             grid-template-rows: auto 1fr auto;
             height: 100vh;
             width: 100vw;
-            margin: 0;
         }
 
-        /* Header Styles */
         #header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--dark) 100%);
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
             padding: 10px 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
             z-index: 1000;
-            flex-wrap: wrap;
-            gap: 10px;
         }
 
         #game-title {
@@ -64,13 +48,12 @@
         }
 
         #game-title i {
-            color: var(--secondary);
+            color: #e74c3c;
         }
 
         #stats {
             display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
+            gap: 15px;
         }
 
         .stat {
@@ -82,36 +65,6 @@
             align-items: center;
             gap: 5px;
             backdrop-filter: blur(5px);
-            font-size: 0.9rem;
-        }
-
-        .stat i {
-            margin-right: 3px;
-        }
-
-        #infestation-bar {
-            width: 120px;
-            height: 16px;
-            background-color: rgba(0, 0, 0, 0.3);
-            border-radius: 8px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        #infestation-level {
-            height: 100%;
-            width: 30%;
-            background: linear-gradient(90deg, var(--success) 0%, var(--warning) 50%, var(--danger) 100%);
-            border-radius: 8px;
-            transition: width 0.5s ease;
-        }
-
-        /* Main Content */
-        #main-content {
-            display: grid;
-            grid-template-columns: 1fr auto;
-            overflow: hidden;
-            position: relative;
         }
 
         #map-container {
@@ -126,232 +79,18 @@
             z-index: 1;
         }
 
-        /* Panel lateral de herramientas */
-        #toolSidebar {
-            position: absolute;
-            top: 80px;
-            left: 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            background: rgba(30, 40, 55, 0.9);
-            padding: 12px;
-            border-radius: 12px;
-            z-index: 1000;
-            backdrop-filter: blur(5px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-        }
-
-        .tool-btn {
-            background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
-            border: none;
-            border-radius: 8px;
-            padding: 12px;
-            color: white;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-            width: 60px;
-            position: relative;
-        }
-
-        .tool-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            background: linear-gradient(135deg, #3c546b 0%, #34495e 100%);
-        }
-
-        .tool-btn:active {
-            transform: translateY(1px);
-        }
-
-        .tool-btn.active {
-            background: linear-gradient(135deg, var(--accent) 0%, #2980b9 100%);
-            box-shadow: 0 0 0 2px var(--accent);
-        }
-
-        .tool-icon {
-            font-size: 1.4rem;
-        }
-
-        .tool-name {
-            font-size: 0.7rem;
-            font-weight: 500;
-            text-align: center;
-        }
-
-        .tool-count {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background-color: var(--secondary);
-            border-radius: 50%;
-            width: 22px;
-            height: 22px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 0.75rem;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        }
-
-        /* Mensajes */
-        #messages-container {
-            position: absolute;
-            bottom: 70px;
-            left: 15px;
-            width: 320px;
-            max-height: 200px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            z-index: 5;
-            background: rgba(30, 40, 55, 0.85);
-            border-radius: 10px;
-            padding: 12px;
-            backdrop-filter: blur(5px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            display: none;
-        }
-
-        #messages-container.visible {
-            display: flex;
-        }
-
-        .message {
-            padding: 8px 10px;
-            background-color: rgba(0, 0, 0, 0.2);
-            border-radius: 6px;
-            font-size: 0.85rem;
-            animation: fadeIn 0.5s ease;
-            border-left: 3px solid var(--accent);
-        }
-
-        .message.warning {
-            border-left-color: var(--warning);
-        }
-
-        .message.danger {
-            border-left-color: var(--danger);
-        }
-
-        .message.success {
-            border-left-color: var(--success);
-        }
-
-        /* Game Over */
-        #game-over {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            backdrop-filter: blur(5px);
-        }
-
-        #game-over-content {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--dark) 100%);
-            padding: 25px;
-            border-radius: 12px;
-            text-align: center;
-            max-width: 450px;
-            width: 90%;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-        }
-
-        #game-over h2 {
-            font-size: 2rem;
-            color: var(--danger);
-            margin-bottom: 12px;
-        }
-
-        #restart-btn {
-            margin-top: 18px;
-            padding: 10px 25px;
-            background: linear-gradient(135deg, var(--accent) 0%, #2980b9 100%);
-            color: white;
-            border: none;
-            border-radius: 25px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        #restart-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.3);
-        }
-
-        /* Rat markers */
-        .rat-marker {
-            width: 22px;
-            height: 22px;
-            border-radius: 50%;
-            background-color: #4a2c2c;
-            border: 2px solid #000;
-            animation: pulse 1.5s infinite;
-            box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: all 0.3s ease;
-        }
-
-        .male {
-            border-color: #3498db;
-            box-shadow: 0 0 8px rgba(52, 152, 219, 0.7);
-        }
-
-        .female {
-            border-color: #e84393;
-            box-shadow: 0 0 8px rgba(232, 67, 147, 0.7);
-        }
-
-        .fast {
-            border-color: #f1c40f;
-            box-shadow: 0 0 8px rgba(241, 196, 15, 0.7);
-            animation: pulse 0.8s infinite;
-        }
-
-        .alpha {
-            border-color: #e74c3c;
-            box-shadow: 0 0 8px rgba(231, 76, 60, 0.7);
-            animation: pulse 2s infinite;
-        }
-
-        .user-marker {
-            font-size: 22px;
-            color: #ffeb3b;
-            text-align: center;
-            line-height: 22px;
-        }
-
-        /* Controls */
         #controls {
             display: flex;
             justify-content: center;
             padding: 12px;
-            background-color: var(--dark);
-            gap: 8px;
+            background-color: #2c3e50;
+            gap: 10px;
             z-index: 10;
         }
 
         .control-btn {
             padding: 8px 16px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--dark) 100%);
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
             color: white;
             border: none;
             border-radius: 25px;
@@ -361,7 +100,6 @@
             align-items: center;
             gap: 6px;
             transition: all 0.3s ease;
-            font-size: 0.9rem;
         }
 
         .control-btn:hover {
@@ -369,246 +107,155 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         }
 
-        /* Loading screen */
-        #loading-screen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: var(--dark);
+        .monster-marker {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 2000;
+            font-size: 18px;
+            animation: pulse 2s infinite;
+            box-shadow: 0 0 15px currentColor;
+            transition: all 0.3s ease;
         }
 
-        .spinner {
-            width: 45px;
-            height: 45px;
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: var(--accent);
-            animation: spin 1s ease-in-out infinite;
-            margin-bottom: 18px;
+        .goblin {
+            background-color: #27ae60;
+            border: 2px solid #2ecc71;
+            color: #2ecc71;
         }
 
-        /* Messages toggle */
-        #messages-toggle {
+        .orc {
+            background-color: #e74c3c;
+            border: 2px solid #c0392b;
+            color: #c0392b;
+        }
+
+        .troll {
+            background-color: #8e44ad;
+            border: 2px solid #9b59b6;
+            color: #9b59b6;
+        }
+
+        .dragon {
+            background-color: #f39c12;
+            border: 2px solid #f1c40f;
+            color: #f1c40f;
+        }
+
+        .user-marker {
+            font-size: 24px;
+            color: #3498db;
+            text-align: center;
+            line-height: 24px;
+        }
+
+        #monster-info {
             position: absolute;
-            bottom: 75px;
-            left: 15px;
-            z-index: 10;
-            background: rgba(30, 40, 55, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: white;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
+            top: 70px;
+            right: 10px;
+            background: rgba(44, 62, 80, 0.9);
+            padding: 10px;
+            border-radius: 10px;
+            z-index: 1000;
             backdrop-filter: blur(5px);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* Animations */
+        .monster-type {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 5px 0;
+        }
+
+        .monster-color {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+        }
+
         @keyframes pulse {
             0% { transform: scale(1); }
             50% { transform: scale(1.1); }
             100% { transform: scale(1); }
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes appear {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        @keyframes explosion {
-            0% { transform: scale(1); opacity: 1; }
-            100% { transform: scale(2); opacity: 0; }
-        }
-
-        /* Media queries */
         @media (max-width: 768px) {
             #header {
-                padding: 8px 10px;
+                flex-direction: column;
+                gap: 10px;
+                padding: 10px;
             }
             
-            #game-title {
-                font-size: 1.1rem;
+            #stats {
+                width: 100%;
+                justify-content: space-between;
             }
             
             .stat {
+                font-size: 0.9rem;
                 padding: 5px 10px;
-                font-size: 0.8rem;
-            }
-            
-            #infestation-bar {
-                width: 80px;
-                height: 14px;
-            }
-            
-            #toolSidebar {
-                top: auto;
-                bottom: 70px;
-                left: 10px;
-                flex-direction: row;
-                width: calc(100% - 20px);
-                justify-content: space-around;
-            }
-            
-            .tool-btn {
-                width: 50px;
-                padding: 8px;
-            }
-            
-            .tool-icon {
-                font-size: 1.2rem;
-            }
-            
-            .tool-name {
-                font-size: 0.6rem;
-            }
-            
-            #messages-container {
-                width: 90%;
-                left: 5%;
-                bottom: 120px;
-                max-height: 150px;
-            }
-            
-            #messages-toggle {
-                bottom: 120px;
-                left: 10px;
             }
             
             .control-btn {
                 padding: 6px 12px;
+                font-size: 0.9rem;
+            }
+            
+            #monster-info {
+                top: 120px;
+                right: 5px;
                 font-size: 0.8rem;
-            }
-            
-            .control-btn span {
-                display: none;
-            }
-        }
-
-        @media (max-width: 480px) {
-            #stats {
-                gap: 5px;
-            }
-            
-            .stat {
-                padding: 4px 8px;
-                font-size: 0.75rem;
-            }
-            
-            #infestation-bar {
-                width: 60px;
-            }
-            
-            .control-btn {
-                padding: 6px 10px;
-            }
-            
-            #toolSidebar {
-                padding: 8px;
-            }
-            
-            .tool-btn {
-                width: 44px;
-                padding: 6px;
-            }
-            
-            .tool-icon {
-                font-size: 1.1rem;
-            }
-            
-            .tool-name {
-                display: none;
             }
         }
     </style>
 </head>
 <body>
     <div id="app">
-        <div id="loading-screen">
-            <div class="spinner"></div>
-            <p>Buscando tu ubicación...</p>
-        </div>
-        
         <header id="header">
-            <h1 id="game-title"><i class="fas fa-radiation"></i> RatHunter Pro</h1>
+            <h1 id="game-title"><i class="fas fa-dragon"></i> Cazador de Monstruos</h1>
             <div id="stats">
-                <div class="stat"><i class="fas fa-coins"></i> <span id="points">0</span></div>
-                <div class="stat"><i class="fas fa-radiation"></i> <span id="rat-count">0</span></div>
-                <div class="stat"><i class="fas fa-level-up-alt"></i> <span id="level">1</span></div>
-                <div class="stat"><i class="fas fa-biohazard"></i> 
-                    <div id="infestation-bar">
-                        <div id="infestation-level"></div>
-                    </div>
-                </div>
+                <div class="stat"><i class="fas fa-skull"></i> Monstruos: <span id="monster-count">0</span></div>
+                <div class="stat"><i class="fas fa-coins"></i> Puntos: <span id="points">0</span></div>
+                <div class="stat"><i class="fas fa-crosshairs"></i> Eliminados: <span id="kills">0</span></div>
             </div>
         </header>
         
-        <main id="main-content">
-            <div id="map-container">
-                <div id="map"></div>
-                
-                <!-- Panel lateral de herramientas -->
-                <div id="toolSidebar">
-                    <button class="tool-btn" data-tool="insecticide">
-                        <div class="tool-icon"><i class="fas fa-spray-can"></i></div>
-                        <div class="tool-name">Insecticida</div>
-                        <div class="tool-count">3</div>
-                    </button>
-                    <button class="tool-btn" data-tool="poison">
-                        <div class="tool-icon"><i class="fas fa-flask"></i></div>
-                        <div class="tool-name">Veneno</div>
-                        <div class="tool-count">2</div>
-                    </button>
-                    <button class="tool-btn" data-tool="trap">
-                        <div class="tool-icon"><i class="fas fa-magnet"></i></div>
-                        <div class="tool-name">Trampa</div>
-                        <div class="tool-count">3</div>
-                    </button>
-                    <button class="tool-btn" data-tool="block">
-                        <div class="tool-icon"><i class="fas fa-road-barrier"></i></div>
-                        <div class="tool-name">Bloquear</div>
-                        <div class="tool-count">5</div>
-                    </button>
+        <div id="map-container">
+            <div id="map"></div>
+            
+            <div id="monster-info">
+                <h3>Tipos de Monstruos</h3>
+                <div class="monster-type">
+                    <div class="monster-color" style="background-color: #27ae60; border: 2px solid #2ecc71;"></div>
+                    <span>Goblin (+10 pts)</span>
                 </div>
-                
-                <div id="game-over">
-                    <div id="game-over-content">
-                        <h2><i class="fas fa-skull-crossbones"></i> ¡Game Over!</h2>
-                        <p>La infestación de ratas ha superado el nivel crítico. La ciudad está perdida.</p>
-                        <p>Puntuación final: <span id="final-score">0</span></p>
-                        <button id="restart-btn"><i class="fas fa-redo"></i> Reiniciar Juego</button>
-                    </div>
+                <div class="monster-type">
+                    <div class="monster-color" style="background-color: #e74c3c; border: 2px solid #c0392b;"></div>
+                    <span>Orco (+15 pts)</span>
+                </div>
+                <div class="monster-type">
+                    <div class="monster-color" style="background-color: #8e44ad; border: 2px solid #9b59b6;"></div>
+                    <span>Troll (+20 pts)</span>
+                </div>
+                <div class="monster-type">
+                    <div class="monster-color" style="background-color: #f39c12; border: 2px solid #f1c40f;"></div>
+                    <span>Dragón (+30 pts)</span>
                 </div>
             </div>
-            
-            <div id="messages-toggle">
-                <i class="fas fa-comments"></i>
-            </div>
-            
-            <div id="messages-container">
-                <div class="message">¡Bienvenido a RatHunter Pro! Tu misión es controlar la infestación de ratas.</div>
-                <div class="message warning">Las ratas se reproducen rápidamente. ¡Elimínalas antes de que sea demasiado tarde!</div>
-            </div>
-        </main>
+        </div>
         
         <div id="controls">
-            <button class="control-btn" id="pause-btn"><i class="fas fa-pause"></i> <span>Pausa</span></button>
-            <button class="control-btn" id="help-btn"><i class="fas fa-question-circle"></i> <span>Ayuda</span></button>
-            <button class="control-btn" id="sound-btn"><i class="fas fa-volume-up"></i> <span>Sonido</span></button>
+            <button class="control-btn" id="pause-btn"><i class="fas fa-pause"></i> Pausa</button>
+            <button class="control-btn" id="add-monster-btn"><i class="fas fa-plus"></i> Añadir Monstruo</button>
+            <button class="control-btn" id="clear-btn"><i class="fas fa-broom"></i> Limpiar</button>
         </div>
     </div>
 
@@ -616,73 +263,61 @@
     <script>
         // Variables globales del juego
         let map, userMarker, userLocation;
-        let rats = [];
-        let selectedTool = null;
+        let monsters = [];
         let points = 0;
-        let ratCount = 0;
-        let level = 1;
+        let kills = 0;
         let gameActive = true;
         let paused = false;
-        let infestationLevel = 0;
-        let gameIntervals = [];
-        let messagesVisible = false;
-        let lastReproductionTime = 0;
         let lastSpawnTime = 0;
-        let lastUpdateTime = Date.now();
-        let animationFrameId = null;
 
-        // Configuración del juego
-        const GAME_CONFIG = {
-            initialRats: 5,
-            maxRats: 50,
-            criticalInfestation: 40,
-            reproductionProbability: 0.7, // 70% de probabilidad de reproducción
-            reproductionCooldown: 10000, // 10 segundos de cooldown
-            movementInterval: 50, // Actualización más frecuente para movimiento suave
-            ratSpawnInterval: 5000, // 5 segundos entre generación de ratas
-            pointsPerRat: 10,
-            pointsPerLevel: 100,
-            expansionRate: 0.001,
-            initialRadius: 0.005,
-            tools: {
-                insecticide: { count: 3, radius: 30 },
-                poison: { count: 2, radius: 50, delay: 5000 },
-                trap: { count: 3, radius: 10, duration: 15000 },
-                block: { count: 5, duration: 20000 }
+        // Tipos de monstruos con características únicas
+        const MONSTER_TYPES = [
+            { 
+                name: "goblin", 
+                icon: "fas fa-ghost", 
+                color: "goblin", 
+                speed: 0.00015,
+                points: 10,
+                spawnChance: 0.4
             },
-            bounds: null // Se establecerá después de inicializar el mapa
-        };
-
-        // Tipos de ratas
-        const RAT_TYPES = {
-            NORMAL: { speed: 0.00015, resistance: 1, fertility: 0.7, color: "default" }, // Más rápido
-            FAST: { speed: 0.00025, resistance: 0.8, fertility: 0.5, color: "fast" }, // Más rápido
-            ALPHA: { speed: 0.00012, resistance: 2, fertility: 0.9, color: "alpha" } // Más rápido
-        };
+            { 
+                name: "orc", 
+                icon: "fas fa-hat-cowboy-side", 
+                color: "orc", 
+                speed: 0.00012,
+                points: 15,
+                spawnChance: 0.3
+            },
+            { 
+                name: "troll", 
+                icon: "fas fa-mountain", 
+                color: "troll", 
+                speed: 0.00008,
+                points: 20,
+                spawnChance: 0.2
+            },
+            { 
+                name: "dragon", 
+                icon: "fas fa-dragon", 
+                color: "dragon", 
+                speed: 0.00025,
+                points: 30,
+                spawnChance: 0.1
+            }
+        ];
 
         // Inicialización del juego
         function initGame() {
             // Reiniciar variables
             points = 0;
-            ratCount = 0;
-            level = 1;
-            rats = [];
+            kills = 0;
+            monsters = [];
             gameActive = true;
-            infestationLevel = 0;
             paused = false;
-            lastReproductionTime = 0;
             lastSpawnTime = 0;
-
-            // Limpiar intervalos y animation frames anteriores
-            clearAllIntervals();
-            cancelAnimationFrame(animationFrameId);
-
-            // Mostrar pantalla de carga
-            document.getElementById('loading-screen').style.display = 'flex';
 
             // Actualizar UI
             updateUI();
-            document.getElementById('game-over').style.display = 'none';
 
             // Obtener ubicación del usuario
             if (navigator.geolocation) {
@@ -690,36 +325,36 @@
                     position => {
                         userLocation = [position.coords.latitude, position.coords.longitude];
                         initMap();
-                        spawnInitialRats();
                         startGameLoop();
-                        addMessage('Ubicación detectada. ¡Comienza la exterminación!', 'success');
-                        document.getElementById('loading-screen').style.display = 'none';
+                        // Generar monstruos iniciales
+                        for (let i = 0; i < 5; i++) {
+                            setTimeout(() => spawnMonster(), i * 500);
+                        }
                     },
                     error => {
-                        // En caso de error, usar una ubicación por defecto (Madrid, España)
+                        // En caso de error, usar una ubicación por defecto (Madrid)
                         userLocation = [40.4168, -3.7038];
                         initMap();
-                        spawnInitialRats();
                         startGameLoop();
-                        addMessage('No se pudo obtener tu ubicación. Usando ubicación predeterminada.', 'warning');
-                        document.getElementById('loading-screen').style.display = 'none';
+                        // Generar monstruos iniciales
+                        for (let i = 0; i < 5; i++) {
+                            setTimeout(() => spawnMonster(), i * 500);
+                        }
                     },
-                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 }
+                    { enableHighAccuracy: true, timeout: 10000 }
                 );
             } else {
                 userLocation = [40.4168, -3.7038];
                 initMap();
-                spawnInitialRats();
                 startGameLoop();
-                addMessage('Tu navegador no soporta geolocalización. Usando ubicación predeterminada.', 'warning');
-                document.getElementById('loading-screen').style.display = 'none';
+                // Generar monstruos iniciales
+                for (let i = 0; i < 5; i++) {
+                    setTimeout(() => spawnMonster(), i * 500);
+                }
             }
 
             // Configurar event listeners
             setupEventListeners();
-
-            // Actualizar herramientas
-            resetTools();
         }
 
         // Inicializar el mapa
@@ -734,20 +369,13 @@
                 zoomControl: true,
                 dragging: true,
                 scrollWheelZoom: true
-            }).setView(userLocation, 16);
+            }).setView(userLocation, 15);
 
             // Añadir capa de OpenStreetMap
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
                 maxZoom: 19
             }).addTo(map);
-
-            // Establecer límites del mapa (área de juego)
-            const boundsPadding = 0.02;
-            GAME_CONFIG.bounds = L.latLngBounds(
-                [userLocation[0] - boundsPadding, userLocation[1] - boundsPadding],
-                [userLocation[0] + boundsPadding, userLocation[1] + boundsPadding]
-            );
 
             // Marcador del usuario
             userMarker = L.marker(userLocation, {
@@ -764,99 +392,76 @@
             }, 100);
         }
 
-        // Generar ratas iniciales
-        function spawnInitialRats() {
-            for (let i = 0; i < GAME_CONFIG.initialRats; i++) {
-                spawnRat();
+        // Generar un nuevo monstruo
+        function spawnMonster() {
+            if (!gameActive || paused || monsters.length >= 25) return;
+
+            // Seleccionar un tipo de monstruo aleatorio basado en probabilidades
+            const rand = Math.random();
+            let cumulativeChance = 0;
+            let monsterType;
+            
+            for (const type of MONSTER_TYPES) {
+                cumulativeChance += type.spawnChance;
+                if (rand <= cumulativeChance) {
+                    monsterType = type;
+                    break;
+                }
             }
-        }
-
-        // Generar una nueva rata
-        function spawnRat(type = null) {
-            if (ratCount >= GAME_CONFIG.maxRats || !gameActive || paused) return;
-
-            // Determinar tipo de rata
-            const ratType = type || getRandomRatType();
             
             // Generar ubicación aleatoria cerca del usuario
-            const radius = GAME_CONFIG.initialRadius + (level * GAME_CONFIG.expansionRate);
+            const radius = 0.015;
             const angle = Math.random() * Math.PI * 2;
             const distance = Math.random() * radius;
             const lat = userLocation[0] + Math.cos(angle) * distance;
             const lng = userLocation[1] + Math.sin(angle) * distance;
 
-            // Determinar sexo aleatoriamente
-            const isMale = Math.random() > 0.5;
-            const sex = isMale ? 'male' : 'female';
-
-            // Crear marcador para la rata
-            const ratMarker = L.marker([lat, lng], {
+            // Crear marcador para el monstruo
+            const monsterMarker = L.marker([lat, lng], {
                 icon: L.divIcon({
-                    className: `rat-marker ${sex} ${ratType.color}`,
-                    html: `<div style="font-size: 16px;">${isMale ? '<i class="fas fa-mars"></i>' : '<i class="fas fa-venus"></i>'}</div>`,
-                    iconSize: [24, 24],
-                    iconAnchor: [12, 12]
+                    className: `monster-marker ${monsterType.color}`,
+                    html: `<i class="${monsterType.icon}"></i>`,
+                    iconSize: [32, 32],
+                    iconAnchor: [16, 16]
                 })
             }).addTo(map);
 
-            // Añadir información de la rata
-            const rat = {
-                marker: ratMarker,
-                sex: sex,
-                type: ratType,
-                age: 0,
-                pregnant: false,
-                birthCountdown: 0,
-                speed: ratType.speed * (0.9 + Math.random() * 0.2), // Variación de velocidad
+            // Añadir información del monstruo
+            const monster = {
+                marker: monsterMarker,
+                type: monsterType.name,
+                speed: monsterType.speed * (0.8 + Math.random() * 0.4),
                 direction: Math.random() * Math.PI * 2,
-                resistance: ratType.resistance,
-                fertility: ratType.fertility,
-                lastReproduction: 0,
-                targetDirection: Math.random() * Math.PI * 2,
-                directionChangeTime: 0
+                directionChangeTime: 0,
+                points: monsterType.points
             };
 
-            rats.push(rat);
-            ratCount++;
+            monsters.push(monster);
+            updateUI();
 
-            // Actualizar nivel de infestación
-            updateInfestationLevel();
-
-            // Comprobar si hay demasiadas ratas (condición de derrota)
-            if (ratCount >= GAME_CONFIG.criticalInfestation) {
-                endGame();
-                return;
-            }
-
-            // Añadir evento para eliminar rata al hacer clic
-            ratMarker.on('click', () => {
-                if (selectedTool === 'insecticide') {
-                    useInsecticideOnRat(rat);
-                }
+            // Añadir evento para eliminar monstruo al hacer clic
+            monsterMarker.on('click', () => {
+                removeMonster(monster, true);
             });
 
-            return rat;
+            // Animación de aparición
+            monsterMarker.getElement().style.animation = 'appear 0.5s forwards';
+
+            return monster;
         }
 
-        // Obtener un tipo de rata aleatorio
-        function getRandomRatType() {
-            const rand = Math.random();
-            if (level < 3) return RAT_TYPES.NORMAL; // Solo normales en niveles bajos
+        // Eliminar un monstruo
+        function removeMonster(monster, addPoints = false) {
+            if (!monster || !monster.marker) return;
             
-            if (rand < 0.6) return RAT_TYPES.NORMAL;      // 60% normales
-            if (rand < 0.85) return RAT_TYPES.FAST;       // 25% rápidas
-            return RAT_TYPES.ALPHA;                       // 15% alfas
-        }
-
-        // Eliminar una rata con efecto visual
-        function removeRat(rat, effect = true) {
-            if (!rat || !rat.marker) return;
-            
-            // Efecto visual de explosión
-            if (effect) {
-                const pos = rat.marker.getLatLng();
+            if (addPoints) {
+                points += monster.points;
+                kills++;
+                
+                // Efecto visual al eliminar
+                const pos = monster.marker.getLatLng();
                 const explosion = L.circleMarker(pos, {
-                    radius: 10,
+                    radius: 15,
                     color: '#ff0000',
                     fillColor: '#ff8800',
                     fillOpacity: 0.7
@@ -867,507 +472,80 @@
                 }, 500);
             }
             
-            map.removeLayer(rat.marker);
-            rats = rats.filter(r => r !== rat);
-            ratCount--;
-            
-            // Actualizar nivel de infestación
-            updateInfestationLevel();
+            map.removeLayer(monster.marker);
+            monsters = monsters.filter(m => m !== monster);
+            updateUI();
         }
 
-        // Actualizar nivel de infestación
-        function updateInfestationLevel() {
-            infestationLevel = (ratCount / GAME_CONFIG.maxRats) * 100;
-            document.getElementById('infestation-level').style.width = `${infestationLevel}%`;
-        }
-
-        // Bucle principal del juego usando requestAnimationFrame
-        function startGameLoop() {
-            lastUpdateTime = Date.now();
-            gameLoop();
-        }
-
-        // Bucle del juego optimizado
-        function gameLoop() {
-            if (!gameActive) return;
-            
+        // Mover los monstruos
+        function moveMonsters(deltaTime) {
             const now = Date.now();
-            const deltaTime = now - lastUpdateTime;
-            lastUpdateTime = now;
+            const moveFactor = deltaTime / 16;
             
-            if (!paused) {
-                // Mover ratas
-                moveRats(deltaTime);
-                
-                // Verificar reproducción
-                if (now - lastReproductionTime >= GAME_CONFIG.reproductionCooldown) {
-                    checkReproduction();
-                    lastReproductionTime = now;
+            monsters.forEach(monster => {
+                // Cambiar dirección ocasionalmente
+                if (now - monster.directionChangeTime > 2000 + Math.random() * 3000) {
+                    monster.direction = Math.random() * Math.PI * 2;
+                    monster.directionChangeTime = now;
                 }
-                
-                // Generar nuevas ratas
-                if (now - lastSpawnTime >= GAME_CONFIG.ratSpawnInterval) {
-                    if (rats.length < GAME_CONFIG.maxRats) {
-                        spawnRat();
-                    }
-                    lastSpawnTime = now;
-                }
-            }
-            
-            animationFrameId = requestAnimationFrame(gameLoop);
-        }
 
-        // Limpiar todos los intervalos y animation frames
-        function clearAllIntervals() {
-            gameIntervals.forEach(interval => clearInterval(interval));
-            gameIntervals = [];
-            cancelAnimationFrame(animationFrameId);
-        }
-
-        // Mover las ratas de forma más realista
-        function moveRats(deltaTime) {
-            const now = Date.now();
-            const moveFactor = deltaTime / 16; // Factor de normalización para 60fps
-            
-            rats.forEach(rat => {
-                // Cambiar dirección de manera más suave y realista
-                if (now - rat.directionChangeTime > 2000 + Math.random() * 3000) {
-                    // Cambio de dirección más gradual
-                    rat.targetDirection = Math.random() * Math.PI * 2;
-                    rat.directionChangeTime = now;
-                }
+                // Mover el monstruo en su dirección actual
+                const currentPos = monster.marker.getLatLng();
+                const moveDistance = monster.speed * moveFactor;
+                const newLat = currentPos.lat + Math.cos(monster.direction) * moveDistance;
+                const newLng = currentPos.lng + Math.sin(monster.direction) * moveDistance;
                 
-                // Suavizar el cambio de dirección
-                const angleDiff = ((rat.targetDirection - rat.direction + Math.PI) % (Math.PI * 2)) - Math.PI;
-                rat.direction += angleDiff * 0.05 * moveFactor;
+                // Mantener a los monstruos dentro de un área razonable
+                const maxDistance = 0.02;
+                const distFromCenter = Math.sqrt(
+                    Math.pow(newLat - userLocation[0], 2) + 
+                    Math.pow(newLng - userLocation[1], 2)
+                );
                 
-                // Mover la rata en su dirección actual
-                const currentPos = rat.marker.getLatLng();
-                const moveDistance = rat.speed * moveFactor;
-                const newLat = currentPos.lat + Math.cos(rat.direction) * moveDistance;
-                const newLng = currentPos.lng + Math.sin(rat.direction) * moveDistance;
-                
-                // Verificar que no se salga de los límites
-                const newPos = L.latLng(newLat, newLng);
-                if (GAME_CONFIG.bounds.contains(newPos)) {
-                    rat.marker.setLatLng([newLat, newLng]);
-                } else {
-                    // Cambiar dirección si se acerca al borde (más inteligente)
-                    rat.targetDirection = Math.atan2(
+                if (distFromCenter > maxDistance) {
+                    // Cambiar dirección hacia el centro
+                    monster.direction = Math.atan2(
                         userLocation[0] - currentPos.lat,
                         userLocation[1] - currentPos.lng
-                    ) + (Math.random() - 0.5) * 0.5;
-                }
-                
-                rat.age++;
-
-                // Comprobar si la rata está preñada
-                if (rat.pregnant) {
-                    rat.birthCountdown--;
-                    if (rat.birthCountdown <= 0) {
-                        giveBirth(rat);
-                    }
+                    );
+                } else {
+                    monster.marker.setLatLng([newLat, newLng]);
                 }
             });
         }
 
-        // Comprobar reproducción entre ratas cercanas
-        function checkReproduction() {
-            const now = Date.now();
+        // Bucle principal del juego
+        function startGameLoop() {
+            let lastUpdateTime = Date.now();
             
-            for (let i = 0; i < rats.length; i++) {
-                const rat = rats[i];
-                if (rat.sex !== 'female' || rat.pregnant || now - rat.lastReproduction < 15000) continue;
+            const gameLoop = () => {
+                if (!gameActive) return;
                 
-                for (let j = 0; j < rats.length; j++) {
-                    if (i === j) continue;
+                const now = Date.now();
+                const deltaTime = now - lastUpdateTime;
+                lastUpdateTime = now;
+                
+                if (!paused) {
+                    moveMonsters(deltaTime);
                     
-                    const otherRat = rats[j];
-                    if (otherRat.sex !== 'male' || now - otherRat.lastReproduction < 15000) continue;
-                    
-                    // Verificar si están cerca
-                    const ratPos = rat.marker.getLatLng();
-                    const otherPos = otherRat.marker.getLatLng();
-                    const distance = map.distance(ratPos, otherPos);
-                    
-                    if (distance < 20) { // 20 metros
-                        // Probabilidad de reproducción considerando la fertilidad de ambos
-                        const reproductionChance = GAME_CONFIG.reproductionProbability * rat.fertility * otherRat.fertility;
-                        
-                        if (Math.random() < reproductionChance) {
-                            rat.pregnant = true;
-                            rat.birthCountdown = 3; // Tiempo hasta el nacimiento
-                            rat.lastReproduction = now;
-                            otherRat.lastReproduction = now;
-                            addMessage('¡Una rata hembra ha quedado preñada!', 'warning');
-                            break;
-                        }
+                    // Generar nuevos monstruos cada 3 segundos
+                    if (now - lastSpawnTime > 3000 && monsters.length < 25) {
+                        spawnMonster();
+                        lastSpawnTime = now;
                     }
                 }
-            }
-        }
-
-        // Una rata da a luz
-        function giveBirth(rat) {
-            rat.pregnant = false;
-            const currentPos = rat.marker.getLatLng();
+                
+                requestAnimationFrame(gameLoop);
+            };
             
-            // Número de crías basado en el tipo de rata
-            let offspringCount = 1;
-            if (rat.type === RAT_TYPES.ALPHA) offspringCount = Math.floor(Math.random() * 3) + 2;
-            else if (rat.type === RAT_TYPES.NORMAL) offspringCount = Math.floor(Math.random() * 2) + 1;
-            
-            for (let i = 0; i < offspringCount; i++) {
-                if (rats.length < GAME_CONFIG.maxRats) {
-                    // Heredar el tipo de la madre con posibilidad de mutación
-                    let offspringType = rat.type;
-                    if (Math.random() < 0.1) { // 10% de probabilidad de mutación
-                        offspringType = getRandomRatType();
-                    }
-                    
-                    const offset = 0.0001;
-                    const newLat = currentPos.lat + (Math.random() * offset * 2) - offset;
-                    const newLng = currentPos.lng + (Math.random() * offset * 2) - offset;
-                    
-                    const isMale = Math.random() > 0.5;
-                    const sex = isMale ? 'male' : 'female';
-                    
-                    const offspringMarker = L.marker([newLat, newLng], {
-                        icon: L.divIcon({
-                            className: `rat-marker ${sex} ${offspringType.color}`,
-                            html: `<div style="font-size: 16px;">${isMale ? '<i class="fas fa-mars"></i>' : '<i class="fas fa-venus"></i>'}</div>`,
-                            iconSize: [20, 20],
-                            iconAnchor: [10, 10]
-                        })
-                    }).addTo(map);
-                    
-                    const newRat = {
-                        marker: offspringMarker,
-                        sex: sex,
-                        type: offspringType,
-                        age: 0,
-                        pregnant: false,
-                        birthCountdown: 0,
-                        speed: offspringType.speed * (0.9 + Math.random() * 0.2),
-                        direction: Math.random() * Math.PI * 2,
-                        resistance: offspringType.resistance,
-                        fertility: offspringType.fertility,
-                        lastReproduction: 0,
-                        targetDirection: Math.random() * Math.PI * 2,
-                        directionChangeTime: 0
-                    };
-                    
-                    rats.push(newRat);
-                    ratCount++;
-                    
-                    // Añadir evento para eliminar rata al hacer clic
-                    offspringMarker.on('click', () => {
-                        if (selectedTool === 'insecticide') {
-                            useInsecticideOnRat(newRat);
-                        }
-                    });
-                }
-            }
-            
-            updateInfestationLevel();
-            addMessage(`¡Una rata ha dado a luz a ${offspringCount} crías!`, 'warning');
-            
-            if (ratCount >= GAME_CONFIG.criticalInfestation) {
-                endGame();
-            }
+            gameLoop();
         }
 
         // Configurar event listeners
         function setupEventListeners() {
-            // Herramientas
-            document.querySelectorAll('.tool-btn').forEach(tool => {
-                tool.addEventListener('click', () => {
-                    const toolType = tool.dataset.tool;
-                    const count = parseInt(tool.querySelector('.tool-count').textContent);
-                    
-                    if (count > 0) {
-                        document.querySelectorAll('.tool-btn').forEach(t => t.classList.remove('active'));
-                        tool.classList.add('active');
-                        selectedTool = toolType;
-                    }
-                });
-            });
-
-            // Clic en el mapa para usar herramientas
-            map.on('click', e => {
-                if (!selectedTool || !gameActive || paused) return;
-                
-                const toolCountEl = document.querySelector(`.tool-btn[data-tool="${selectedTool}"] .tool-count`);
-                let count = parseInt(toolCountEl.textContent);
-                
-                if (count > 0) {
-                    count--;
-                    toolCountEl.textContent = count;
-                    
-                    switch(selectedTool) {
-                        case 'insecticide':
-                            useInsecticide(e.latlng);
-                            break;
-                        case 'poison':
-                            usePoison(e.latlng);
-                            break;
-                        case 'trap':
-                            useTrap(e.latlng);
-                            break;
-                        case 'block':
-                            useBlock(e.latlng);
-                            break;
-                    }
-                    
-                    if (count === 0) {
-                        document.querySelectorAll('.tool-btn').forEach(t => t.classList.remove('active'));
-                        selectedTool = null;
-                    }
-                }
-            });
-
-            // Botones de control
-            document.getElementById('restart-btn').addEventListener('click', initGame);
             document.getElementById('pause-btn').addEventListener('click', togglePause);
-            document.getElementById('sound-btn').addEventListener('click', toggleSound);
-            document.getElementById('help-btn').addEventListener('click', showHelp);
-            document.getElementById('messages-toggle').addEventListener('click', toggleMessages);
-        }
-
-        // Usar insecticida
-        function useInsecticide(latlng) {
-            let ratsKilled = 0;
-            
-            rats.forEach(rat => {
-                const ratPos = rat.marker.getLatLng();
-                const distance = map.distance(latlng, ratPos);
-                
-                if (distance < GAME_CONFIG.tools.insecticide.radius) {
-                    // Las ratas alfas tienen resistencia al insecticida
-                    if (rat.type === RAT_TYPES.ALPHA && Math.random() < 0.5) {
-                        addMessage('¡Una rata alfa ha resistido el insecticida!', 'warning');
-                        return;
-                    }
-                    
-                    removeRat(rat);
-                    ratsKilled++;
-                }
-            });
-            
-            if (ratsKilled > 0) {
-                addPoints(ratsKilled * GAME_CONFIG.pointsPerRat);
-                addMessage(`¡Has eliminado ${ratsKilled} ratas con insecticida!`, 'success');
-                
-                const area = L.circle(latlng, {
-                    radius: GAME_CONFIG.tools.insecticide.radius,
-                    color: '#e94560',
-                    fillOpacity: 0.2
-                }).addTo(map);
-                
-                setTimeout(() => map.removeLayer(area), 1000);
-            }
-        }
-
-        // Usar insecticida directamente sobre una rata
-        function useInsecticideOnRat(rat) {
-            const toolCountEl = document.querySelector('.tool-btn[data-tool="insecticide"] .tool-count');
-            let count = parseInt(toolCountEl.textContent);
-            
-            if (count > 0) {
-                count--;
-                toolCountEl.textContent = count;
-                
-                // Las ratas alfas tienen resistencia al insecticida
-                if (rat.type === RAT_TYPES.ALPHA && Math.random() < 0.5) {
-                    addMessage('¡Una rata alfa ha resistido el insecticida!', 'warning');
-                    return;
-                }
-                
-                removeRat(rat);
-                addPoints(GAME_CONFIG.pointsPerRat);
-                addMessage('¡Has eliminado una rata con insecticida!', 'success');
-                
-                if (count === 0) {
-                    document.querySelectorAll('.tool-btn').forEach(t => t.classList.remove('active'));
-                    selectedTool = null;
-                }
-            }
-        }
-
-        // Usar veneno
-        function usePoison(latlng) {
-            let ratsPoisoned = 0;
-            
-            rats.forEach(rat => {
-                const ratPos = rat.marker.getLatLng();
-                const distance = map.distance(latlng, ratPos);
-                
-                if (distance < GAME_CONFIG.tools.poison.radius) {
-                    // Las ratas alfas tienen resistencia al veneno
-                    if (rat.type === RAT_TYPES.ALPHA && Math.random() < 0.7) {
-                        addMessage('¡Una rata alfa ha resistido el veneno!', 'warning');
-                        return;
-                    }
-                    
-                    setTimeout(() => {
-                        if (rats.includes(rat)) {
-                            removeRat(rat);
-                            addPoints(GAME_CONFIG.pointsPerRat);
-                            addMessage('¡Una rata ha muerto por envenenamiento!', 'success');
-                        }
-                    }, GAME_CONFIG.tools.poison.delay);
-                    
-                    ratsPoisoned++;
-                }
-            });
-            
-            if (ratsPoisoned > 0) {
-                addMessage(`¡Has envenenado a ${ratsPoisoned} ratas! El efecto tardará unos segundos.`, 'info');
-                
-                const area = L.circle(latlng, {
-                    radius: GAME_CONFIG.tools.poison.radius,
-                    color: '#9b59b6',
-                    fillOpacity: 0.2
-                }).addTo(map);
-                
-                setTimeout(() => map.removeLayer(area), 1000);
-            }
-        }
-
-        // Usar trampa
-        function useTrap(latlng) {
-            const trap = L.marker(latlng, {
-                icon: L.divIcon({
-                    className: 'trap-marker',
-                    html: '<i class="fas fa-magnet"></i>',
-                    iconSize: [25, 25],
-                    iconAnchor: [12.5, 12.5]
-                })
-            }).addTo(map);
-            
-            setTimeout(() => {
-                map.removeLayer(trap);
-            }, GAME_CONFIG.tools.trap.duration);
-            
-            const trapInterval = setInterval(() => {
-                if (!map.hasLayer(trap)) {
-                    clearInterval(trapInterval);
-                    return;
-                }
-                
-                rats.forEach(rat => {
-                    const ratPos = rat.marker.getLatLng();
-                    const distance = map.distance(latlng, ratPos);
-                    
-                    if (distance < GAME_CONFIG.tools.trap.radius) {
-                        removeRat(rat);
-                        addPoints(GAME_CONFIG.pointsPerRat);
-                        addMessage('¡Una rata ha caído en tu trampa!', 'success');
-                        map.removeLayer(trap);
-                        clearInterval(trapInterval);
-                    }
-                });
-            }, 1000);
-            
-            addMessage('¡Has colocado una trampa! Atrapará ratas que pasen cerca.', 'info');
-        }
-
-        // Usar bloqueo de camino
-        function useBlock(latlng) {
-            const block = L.marker(latlng, {
-                icon: L.divIcon({
-                    className: 'block-marker',
-                    html: '<i class="fas fa-road-barrier"></i>',
-                    iconSize: [25, 25],
-                    iconAnchor: [12.5, 12.5]
-                })
-            }).addTo(map);
-            
-            setTimeout(() => {
-                map.removeLayer(block);
-            }, GAME_CONFIG.tools.block.duration);
-            
-            addMessage('¡Has bloqueado un camino! Las ratas evitarán esta zona.', 'info');
-        }
-
-        // Añadir puntos
-        function addPoints(amount) {
-            points += amount;
-            
-            if (points >= level * GAME_CONFIG.pointsPerLevel) {
-                levelUp();
-            }
-            
-            updateUI();
-        }
-
-        // Subir de nivel
-        function levelUp() {
-            level++;
-            
-            document.querySelectorAll('.tool-btn').forEach(tool => {
-                const toolType = tool.dataset.tool;
-                const countEl = tool.querySelector('.tool-count');
-                let count = parseInt(countEl.textContent);
-                
-                switch(toolType) {
-                    case 'insecticide':
-                        count += 2;
-                        break;
-                    case 'poison':
-                        count += 1;
-                        break;
-                    case 'trap':
-                        count += 1;
-                        break;
-                    case 'block':
-                        count += 2;
-                        break;
-                }
-                
-                countEl.textContent = count;
-            });
-            
-            addMessage(`¡Has subido al nivel ${level}! Se han añadido más herramientas.`, 'info');
-            updateUI();
-        }
-
-        // Añadir mensaje al log
-        function addMessage(text, type = 'info') {
-            const messagesContainer = document.getElementById('messages-container');
-            const message = document.createElement('div');
-            message.className = `message ${type}`;
-            message.textContent = text;
-            messagesContainer.appendChild(message);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            
-            if (messagesContainer.children.length > 20) {
-                messagesContainer.removeChild(messagesContainer.children[0]);
-            }
-        }
-
-        // Finalizar el juego
-        function endGame() {
-            gameActive = false;
-            document.getElementById('game-over').style.display = 'flex';
-            document.getElementById('final-score').textContent = points;
-            addMessage('¡Game Over! Las ratas han tomado el control de la ciudad.', 'danger');
-        }
-
-        // Actualizar la UI
-        function updateUI() {
-            document.getElementById('points').textContent = points;
-            document.getElementById('rat-count').textContent = ratCount;
-            document.getElementById('level').textContent = level;
-        }
-
-        // Reiniciar herramientas
-        function resetTools() {
-            document.querySelectorAll('.tool-btn').forEach(tool => {
-                const toolType = tool.dataset.tool;
-                const countEl = tool.querySelector('.tool-count');
-                countEl.textContent = GAME_CONFIG.tools[toolType].count;
-            });
+            document.getElementById('add-monster-btn').addEventListener('click', () => spawnMonster());
+            document.getElementById('clear-btn').addEventListener('click', clearMonsters);
         }
 
         // Alternar pausa
@@ -1376,40 +554,26 @@
             const pauseBtn = document.getElementById('pause-btn');
             
             if (paused) {
-                pauseBtn.innerHTML = '<i class="fas fa-play"></i> <span>Reanudar</span>';
-                addMessage('Juego en pausa', 'warning');
+                pauseBtn.innerHTML = '<i class="fas fa-play"></i> Reanudar';
             } else {
-                pauseBtn.innerHTML = '<i class="fas fa-pause"></i> <span>Pausa</span>';
-                addMessage('Juego reanudado', 'info');
+                pauseBtn.innerHTML = '<i class="fas fa-pause"></i> Pausa';
             }
         }
 
-        // Alternar sonido
-        function toggleSound() {
-            const soundBtn = document.getElementById('sound-btn');
-            addMessage('Funcionalidad de sonido en desarrollo', 'info');
+        // Limpiar monstruos
+        function clearMonsters() {
+            monsters.forEach(monster => {
+                map.removeLayer(monster.marker);
+            });
+            monsters = [];
+            updateUI();
         }
 
-        // Mostrar ayuda
-        function showHelp() {
-            addMessage('Haz clic en una herramienta y luego en el mapa para usarla.', 'info');
-            addMessage('Haz clic directamente en una rata con el insecticida seleccionado para eliminarla.', 'info');
-            addMessage('¡Controla la infestación antes de que sea demasiado tarde!', 'warning');
-        }
-
-        // Alternar visibilidad de mensajes
-        function toggleMessages() {
-            messagesVisible = !messagesVisible;
-            const messagesContainer = document.getElementById('messages-container');
-            const messagesToggle = document.getElementById('messages-toggle');
-            
-            if (messagesVisible) {
-                messagesContainer.classList.add('visible');
-                messagesToggle.innerHTML = '<i class="fas fa-times"></i>';
-            } else {
-                messagesContainer.classList.remove('visible');
-                messagesToggle.innerHTML = '<i class="fas fa-comments"></i>';
-            }
+        // Actualizar la UI
+        function updateUI() {
+            document.getElementById('monster-count').textContent = monsters.length;
+            document.getElementById('points').textContent = points;
+            document.getElementById('kills').textContent = kills;
         }
 
         // Iniciar el juego cuando se carga la página
