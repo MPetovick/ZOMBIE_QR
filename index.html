@@ -126,53 +126,24 @@
             z-index: 1;
         }
 
-        #tools-panel {
-            background: rgba(30, 40, 55, 0.95);
-            padding: 15px 10px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            width: 70px;
-            transition: width 0.3s ease;
-            z-index: 10;
-            border-left: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        #tools-panel:hover {
-            width: 180px;
-        }
-
-        #tools-panel:hover .tool-name {
-            display: block;
-            opacity: 1;
-        }
-
-        .panel-section {
-            background-color: rgba(255, 255, 255, 0.08);
-            border-radius: 10px;
-            padding: 12px;
-            backdrop-filter: blur(5px);
-        }
-
-        .section-title {
-            color: var(--accent);
-            margin-bottom: 12px;
-            font-size: 1rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            white-space: nowrap;
-        }
-
-        #tools {
+        /* Panel lateral de herramientas */
+        #toolSidebar {
+            position: absolute;
+            top: 80px;
+            left: 10px;
             display: flex;
             flex-direction: column;
             gap: 10px;
+            background: rgba(30, 40, 55, 0.9);
+            padding: 12px;
+            border-radius: 12px;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
 
-        .tool {
+        .tool-btn {
             background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
             border: none;
             border-radius: 8px;
@@ -181,35 +152,36 @@
             cursor: pointer;
             transition: all 0.2s ease;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: 12px;
+            gap: 5px;
+            width: 60px;
             position: relative;
-            width: 100%;
         }
 
-        .tool:hover {
+        .tool-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
             background: linear-gradient(135deg, #3c546b 0%, #34495e 100%);
         }
 
-        .tool:active {
+        .tool-btn:active {
             transform: translateY(1px);
+        }
+
+        .tool-btn.active {
+            background: linear-gradient(135deg, var(--accent) 0%, #2980b9 100%);
+            box-shadow: 0 0 0 2px var(--accent);
         }
 
         .tool-icon {
             font-size: 1.4rem;
-            min-width: 30px;
-            text-align: center;
         }
 
         .tool-name {
-            font-size: 0.85rem;
+            font-size: 0.7rem;
             font-weight: 500;
-            display: none;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            white-space: nowrap;
+            text-align: center;
         }
 
         .tool-count {
@@ -228,10 +200,7 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
 
-        .tool-selected {
-            box-shadow: 0 0 0 2px var(--accent);
-        }
-
+        /* Mensajes */
         #messages-container {
             position: absolute;
             bottom: 70px;
@@ -276,6 +245,7 @@
             border-left-color: var(--success);
         }
 
+        /* Game Over */
         #game-over {
             position: absolute;
             top: 0;
@@ -325,17 +295,19 @@
             box-shadow: 0 5px 12px rgba(0, 0, 0, 0.3);
         }
 
+        /* Rat markers */
         .rat-marker {
             width: 22px;
             height: 22px;
             border-radius: 50%;
             background-color: #4a2c2c;
             border: 2px solid #000;
-            animation: pulse 1.5s infinite, moveRat 3s infinite alternate;
+            animation: pulse 1.5s infinite;
             box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
             display: flex;
             justify-content: center;
             align-items: center;
+            transition: all 0.3s ease;
         }
 
         .male {
@@ -348,6 +320,18 @@
             box-shadow: 0 0 8px rgba(232, 67, 147, 0.7);
         }
 
+        .fast {
+            border-color: #f1c40f;
+            box-shadow: 0 0 8px rgba(241, 196, 15, 0.7);
+            animation: pulse 0.8s infinite;
+        }
+
+        .alpha {
+            border-color: #e74c3c;
+            box-shadow: 0 0 8px rgba(231, 76, 60, 0.7);
+            animation: pulse 2s infinite;
+        }
+
         .user-marker {
             font-size: 22px;
             color: #ffeb3b;
@@ -355,6 +339,7 @@
             line-height: 22px;
         }
 
+        /* Controls */
         #controls {
             display: flex;
             justify-content: center;
@@ -384,6 +369,7 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         }
 
+        /* Loading screen */
         #loading-screen {
             position: absolute;
             top: 0;
@@ -408,6 +394,7 @@
             margin-bottom: 18px;
         }
 
+        /* Messages toggle */
         #messages-toggle {
             position: absolute;
             bottom: 75px;
@@ -427,18 +414,11 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
         }
 
+        /* Animations */
         @keyframes pulse {
             0% { transform: scale(1); }
             50% { transform: scale(1.1); }
             100% { transform: scale(1); }
-        }
-
-        @keyframes moveRat {
-            0% { transform: translateX(0) translateY(0); }
-            25% { transform: translateX(3px) translateY(-3px); }
-            50% { transform: translateX(0) translateY(-5px); }
-            75% { transform: translateX(-3px) translateY(-3px); }
-            100% { transform: translateX(0) translateY(0); }
         }
 
         @keyframes fadeIn {
@@ -450,6 +430,12 @@
             to { transform: rotate(360deg); }
         }
 
+        @keyframes explosion {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+
+        /* Media queries */
         @media (max-width: 768px) {
             #header {
                 padding: 8px 10px;
@@ -469,34 +455,18 @@
                 height: 14px;
             }
             
-            #tools-panel {
-                position: absolute;
-                bottom: 50px;
-                right: 10px;
-                width: 60px;
-                padding: 10px 8px;
-                border-radius: 12px;
+            #toolSidebar {
+                top: auto;
+                bottom: 70px;
+                left: 10px;
                 flex-direction: row;
-                height: auto;
-                transform: translateY(100px);
-                transition: transform 0.3s ease, width 0.3s ease;
+                width: calc(100% - 20px);
+                justify-content: space-around;
             }
             
-            #tools-panel.visible {
-                transform: translateY(0);
-            }
-            
-            #tools {
-                flex-direction: row;
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-            
-            .tool {
-                width: 44px;
-                height: 44px;
+            .tool-btn {
+                width: 50px;
                 padding: 8px;
-                justify-content: center;
             }
             
             .tool-icon {
@@ -504,11 +474,7 @@
             }
             
             .tool-name {
-                display: none !important;
-            }
-            
-            #tools-panel:hover {
-                width: 60px;
+                font-size: 0.6rem;
             }
             
             #messages-container {
@@ -550,6 +516,23 @@
             .control-btn {
                 padding: 6px 10px;
             }
+            
+            #toolSidebar {
+                padding: 8px;
+            }
+            
+            .tool-btn {
+                width: 44px;
+                padding: 6px;
+            }
+            
+            .tool-icon {
+                font-size: 1.1rem;
+            }
+            
+            .tool-name {
+                display: none;
+            }
         }
     </style>
 </head>
@@ -577,40 +560,37 @@
         <main id="main-content">
             <div id="map-container">
                 <div id="map"></div>
+                
+                <!-- Panel lateral de herramientas -->
+                <div id="toolSidebar">
+                    <button class="tool-btn" data-tool="insecticide">
+                        <div class="tool-icon"><i class="fas fa-spray-can"></i></div>
+                        <div class="tool-name">Insecticida</div>
+                        <div class="tool-count">3</div>
+                    </button>
+                    <button class="tool-btn" data-tool="poison">
+                        <div class="tool-icon"><i class="fas fa-flask"></i></div>
+                        <div class="tool-name">Veneno</div>
+                        <div class="tool-count">2</div>
+                    </button>
+                    <button class="tool-btn" data-tool="trap">
+                        <div class="tool-icon"><i class="fas fa-magnet"></i></div>
+                        <div class="tool-name">Trampa</div>
+                        <div class="tool-count">3</div>
+                    </button>
+                    <button class="tool-btn" data-tool="block">
+                        <div class="tool-icon"><i class="fas fa-road-barrier"></i></div>
+                        <div class="tool-name">Bloquear</div>
+                        <div class="tool-count">5</div>
+                    </button>
+                </div>
+                
                 <div id="game-over">
                     <div id="game-over-content">
                         <h2><i class="fas fa-skull-crossbones"></i> ¡Game Over!</h2>
                         <p>La infestación de ratas ha superado el nivel crítico. La ciudad está perdida.</p>
                         <p>Puntuación final: <span id="final-score">0</span></p>
                         <button id="restart-btn"><i class="fas fa-redo"></i> Reiniciar Juego</button>
-                    </div>
-                </div>
-            </div>
-            
-            <div id="tools-panel">
-                <div class="panel-section">
-                    <h3 class="section-title"><i class="fas fa-tools"></i> <span>Herramientas</span></h3>
-                    <div id="tools">
-                        <button class="tool" data-tool="insecticide">
-                            <div class="tool-icon"><i class="fas fa-spray-can"></i></div>
-                            <div class="tool-name">Insecticida</div>
-                            <div class="tool-count">3</div>
-                        </button>
-                        <button class="tool" data-tool="poison">
-                            <div class="tool-icon"><i class="fas fa-flask"></i></div>
-                            <div class="tool-name">Veneno</div>
-                            <div class="tool-count">2</div>
-                        </button>
-                        <button class="tool" data-tool="trap">
-                            <div class="tool-icon"><i class="fas fa-magnet"></i></div>
-                            <div class="tool-name">Trampa</div>
-                            <div class="tool-count">3</div>
-                        </button>
-                        <button class="tool" data-tool="block">
-                            <div class="tool-icon"><i class="fas fa-road-barrier"></i></div>
-                            <div class="tool-name">Bloquear</div>
-                            <div class="tool-count">5</div>
-                        </button>
                     </div>
                 </div>
             </div>
@@ -629,7 +609,6 @@
             <button class="control-btn" id="pause-btn"><i class="fas fa-pause"></i> <span>Pausa</span></button>
             <button class="control-btn" id="help-btn"><i class="fas fa-question-circle"></i> <span>Ayuda</span></button>
             <button class="control-btn" id="sound-btn"><i class="fas fa-volume-up"></i> <span>Sonido</span></button>
-            <button class="control-btn" id="tools-toggle-btn"><i class="fas fa-tools"></i> <span>Herramientas</span></button>
         </div>
     </div>
 
@@ -647,14 +626,15 @@
         let infestationLevel = 0;
         let gameIntervals = [];
         let messagesVisible = false;
-        let toolsVisible = true;
+        let lastReproductionTime = 0;
 
         // Configuración del juego
         const GAME_CONFIG = {
             initialRats: 5,
             maxRats: 50,
             criticalInfestation: 40,
-            reproductionProbability: 0.04,
+            reproductionProbability: 0.7, // 70% de probabilidad de reproducción
+            reproductionCooldown: 10000, // 10 segundos de cooldown
             movementInterval: 2000,
             ratSpawnInterval: 10000,
             pointsPerRat: 10,
@@ -666,7 +646,15 @@
                 poison: { count: 2, radius: 50, delay: 5000 },
                 trap: { count: 3, radius: 10, duration: 15000 },
                 block: { count: 5, duration: 20000 }
-            }
+            },
+            bounds: null // Se establecerá después de inicializar el mapa
+        };
+
+        // Tipos de ratas
+        const RAT_TYPES = {
+            NORMAL: { speed: 0.0001, resistance: 1, fertility: 0.7, color: "default" },
+            FAST: { speed: 0.0002, resistance: 0.8, fertility: 0.5, color: "fast" },
+            ALPHA: { speed: 0.00008, resistance: 2, fertility: 0.9, color: "alpha" }
         };
 
         // Inicialización del juego
@@ -679,6 +667,7 @@
             gameActive = true;
             infestationLevel = 0;
             paused = false;
+            lastReproductionTime = 0;
 
             // Limpiar intervalos anteriores
             clearAllIntervals();
@@ -748,6 +737,13 @@
                 maxZoom: 19
             }).addTo(map);
 
+            // Establecer límites del mapa (área de juego)
+            const boundsPadding = 0.02;
+            GAME_CONFIG.bounds = L.latLngBounds(
+                [userLocation[0] - boundsPadding, userLocation[1] - boundsPadding],
+                [userLocation[0] + boundsPadding, userLocation[1] + boundsPadding]
+            );
+
             // Marcador del usuario
             userMarker = L.marker(userLocation, {
                 icon: L.divIcon({
@@ -779,9 +775,12 @@
         }
 
         // Generar una nueva rata
-        function spawnRat() {
+        function spawnRat(type = null) {
             if (ratCount >= GAME_CONFIG.maxRats || !gameActive || paused) return;
 
+            // Determinar tipo de rata
+            const ratType = type || getRandomRatType();
+            
             // Generar ubicación aleatoria cerca del usuario
             const radius = GAME_CONFIG.initialRadius + (level * GAME_CONFIG.expansionRate);
             const angle = Math.random() * Math.PI * 2;
@@ -796,7 +795,7 @@
             // Crear marcador para la rata
             const ratMarker = L.marker([lat, lng], {
                 icon: L.divIcon({
-                    className: `rat-marker ${sex}`,
+                    className: `rat-marker ${sex} ${ratType.color}`,
                     html: `<div style="font-size: 16px;">${isMale ? '<i class="fas fa-mars"></i>' : '<i class="fas fa-venus"></i>'}</div>`,
                     iconSize: [24, 24],
                     iconAnchor: [12, 12]
@@ -807,11 +806,15 @@
             const rat = {
                 marker: ratMarker,
                 sex: sex,
+                type: ratType,
                 age: 0,
                 pregnant: false,
                 birthCountdown: 0,
-                speed: 0.0001 + (Math.random() * 0.0001),
-                direction: Math.random() * Math.PI * 2
+                speed: ratType.speed + (Math.random() * 0.00005),
+                direction: Math.random() * Math.PI * 2,
+                resistance: ratType.resistance,
+                fertility: ratType.fertility,
+                lastReproduction: 0
             };
 
             rats.push(rat);
@@ -835,9 +838,33 @@
             return rat;
         }
 
-        // Eliminar una rata
-        function removeRat(rat) {
+        // Obtener un tipo de rata aleatorio
+        function getRandomRatType() {
+            const rand = Math.random();
+            if (rand < 0.7) return RAT_TYPES.NORMAL;      // 70% normales
+            if (rand < 0.9) return RAT_TYPES.FAST;        // 20% rápidas
+            return RAT_TYPES.ALPHA;                       // 10% alfas
+        }
+
+        // Eliminar una rata con efecto visual
+        function removeRat(rat, effect = true) {
             if (!rat || !rat.marker) return;
+            
+            // Efecto visual de explosión
+            if (effect) {
+                const pos = rat.marker.getLatLng();
+                const explosion = L.circleMarker(pos, {
+                    radius: 10,
+                    color: '#ff0000',
+                    fillColor: '#ff8800',
+                    fillOpacity: 0.7
+                }).addTo(map);
+                
+                setTimeout(() => {
+                    map.removeLayer(explosion);
+                }, 500);
+            }
+            
             map.removeLayer(rat.marker);
             rats = rats.filter(r => r !== rat);
             ratCount--;
@@ -856,7 +883,10 @@
         function startGameLoop() {
             // Mover ratas periódicamente
             const moveInterval = setInterval(() => {
-                if (!paused && gameActive) moveRats();
+                if (!paused && gameActive) {
+                    moveRats();
+                    checkReproduction();
+                }
             }, GAME_CONFIG.movementInterval);
             gameIntervals.push(moveInterval);
 
@@ -875,11 +905,13 @@
             gameIntervals = [];
         }
 
-        // Mover las ratas
+        // Mover las ratas de forma más realista
         function moveRats() {
+            const now = Date.now();
+            
             rats.forEach(rat => {
-                // Cambiar dirección ocasionalmente
-                if (Math.random() < 0.1) {
+                // Cambiar dirección ocasionalmente (menos frecuente que antes)
+                if (Math.random() < 0.05) {
                     rat.direction = Math.random() * Math.PI * 2;
                 }
 
@@ -887,14 +919,20 @@
                 const currentPos = rat.marker.getLatLng();
                 const newLat = currentPos.lat + Math.cos(rat.direction) * rat.speed;
                 const newLng = currentPos.lng + Math.sin(rat.direction) * rat.speed;
-
-                rat.marker.setLatLng([newLat, newLng]);
-                rat.age++;
-
-                // Comprobar reproducción
-                if (!rat.pregnant && rat.age > 5) {
-                    checkReproduction(rat);
+                
+                // Verificar que no se salga de los límites
+                const newPos = L.latLng(newLat, newLng);
+                if (GAME_CONFIG.bounds.contains(newPos)) {
+                    rat.marker.setLatLng([newLat, newLng]);
+                } else {
+                    // Cambiar dirección si se acerca al borde
+                    rat.direction = Math.atan2(
+                        userLocation[0] - currentPos.lat,
+                        userLocation[1] - currentPos.lng
+                    ) + (Math.random() - 0.5) * 0.5; // Pequeña variación aleatoria
                 }
+                
+                rat.age++;
 
                 // Comprobar si la rata está preñada
                 if (rat.pregnant) {
@@ -906,33 +944,62 @@
             });
         }
 
-        // Comprobar reproducción entre ratas
-        function checkReproduction(rat) {
-            if (rat.sex !== 'female') return;
-
-            const currentPos = rat.marker.getLatLng();
-            const nearbyMales = rats.filter(otherRat => {
-                if (otherRat.sex !== 'male' || otherRat === rat) return false;
-                const otherPos = otherRat.marker.getLatLng();
-                const distance = map.distance(currentPos, otherPos);
-                return distance < 50; // 50 metros
-            });
-
-            if (nearbyMales.length > 0 && Math.random() < GAME_CONFIG.reproductionProbability) {
-                rat.pregnant = true;
-                rat.birthCountdown = 5;
-                addMessage('¡Una rata hembra ha quedado preñada!', 'warning');
+        // Comprobar reproducción entre ratas cercanas
+        function checkReproduction() {
+            const now = Date.now();
+            
+            // Cooldown para evitar explosión de reproducción
+            if (now - lastReproductionTime < GAME_CONFIG.reproductionCooldown) return;
+            
+            for (let i = 0; i < rats.length; i++) {
+                const rat = rats[i];
+                if (rat.sex !== 'female' || rat.pregnant) continue;
+                
+                for (let j = 0; j < rats.length; j++) {
+                    if (i === j) continue;
+                    
+                    const otherRat = rats[j];
+                    if (otherRat.sex !== 'male') continue;
+                    
+                    // Verificar si están cerca
+                    const ratPos = rat.marker.getLatLng();
+                    const otherPos = otherRat.marker.getLatLng();
+                    const distance = map.distance(ratPos, otherPos);
+                    
+                    if (distance < 15) { // 15 metros
+                        // Probabilidad de reproducción considerando la fertilidad de ambos
+                        const reproductionChance = GAME_CONFIG.reproductionProbability * rat.fertility * otherRat.fertility;
+                        
+                        if (Math.random() < reproductionChance) {
+                            rat.pregnant = true;
+                            rat.birthCountdown = 3; // Tiempo hasta el nacimiento
+                            lastReproductionTime = now;
+                            addMessage('¡Una rata hembra ha quedado preñada!', 'warning');
+                            break;
+                        }
+                    }
+                }
             }
         }
 
         // Una rata da a luz
         function giveBirth(rat) {
             rat.pregnant = false;
-            const offspringCount = Math.floor(Math.random() * 3) + 1;
+            const currentPos = rat.marker.getLatLng();
+            
+            // Número de crías basado en el tipo de rata
+            let offspringCount = 1;
+            if (rat.type === RAT_TYPES.ALPHA) offspringCount = Math.floor(Math.random() * 3) + 2;
+            else if (rat.type === RAT_TYPES.NORMAL) offspringCount = Math.floor(Math.random() * 2) + 1;
             
             for (let i = 0; i < offspringCount; i++) {
                 if (rats.length < GAME_CONFIG.maxRats) {
-                    const currentPos = rat.marker.getLatLng();
+                    // Heredar el tipo de la madre con posibilidad de mutación
+                    let offspringType = rat.type;
+                    if (Math.random() < 0.1) { // 10% de probabilidad de mutación
+                        offspringType = getRandomRatType();
+                    }
+                    
                     const offset = 0.0001;
                     const newLat = currentPos.lat + (Math.random() * offset * 2) - offset;
                     const newLng = currentPos.lng + (Math.random() * offset * 2) - offset;
@@ -942,7 +1009,7 @@
                     
                     const offspringMarker = L.marker([newLat, newLng], {
                         icon: L.divIcon({
-                            className: `rat-marker ${sex}`,
+                            className: `rat-marker ${sex} ${offspringType.color}`,
                             html: `<div style="font-size: 16px;">${isMale ? '<i class="fas fa-mars"></i>' : '<i class="fas fa-venus"></i>'}</div>`,
                             iconSize: [20, 20],
                             iconAnchor: [10, 10]
@@ -952,13 +1019,24 @@
                     rats.push({
                         marker: offspringMarker,
                         sex: sex,
+                        type: offspringType,
                         age: 0,
                         pregnant: false,
                         birthCountdown: 0,
-                        speed: 0.0001 + (Math.random() * 0.0001),
-                        direction: Math.random() * Math.PI * 2
+                        speed: offspringType.speed + (Math.random() * 0.00005),
+                        direction: Math.random() * Math.PI * 2,
+                        resistance: offspringType.resistance,
+                        fertility: offspringType.fertility,
+                        lastReproduction: 0
                     });
                     ratCount++;
+                    
+                    // Añadir evento para eliminar rata al hacer clic
+                    offspringMarker.on('click', () => {
+                        if (selectedTool === 'insecticide') {
+                            useInsecticideOnRat(rats[rats.length - 1]);
+                        }
+                    });
                 }
             }
             
@@ -972,23 +1050,25 @@
 
         // Configurar event listeners
         function setupEventListeners() {
-            document.querySelectorAll('.tool').forEach(tool => {
+            // Herramientas
+            document.querySelectorAll('.tool-btn').forEach(tool => {
                 tool.addEventListener('click', () => {
                     const toolType = tool.dataset.tool;
                     const count = parseInt(tool.querySelector('.tool-count').textContent);
                     
                     if (count > 0) {
-                        document.querySelectorAll('.tool').forEach(t => t.classList.remove('tool-selected'));
-                        tool.classList.add('tool-selected');
+                        document.querySelectorAll('.tool-btn').forEach(t => t.classList.remove('active'));
+                        tool.classList.add('active');
                         selectedTool = toolType;
                     }
                 });
             });
 
+            // Clic en el mapa para usar herramientas
             map.on('click', e => {
                 if (!selectedTool || !gameActive || paused) return;
                 
-                const toolCountEl = document.querySelector(`.tool[data-tool="${selectedTool}"] .tool-count`);
+                const toolCountEl = document.querySelector(`.tool-btn[data-tool="${selectedTool}"] .tool-count`);
                 let count = parseInt(toolCountEl.textContent);
                 
                 if (count > 0) {
@@ -1011,18 +1091,18 @@
                     }
                     
                     if (count === 0) {
-                        document.querySelectorAll('.tool').forEach(t => t.classList.remove('tool-selected'));
+                        document.querySelectorAll('.tool-btn').forEach(t => t.classList.remove('active'));
                         selectedTool = null;
                     }
                 }
             });
 
+            // Botones de control
             document.getElementById('restart-btn').addEventListener('click', initGame);
             document.getElementById('pause-btn').addEventListener('click', togglePause);
             document.getElementById('sound-btn').addEventListener('click', toggleSound);
             document.getElementById('help-btn').addEventListener('click', showHelp);
             document.getElementById('messages-toggle').addEventListener('click', toggleMessages);
-            document.getElementById('tools-toggle-btn').addEventListener('click', toggleTools);
         }
 
         // Usar insecticida
@@ -1034,6 +1114,12 @@
                 const distance = map.distance(latlng, ratPos);
                 
                 if (distance < GAME_CONFIG.tools.insecticide.radius) {
+                    // Las ratas alfas tienen resistencia al insecticida
+                    if (rat.type === RAT_TYPES.ALPHA && Math.random() < 0.5) {
+                        addMessage('¡Una rata alfa ha resistido el insecticida!', 'warning');
+                        return;
+                    }
+                    
                     removeRat(rat);
                     ratsKilled++;
                 }
@@ -1055,19 +1141,25 @@
 
         // Usar insecticida directamente sobre una rata
         function useInsecticideOnRat(rat) {
-            const toolCountEl = document.querySelector(`.tool[data-tool="insecticide"] .tool-count`);
+            const toolCountEl = document.querySelector('.tool-btn[data-tool="insecticide"] .tool-count');
             let count = parseInt(toolCountEl.textContent);
             
             if (count > 0) {
                 count--;
                 toolCountEl.textContent = count;
                 
+                // Las ratas alfas tienen resistencia al insecticida
+                if (rat.type === RAT_TYPES.ALPHA && Math.random() < 0.5) {
+                    addMessage('¡Una rata alfa ha resistido el insecticida!', 'warning');
+                    return;
+                }
+                
                 removeRat(rat);
                 addPoints(GAME_CONFIG.pointsPerRat);
                 addMessage('¡Has eliminado una rata con insecticida!', 'success');
                 
                 if (count === 0) {
-                    document.querySelectorAll('.tool').forEach(t => t.classList.remove('tool-selected'));
+                    document.querySelectorAll('.tool-btn').forEach(t => t.classList.remove('active'));
                     selectedTool = null;
                 }
             }
@@ -1082,6 +1174,12 @@
                 const distance = map.distance(latlng, ratPos);
                 
                 if (distance < GAME_CONFIG.tools.poison.radius) {
+                    // Las ratas alfas tienen resistencia al veneno
+                    if (rat.type === RAT_TYPES.ALPHA && Math.random() < 0.7) {
+                        addMessage('¡Una rata alfa ha resistido el veneno!', 'warning');
+                        return;
+                    }
+                    
                     setTimeout(() => {
                         if (rats.includes(rat)) {
                             removeRat(rat);
@@ -1178,7 +1276,7 @@
         function levelUp() {
             level++;
             
-            document.querySelectorAll('.tool').forEach(tool => {
+            document.querySelectorAll('.tool-btn').forEach(tool => {
                 const toolType = tool.dataset.tool;
                 const countEl = tool.querySelector('.tool-count');
                 let count = parseInt(countEl.textContent);
@@ -1236,7 +1334,7 @@
 
         // Reiniciar herramientas
         function resetTools() {
-            document.querySelectorAll('.tool').forEach(tool => {
+            document.querySelectorAll('.tool-btn').forEach(tool => {
                 const toolType = tool.dataset.tool;
                 const countEl = tool.querySelector('.tool-count');
                 countEl.textContent = GAME_CONFIG.tools[toolType].count;
@@ -1285,20 +1383,6 @@
             }
         }
 
-        // Alternar visibilidad de herramientas
-        function toggleTools() {
-            if (window.innerWidth <= 768) {
-                toolsVisible = !toolsVisible;
-                const toolsPanel = document.getElementById('tools-panel');
-                
-                if (toolsVisible) {
-                    toolsPanel.classList.add('visible');
-                } else {
-                    toolsPanel.classList.remove('visible');
-                }
-            }
-        }
-
         // Iniciar el juego cuando se carga la página
         window.onload = initGame;
 
@@ -1306,13 +1390,6 @@
         window.addEventListener('resize', () => {
             if (map) {
                 map.invalidateSize();
-            }
-            
-            // En pantallas grandes, asegurar que el panel de herramientas sea visible
-            if (window.innerWidth > 768) {
-                const toolsPanel = document.getElementById('tools-panel');
-                toolsPanel.classList.remove('visible');
-                toolsVisible = true;
             }
         });
     </script>
