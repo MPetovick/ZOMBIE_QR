@@ -3,553 +3,293 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZACMAN - Survival Zombie Game</title>
+    <title>Exterminador de Ratas</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
         }
         
         body {
-            background-color: #0a0a0a;
-            color: #f0f0f0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1a1a2e;
+            color: #fff;
             overflow: hidden;
-            height: 100vh;
         }
         
-        .container {
+        #game-container {
             display: flex;
             flex-direction: column;
             height: 100vh;
         }
         
-        header {
-            background-color: #111;
+        #header {
+            background-color: #16213e;
             padding: 15px;
-            text-align: center;
-            border-bottom: 2px solid #ff0000;
-            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
         }
         
-        .logo {
-            font-family: 'Impact', sans-serif;
-            font-size: 2.5rem;
-            color: #ff0000;
-            text-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
-            letter-spacing: 2px;
+        #game-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #e94560;
         }
         
-        .game-info {
+        #stats {
             display: flex;
             gap: 20px;
         }
         
-        .game-info div {
-            background: rgba(255, 0, 0, 0.2);
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 0.9rem;
+        .stat {
+            background-color: #0f3460;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
         }
         
-        .game-container {
+        #main-content {
             display: flex;
             flex: 1;
+            overflow: hidden;
+        }
+        
+        #map-container {
+            flex: 7;
             position: relative;
         }
         
         #map {
-            flex: 1;
             height: 100%;
+            width: 100%;
             z-index: 1;
         }
         
-        .hud {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            z-index: 1000;
-            background-color: rgba(0, 0, 0, 0.7);
-            padding: 15px;
-            border-radius: 10px;
-            border: 1px solid #ff0000;
-            min-width: 200px;
-            backdrop-filter: blur(5px);
-        }
-        
-        .stats {
-            margin-bottom: 15px;
-        }
-        
-        .stat {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-        }
-        
-        .stat i {
-            margin-right: 5px;
-            color: #ff0000;
-        }
-        
-        .health-bar {
-            height: 20px;
-            background-color: #333;
-            border-radius: 10px;
-            overflow: hidden;
-            margin-bottom: 15px;
-            position: relative;
-        }
-        
-        .health-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #ff0000, #ff5a00);
-            width: 100%;
-            transition: width 0.3s;
-        }
-        
-        .health-text {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            text-align: center;
-            font-size: 12px;
-            font-weight: bold;
-            text-shadow: 0 0 2px #000;
-        }
-        
-        .controls {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            z-index: 1000;
-            display: flex;
-            gap: 10px;
-        }
-        
-        button {
-            background-color: #ff0000;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s;
-            box-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
-        }
-        
-        button:hover {
-            background-color: #ff3333;
-            transform: translateY(-2px);
-            box-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
-        }
-        
-        .modal {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
+        #tools-container {
+            flex: 3;
+            background-color: #16213e;
+            padding: 20px;
+            overflow-y: auto;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-            backdrop-filter: blur(5px);
+            gap: 20px;
         }
         
-        .modal-content {
-            background-color: #111;
-            padding: 30px;
-            border-radius: 15px;
-            border: 2px solid #ff0000;
-            text-align: center;
-            max-width: 500px;
-            width: 90%;
-            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
-            animation: modalAppear 0.5s ease-out;
-        }
-        
-        @keyframes modalAppear {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .modal h2 {
-            color: #ff0000;
-            margin-bottom: 20px;
-            font-size: 2rem;
-            text-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
-        }
-        
-        .modal p {
-            margin-bottom: 15px;
-            line-height: 1.5;
-        }
-        
-        .score-display {
-            font-size: 3rem;
-            color: #ff0000;
-            margin: 20px 0;
-            text-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
-        }
-        
-        .hidden {
-            display: none;
-        }
-        
-        .item-marker {
-            border-radius: 50%;
-            background-color: #ffcc00;
-            width: 12px;
-            height: 12px;
-            box-shadow: 0 0 10px #ffcc00;
-            animation: pulse 2s infinite;
-        }
-        
-        .zombie-marker {
-            border-radius: 50%;
-            background-color: #00cc00;
-            width: 16px;
-            height: 16px;
-            box-shadow: 0 0 10px #00cc00;
-            animation: pulse 1.5s infinite;
-        }
-        
-        .zombie-marker.fast {
-            background-color: #cc0000;
-            box-shadow: 0 0 10px #cc0000;
-            animation: pulse 0.8s infinite;
-        }
-        
-        .zombie-marker.big {
-            width: 22px;
-            height: 22px;
-            background-color: #006600;
-            box-shadow: 0 0 15px #006600;
-        }
-        
-        .player-marker {
-            border-radius: 50%;
-            background-color: #ff0000;
-            width: 20px;
-            height: 20px;
-            box-shadow: 0 0 15px #ff0000;
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.1); opacity: 0.8; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        
-        .powerup-marker {
-            border-radius: 50%;
-            background-color: #0066ff;
-            width: 14px;
-            height: 14px;
-            box-shadow: 0 0 10px #0066ff;
-            animation: rotate 3s infinite linear;
-        }
-        
-        .powerup-marker.health {
-            background-color: #ff00ff;
-            box-shadow: 0 0 10px #ff00ff;
-        }
-        
-        @keyframes rotate {
-            0% { transform: rotate(0deg) scale(1); }
-            50% { transform: rotate(180deg) scale(1.2); }
-            100% { transform: rotate(360deg) scale(1); }
-        }
-        
-        .notification {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(0, 0, 0, 0.7);
-            border: 1px solid #ff0000;
-            border-radius: 5px;
-            padding: 10px;
-            z-index: 1000;
-            backdrop-filter: blur(5px);
-            transform: translateX(100%);
-            opacity: 0;
-            transition: all 0.3s;
-        }
-        
-        .notification.show {
-            transform: translateX(0);
-            opacity: 1;
-        }
-        
-        .damage-effect {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 0, 0, 0.3);
-            z-index: 999;
-            pointer-events: none;
-            opacity: 0;
-        }
-        
-        .damage-effect.active {
-            animation: damageFlash 0.3s;
-        }
-        
-        @keyframes damageFlash {
-            0% { opacity: 0.7; }
-            100% { opacity: 0; }
-        }
-        
-        .collect-effect {
-            position: absolute;
-            background: rgba(255, 204, 0, 0.5);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 998;
-            transform: scale(0);
-        }
-        
-        .collect-effect.active {
-            animation: collectAnim 0.5s;
-        }
-        
-        @keyframes collectAnim {
-            0% { transform: scale(0); opacity: 1; }
-            100% { transform: scale(3); opacity: 0; }
-        }
-        
-        .mini-map {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            width: 150px;
-            height: 150px;
-            background: rgba(0, 0, 0, 0.7);
-            border: 1px solid #ff0000;
-            border-radius: 10px;
-            z-index: 1000;
-            backdrop-filter: blur(5px);
-        }
-        
-        .powerup-timer {
-            height: 5px;
-            background: #333;
-            border-radius: 5px;
-            margin-top: 5px;
-            overflow: hidden;
-        }
-        
-        .powerup-progress {
-            height: 100%;
-            background: #0066ff;
-            width: 100%;
-            transition: width 0.1s linear;
-        }
-        
-        .upgrade-menu {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.9);
-            border: 2px solid #ff0000;
-            border-radius: 10px;
-            padding: 20px;
-            z-index: 2000;
-            backdrop-filter: blur(5px);
-            display: none;
-        }
-        
-        .upgrade-menu h3 {
-            color: #ff0000;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-        
-        .upgrade-option {
-            background: #222;
-            padding: 10px;
+        .section-title {
+            color: #e94560;
             margin-bottom: 10px;
-            border-radius: 5px;
+            font-size: 1.2rem;
+        }
+        
+        #tools {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .tool {
+            background-color: #0f3460;
+            border: none;
+            border-radius: 10px;
+            padding: 15px;
+            color: white;
             cursor: pointer;
             transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
         }
         
-        .upgrade-option:hover {
-            background: #333;
-            transform: translateX(5px);
+        .tool:hover {
+            background-color: #133b74;
+            transform: translateY(-2px);
         }
         
-        .upgrade-option h4 {
-            color: #ffcc00;
+        .tool:active {
+            transform: translateY(1px);
+        }
+        
+        .tool-icon {
+            font-size: 1.5rem;
             margin-bottom: 5px;
         }
         
-        .upgrade-option p {
-            font-size: 0.9rem;
-            color: #ccc;
+        .tool-count {
+            background-color: #e94560;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
         }
         
-        .close-upgrades {
+        #rat-alert {
+            background-color: rgba(233, 69, 96, 0.9);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        #messages {
+            background-color: #0f3460;
+            padding: 15px;
+            border-radius: 10px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        
+        .message {
+            margin-bottom: 8px;
+            padding: 8px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        
+        #game-over {
             position: absolute;
-            top: 10px;
-            right: 10px;
-            background: none;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        #game-over h2 {
+            font-size: 3rem;
+            color: #e94560;
+            margin-bottom: 20px;
+        }
+        
+        #restart-btn {
+            padding: 15px 30px;
+            background-color: #0f3460;
+            color: white;
             border: none;
-            color: #fff;
+            border-radius: 10px;
             font-size: 1.2rem;
             cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        #restart-btn:hover {
+            background-color: #133b74;
+        }
+        
+        .rat-marker {
+            background-color: #4a2c2c;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #000;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+        .male {
+            border-color: #3498db;
+        }
+        
+        .female {
+            border-color: #e84393;
+        }
+        
+        .tool-selected {
+            box-shadow: 0 0 0 3px #e94560;
         }
         
         @media (max-width: 768px) {
-            .hud {
-                top: 10px;
-                left: 10px;
-                padding: 10px;
-                min-width: 160px;
-            }
-            
-            .controls {
-                bottom: 10px;
-                right: 10px;
-            }
-            
-            .logo {
-                font-size: 2rem;
-            }
-            
-            .mini-map {
-                width: 100px;
-                height: 100px;
-                bottom: 10px;
-                left: 10px;
-            }
-            
-            header {
+            #main-content {
                 flex-direction: column;
-                gap: 10px;
             }
             
-            .game-info {
-                gap: 10px;
+            #map-container {
+                flex: 6;
             }
             
-            .game-info div {
-                font-size: 0.8rem;
+            #tools-container {
+                flex: 4;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <div class="logo">ZACMAN</div>
-            <div class="game-info">
-                <div id="waveDisplay">Oleada: 1</div>
-                <div id="timeDisplay">Tiempo: 00:00</div>
+    <div id="game-container">
+        <div id="header">
+            <h1 id="game-title">🚀 Exterminador de Ratas</h1>
+            <div id="stats">
+                <div class="stat">💰 Puntos: <span id="points">0</span></div>
+                <div class="stat">🐀 Ratas: <span id="rat-count">0</span></div>
+                <div class="stat">🎯 Nivel: <span id="level">1</span></div>
             </div>
-        </header>
+        </div>
         
-        <div class="game-container">
-            <div id="map"></div>
-            <div class="damage-effect" id="damageEffect"></div>
-            
-            <div class="hud">
-                <div class="stats">
-                    <div class="stat">
-                        <span>📈 Puntuación:</span>
-                        <span id="score">0</span>
-                    </div>
-                    <div class="stat">
-                        <span>🎒 Suministros:</span>
-                        <span id="supplies">0</span>
-                    </div>
-                    <div class="stat">
-                        <span>🧟 Zombies:</span>
-                        <span id="zombieCount">0</span>
-                    </div>
-                    <div class="stat">
-                        <span>💉 Curaciones:</span>
-                        <span id="medkits">0</span>
-                    </div>
-                </div>
-                
-                <div class="health-bar">
-                    <div class="health-fill" id="healthBar"></div>
-                    <div class="health-text" id="healthText">100%</div>
-                </div>
-                
-                <div id="powerupInfo">No hay power-ups activos</div>
-                <div class="powerup-timer" id="powerupTimer" style="display: none;">
-                    <div class="powerup-progress" id="powerupProgress"></div>
-                </div>
-            </div>
-            
-            <div class="mini-map" id="miniMap"></div>
-            
-            <div class="controls">
-                <button id="startBtn">Iniciar Juego</button>
-                <button id="mockBtn">Modo Mock</button>
-                <button id="upgradeBtn" style="display: none;">Mejoras</button>
-            </div>
-            
-            <div id="startModal" class="modal">
-                <div class="modal-content">
-                    <h2>ZACMAN</h2>
-                    <p>¡Sobrevive en un mundo infestado de zombies! Recolecta suministros, evita a los zombies y utiliza power-ups para aumentar tus posibilidades de supervivencia.</p>
-                    <p>Tu ubicación se utilizará para crear el mapa de juego. ¡Moverse en la vida real te moverá en el juego!</p>
-                    <div style="margin: 15px 0;">
-                        <label for="difficultySelect">Dificultad:</label>
-                        <select id="difficultySelect" style="margin-left: 10px; padding: 5px; background: #222; color: #fff; border: 1px solid #ff0000;">
-                            <option value="easy">Fácil</option>
-                            <option value="normal" selected>Normal</option>
-                            <option value="hard">Difícil</option>
-                        </select>
-                    </div>
-                    <button id="startGameBtn">Comenzar</button>
-                </div>
-            </div>
-            
-            <div id="gameOverModal" class="modal hidden">
-                <div class="modal-content">
+        <div id="main-content">
+            <div id="map-container">
+                <div id="map"></div>
+                <div id="game-over">
                     <h2>¡Game Over!</h2>
-                    <p>Los zombies te han atrapado...</p>
-                    <div class="score-display" id="finalScore">0</div>
-                    <p>Suministros recolectados: <span id="finalSupplies">0</span></p>
-                    <p>Zombies eliminados: <span id="finalZombies">0</span></p>
-                    <p>Tiempo sobrevivido: <span id="finalTime">00:00</span></p>
-                    <button id="restartBtn">Reintentar</button>
+                    <p>Las ratas han tomado el control de la ciudad.</p>
+                    <button id="restart-btn">Reiniciar Juego</button>
                 </div>
             </div>
             
-            <div class="upgrade-menu" id="upgradeMenu">
-                <button class="close-upgrades" id="closeUpgrades">X</button>
-                <h3>MEJORAS DISPONIBLES</h3>
-                <p style="margin-bottom: 15px; text-align: center;">Suministros: <span id="upgradeSupplies">0</span></p>
-                <div class="upgrade-option" data-upgrade="health">
-                    <h4>➕ Vida Máxima (+20%) - 5 suministros</h4>
-                    <p>Aumenta tu vida máxima en un 20%</p>
+            <div id="tools-container">
+                <div>
+                    <h3 class="section-title">🔧 Herramientas</h3>
+                    <div id="tools">
+                        <button class="tool" data-tool="insecticide">
+                            <div class="tool-icon">💨</div>
+                            <div>Insecticida</div>
+                            <div class="tool-count">3</div>
+                        </button>
+                        <button class="tool" data-tool="poison">
+                            <div class="tool-icon">☠️</div>
+                            <div>Veneno</div>
+                            <div class="tool-count">2</div>
+                        </button>
+                        <button class="tool" data-tool="trap">
+                            <div class="tool-icon">🧩</div>
+                            <div>Trampa</div>
+                            <div class="tool-count">3</div>
+                        </button>
+                        <button class="tool" data-tool="block">
+                            <div class="tool-icon">🚧</div>
+                            <div>Bloquear</div>
+                            <div class="tool-count">5</div>
+                        </button>
+                    </div>
                 </div>
-                <div class="upgrade-option" data-upgrade="speed">
-                    <h4>👟 Velocidad de Movimiento (+15%) - 7 suministros</h4>
-                    <p>Aumenta tu velocidad de movimiento</p>
+                
+                <div id="rat-alert">
+                    <strong>¡Ratas cerca de tu ubicación!</strong>
+                    <p>Usa tus herramientas para eliminarlas.</p>
                 </div>
-                <div class="upgrade-option" data-upgrade="damage">
-                    <h4>⚔️ Daño a Zombies (+25%) - 10 suministros</h4>
-                    <p>Aumenta el daño que infliges a los zombies</p>
+                
+                <div>
+                    <h3 class="section-title">📝 Mensajes</h3>
+                    <div id="messages">
+                        <div class="message">¡Bienvenido a Exterminador de Ratas! Tu misión es eliminar todas las ratas de la ciudad.</div>
+                        <div class="message">Las ratas se reproducen rápidamente. ¡No dejes que se multipliquen!</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -557,930 +297,503 @@
 
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script>
-        // Variables globales
-        let map, playerMarker, playerLocation, miniMap;
-        let zombies = [];
-        let supplies = [];
-        let powerups = [];
-        let medkits = [];
-        let gameActive = false;
-        let mockMode = false;
-        let score = 0;
-        let health = 100;
-        let maxHealth = 100;
-        let suppliesCollected = 0;
-        let zombiesKilled = 0;
-        let activePowerup = null;
-        let powerupTimer = null;
-        let powerupEndTime = 0;
-        let gameTime = 0;
-        let gameTimeInterval;
-        let wave = 1;
-        let difficulty = "normal";
-        let playerStats = {
-            speed: 1.0,
-            damage: 1.0
-        };
-        let keys = {};
-        let moveInterval;
+        // Variables globales del juego
+        let map, userMarker, userLocation;
+        let rats = [];
+        let selectedTool = null;
+        let points = 0;
+        let ratCount = 0;
+        let level = 1;
+        let gameActive = true;
         
-        // Elementos DOM
-        const startModal = document.getElementById('startModal');
-        const gameOverModal = document.getElementById('gameOverModal');
-        const startBtn = document.getElementById('startBtn');
-        const mockBtn = document.getElementById('mockBtn');
-        const startGameBtn = document.getElementById('startGameBtn');
-        const restartBtn = document.getElementById('restartBtn');
-        const scoreDisplay = document.getElementById('score');
-        const suppliesDisplay = document.getElementById('supplies');
-        const zombieCountDisplay = document.getElementById('zombieCount');
-        const healthBar = document.getElementById('healthBar');
-        const healthText = document.getElementById('healthText');
-        const powerupInfo = document.getElementById('powerupInfo');
-        const powerupTimerEl = document.getElementById('powerupTimer');
-        const powerupProgress = document.getElementById('powerupProgress');
-        const finalScore = document.getElementById('finalScore');
-        const finalSupplies = document.getElementById('finalSupplies');
-        const finalZombies = document.getElementById('finalZombies');
-        const finalTime = document.getElementById('finalTime');
-        const damageEffect = document.getElementById('damageEffect');
-        const upgradeBtn = document.getElementById('upgradeBtn');
-        const upgradeMenu = document.getElementById('upgradeMenu');
-        const closeUpgrades = document.getElementById('closeUpgrades');
-        const upgradeSupplies = document.getElementById('upgradeSupplies');
-        const waveDisplay = document.getElementById('waveDisplay');
-        const timeDisplay = document.getElementById('timeDisplay');
-        const difficultySelect = document.getElementById('difficultySelect');
-        const medkitsDisplay = document.getElementById('medkits');
+        // Configuración del juego
+        const GAME_CONFIG = {
+            initialRats: 5,
+            maxRats: 30,
+            reproductionProbability: 0.03,
+            movementInterval: 2000,
+            ratSpawnInterval: 10000,
+            pointsPerRat: 10,
+            pointsPerLevel: 100
+        };
+        
+        // Inicialización del juego
+        function initGame() {
+            // Reiniciar variables
+            points = 0;
+            ratCount = 0;
+            level = 1;
+            rats = [];
+            gameActive = true;
+            
+            // Actualizar UI
+            document.getElementById('points').textContent = points;
+            document.getElementById('rat-count').textContent = ratCount;
+            document.getElementById('level').textContent = level;
+            document.getElementById('game-over').style.display = 'none';
+            
+            // Obtener ubicación del usuario
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    position => {
+                        userLocation = [position.coords.latitude, position.coords.longitude];
+                        initMap();
+                        spawnInitialRats();
+                        startGameLoop();
+                    },
+                    error => {
+                        // En caso de error, usar una ubicación por defecto (Madrid)
+                        userLocation = [40.4168, -3.7038];
+                        initMap();
+                        spawnInitialRats();
+                        startGameLoop();
+                        addMessage('No se pudo obtener tu ubicación. Usando ubicación predeterminada.');
+                    }
+                );
+            } else {
+                addMessage('Tu navegador no soporta geolocalización. Usando ubicación predeterminada.');
+                userLocation = [40.4168, -3.7038];
+                initMap();
+                spawnInitialRats();
+                startGameLoop();
+            }
+            
+            // Configurar event listeners para herramientas
+            setupEventListeners();
+        }
         
         // Inicializar el mapa
-        function initMap(lat, lng) {
-            map = L.map('map').setView([lat, lng], 16);
+        function initMap() {
+            map = L.map('map').setView(userLocation, 16);
             
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; OpenStreetMap contributors'
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             }).addTo(map);
             
-            // Crear marcador del jugador
-            playerMarker = L.marker([lat, lng], {
+            // Marcador del usuario
+            userMarker = L.marker(userLocation)
+                .addTo(map)
+                .bindPopup('¡Tu ubicación!')
+                .openPopup();
+        }
+        
+        // Generar ratas iniciales
+        function spawnInitialRats() {
+            for (let i = 0; i < GAME_CONFIG.initialRats; i++) {
+                spawnRat();
+            }
+        }
+        
+        // Generar una nueva rata
+        function spawnRat() {
+            if (ratCount >= GAME_CONFIG.maxRats || !gameActive) return;
+            
+            // Generar ubicación aleatoria cerca del usuario
+            const offset = 0.005;
+            const lat = userLocation[0] + (Math.random() * offset * 2) - offset;
+            const lng = userLocation[1] + (Math.random() * offset * 2) - offset;
+            
+            // Determinar sexo aleatoriamente
+            const isMale = Math.random() > 0.5;
+            const sex = isMale ? 'male' : 'female';
+            
+            // Crear marcador para la rata
+            const ratMarker = L.marker([lat, lng], {
                 icon: L.divIcon({
-                    className: 'player-marker',
+                    className: `rat-marker ${sex}`,
                     iconSize: [20, 20]
                 })
             }).addTo(map);
             
-            // Inicializar minimapa
-            miniMap = L.map('miniMap', {
-                zoomControl: false,
-                attributionControl: false,
-                dragging: false,
-                scrollWheelZoom: false,
-                doubleClickZoom: false,
-                boxZoom: false
-            }).setView([lat, lng], 14);
+            // Añadir información de la rata
+            const rat = {
+                marker: ratMarker,
+                sex: sex,
+                age: 0,
+                pregnant: false,
+                birthCountdown: 0
+            };
             
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(miniMap);
+            rats.push(rat);
+            ratCount++;
             
-            // Añadir marcador al minimapa
-            L.marker([lat, lng], {
-                icon: L.divIcon({
-                    className: 'player-marker',
-                    iconSize: [10, 10]
-                })
-            }).addTo(miniMap);
+            // Actualizar contador de ratas
+            document.getElementById('rat-count').textContent = ratCount;
             
-            // Centrar el mapa en el jugador
-            map.setView([lat, lng], 16);
-        }
-        
-        // Iniciar juego con geolocalización real
-        function startGame() {
-            difficulty = difficultySelect.value;
-            mockMode = false;
-            
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    function(position) {
-                        playerLocation = {
-                            lat: position.coords.latitude,
-                            lng: position.coords.longitude
-                        };
-                        
-                        initMap(playerLocation.lat, playerLocation.lng);
-                        startModal.classList.add('hidden');
-                        gameActive = true;
-                        
-                        // Iniciar temporizador
-                        startGameTimer();
-                        
-                        // Generar elementos del juego
-                        generateGameElements();
-                        
-                        // Iniciar el bucle del juego
-                        gameLoop();
-                        
-                        // Iniciar actualización de ubicación
-                        startLocationUpdates();
-                    },
-                    function(error) {
-                        alert('Error obteniendo la ubicación. Usando ubicación por defecto.');
-                        // Ubicación por defecto (Plaza Mayor de Madrid)
-                        playerLocation = { lat: 40.415363, lng: -3.707398 };
-                        initMap(playerLocation.lat, playerLocation.lng);
-                        startModal.classList.add('hidden');
-                        gameActive = true;
-                        startGameTimer();
-                        generateGameElements();
-                        gameLoop();
-                    }
-                );
-            } else {
-                alert('Geolocalización no soportada por tu navegador. Usando ubicación por defecto.');
-                playerLocation = { lat: 40.415363, lng: -3.707398 };
-                initMap(playerLocation.lat, playerLocation.lng);
-                startModal.classList.add('hidden');
-                gameActive = true;
-                startGameTimer();
-                generateGameElements();
-                gameLoop();
-            }
-        }
-        
-        // Iniciar juego en modo mock (para escritorio)
-        function startMockMode() {
-            difficulty = difficultySelect.value;
-            mockMode = true;
-            playerLocation = { lat: 40.415363, lng: -3.707398 };
-            initMap(playerLocation.lat, playerLocation.lng);
-            startModal.classList.add('hidden');
-            gameActive = true;
-            startGameTimer();
-            
-            // Agregar controles de teclado para modo mock
-            initKeyboardControls();
-            
-            generateGameElements();
-            gameLoop();
-            
-            // Mostrar botón de mejoras
-            upgradeBtn.style.display = 'block';
-        }
-        
-        // Iniciar actualización continua de ubicación
-        function startLocationUpdates() {
-            if (mockMode) return;
-            
-            if (navigator.geolocation) {
-                navigator.geolocation.watchPosition(
-                    function(position) {
-                        playerLocation = {
-                            lat: position.coords.latitude,
-                            lng: position.coords.longitude
-                        };
-                        
-                        // Actualizar marcador del jugador
-                        playerMarker.setLatLng([playerLocation.lat, playerLocation.lng]);
-                        
-                        // Actualizar minimapa
-                        miniMap.setView([playerLocation.lat, playerLocation.lng], 14);
-                        
-                        // Centrar mapa en el jugador (solo si no está en modo mock)
-                        if (!mockMode) {
-                            map.setView([playerLocation.lat, playerLocation.lng]);
-                        }
-                    },
-                    function(error) {
-                        console.error('Error updating location:', error);
-                    },
-                    { enableHighAccuracy: true, maximumAge: 3000, timeout: 5000 }
-                );
-            }
-        }
-        
-        // Generar zombies, suministros y power-ups
-        function generateGameElements() {
-            // Configuración según dificultad
-            let zombieCount, suppliesCount, powerupCount, medkitCount;
-            
-            switch(difficulty) {
-                case "easy":
-                    zombieCount = 4 + Math.floor(Math.random() * 4);
-                    suppliesCount = 20 + Math.floor(Math.random() * 11);
-                    powerupCount = 3 + Math.floor(Math.random() * 3);
-                    medkitCount = 3;
-                    break;
-                case "hard":
-                    zombieCount = 8 + Math.floor(Math.random() * 6);
-                    suppliesCount = 12 + Math.floor(Math.random() * 9);
-                    powerupCount = 1 + Math.floor(Math.random() * 2);
-                    medkitCount = 1;
-                    break;
-                default: // normal
-                    zombieCount = 6 + Math.floor(Math.random() * 5);
-                    suppliesCount = 15 + Math.floor(Math.random() * 11);
-                    powerupCount = 2 + Math.floor(Math.random() * 3);
-                    medkitCount = 2;
+            // Comprobar si hay demasiadas ratas (condición de derrota)
+            if (ratCount >= GAME_CONFIG.maxRats) {
+                endGame();
             }
             
-            // Generar zombies
-            for (let i = 0; i < zombieCount; i++) {
-                const offsetLat = (Math.random() - 0.5) * 0.01;
-                const offsetLng = (Math.random() - 0.5) * 0.01;
-                
-                // Tipos de zombies con diferentes características
-                let zombieType = "normal";
-                if (Math.random() < 0.2) zombieType = "fast";
-                if (Math.random() < 0.1) zombieType = "big";
-                
-                const zombie = L.marker([playerLocation.lat + offsetLat, playerLocation.lng + offsetLng], {
-                    icon: L.divIcon({
-                        className: `zombie-marker ${zombieType}`,
-                        iconSize: zombieType === "big" ? [22, 22] : [16, 16]
-                    })
-                }).addTo(map);
-                
-                // Añadir al minimapa
-                L.marker([playerLocation.lat + offsetLat, playerLocation.lng + offsetLng], {
-                    icon: L.divIcon({
-                        className: `zombie-marker ${zombieType}`,
-                        iconSize: zombieType === "big" ? [8, 8] : [6, 6]
-                    })
-                }).addTo(miniMap);
-                
-                let speed, health;
-                switch(zombieType) {
-                    case "fast":
-                        speed = 0.00003 + Math.random() * 0.00002;
-                        health = 1;
-                        break;
-                    case "big":
-                        speed = 0.000015 + Math.random() * 0.00001;
-                        health = 3;
-                        break;
-                    default:
-                        speed = 0.00002 + Math.random() * 0.00002;
-                        health = 2;
+            // Añadir evento para eliminar rata al hacer clic (solo para debugging)
+            ratMarker.on('click', () => {
+                if (selectedTool === 'insecticide') {
+                    removeRat(rat);
+                    addPoints(GAME_CONFIG.pointsPerRat);
+                    addMessage('¡Has eliminado una rata con insecticida!');
                 }
-                
-                zombies.push({
-                    marker: zombie,
-                    miniMap: miniMap,
-                    lat: playerLocation.lat + offsetLat,
-                    lng: playerLocation.lng + offsetLng,
-                    speed: speed,
-                    health: health,
-                    type: zombieType
-                });
-            }
+            });
             
-            // Generar suministros
-            for (let i = 0; i < suppliesCount; i++) {
-                const offsetLat = (Math.random() - 0.5) * 0.02;
-                const offsetLng = (Math.random() - 0.5) * 0.02;
-                
-                const supply = L.marker([playerLocation.lat + offsetLat, playerLocation.lng + offsetLng], {
-                    icon: L.divIcon({
-                        className: 'item-marker',
-                        iconSize: [12, 12]
-                    })
-                }).addTo(map);
-                
-                // Añadir al minimapa
-                L.marker([playerLocation.lat + offsetLat, playerLocation.lng + offsetLng], {
-                    icon: L.divIcon({
-                        className: 'item-marker',
-                        iconSize: [5, 5]
-                    })
-                }).addTo(miniMap);
-                
-                supplies.push({
-                    marker: supply,
-                    lat: playerLocation.lat + offsetLat,
-                    lng: playerLocation.lng + offsetLng,
-                    collected: false
-                });
-            }
-            
-            // Generar power-ups
-            for (let i = 0; i < powerupCount; i++) {
-                const offsetLat = (Math.random() - 0.5) * 0.015;
-                const offsetLng = (Math.random() - 0.5) * 0.015;
-                
-                const powerupType = Math.random() > 0.5 ? 'weapon' : 'speed';
-                
-                const powerup = L.marker([playerLocation.lat + offsetLat, playerLocation.lng + offsetLng], {
-                    icon: L.divIcon({
-                        className: `powerup-marker ${powerupType === 'weapon' ? '' : 'health'}`,
-                        iconSize: [14, 14]
-                    })
-                }).addTo(map);
-                
-                // Añadir al minimapa
-                L.marker([playerLocation.lat + offsetLat, playerLocation.lng + offsetLng], {
-                    icon: L.divIcon({
-                        className: `powerup-marker ${powerupType === 'weapon' ? '' : 'health'}`,
-                        iconSize: [6, 6]
-                    })
-                }).addTo(miniMap);
-                
-                powerups.push({
-                    marker: powerup,
-                    lat: playerLocation.lat + offsetLat,
-                    lng: playerLocation.lng + offsetLng,
-                    type: powerupType,
-                    collected: false
-                });
-            }
-            
-            // Generar botiquines
-            for (let i = 0; i < medkitCount; i++) {
-                const offsetLat = (Math.random() - 0.5) * 0.018;
-                const offsetLng = (Math.random() - 0.5) * 0.018;
-                
-                const medkit = L.marker([playerLocation.lat + offsetLat, playerLocation.lng + offsetLng], {
-                    icon: L.divIcon({
-                        className: 'powerup-marker health',
-                        iconSize: [14, 14]
-                    })
-                }).addTo(map);
-                
-                // Añadir al minimapa
-                L.marker([playerLocation.lat + offsetLat, playerLocation.lng + offsetLng], {
-                    icon: L.divIcon({
-                        className: 'powerup-marker health',
-                        iconSize: [6, 6]
-                    })
-                }).addTo(miniMap);
-                
-                medkits.push({
-                    marker: medkit,
-                    lat: playerLocation.lat + offsetLat,
-                    lng: playerLocation.lng + offsetLng,
-                    collected: false
-                });
-            }
-            
-            // Actualizar contador de zombies
-            zombieCountDisplay.textContent = zombies.length;
+            return rat;
+        }
+        
+        // Eliminar una rata
+        function removeRat(rat) {
+            map.removeLayer(rat.marker);
+            rats = rats.filter(r => r !== rat);
+            ratCount--;
+            document.getElementById('rat-count').textContent = ratCount;
         }
         
         // Bucle principal del juego
-        function gameLoop() {
+        function startGameLoop() {
+            // Mover ratas periódicamente
+            setInterval(moveRats, GAME_CONFIG.movementInterval);
+            
+            // Generar nuevas ratas periódicamente
+            setInterval(() => {
+                if (rats.length < GAME_CONFIG.maxRats && gameActive) {
+                    spawnRat();
+                }
+            }, GAME_CONFIG.ratSpawnInterval);
+        }
+        
+        // Mover las ratas
+        function moveRats() {
             if (!gameActive) return;
             
-            // Mover zombies hacia el jugador
-            moveZombies();
-            
-            // Comprobar colisiones
-            checkCollisions();
-            
-            // Actualizar power-up timer
-            updatePowerupTimer();
-            
-            // Comprobar si es hora de una nueva oleada
-            checkNewWave();
-            
-            // Continuar el bucle
-            requestAnimationFrame(gameLoop);
-        }
-        
-        // Mover zombies hacia la posición del jugador
-        function moveZombies() {
-            zombies.forEach(zombie => {
-                // Calcular dirección hacia el jugador
-                const latDiff = playerLocation.lat - zombie.lat;
-                const lngDiff = playerLocation.lng - zombie.lng;
+            rats.forEach(rat => {
+                // Mover la rata aleatoriamente
+                const currentPos = rat.marker.getLatLng();
+                const offset = 0.0005;
+                const newLat = currentPos.lat + (Math.random() * offset * 2) - offset;
+                const newLng = currentPos.lng + (Math.random() * offset * 2) - offset;
                 
-                // Normalizar y aplicar velocidad
-                const distance = Math.sqrt(latDiff * latDiff + lngDiff * lngDiff);
-                if (distance > 0.0001) { // Evitar división por cero
-                    const latMove = (latDiff / distance) * zombie.speed;
-                    const lngMove = (lngDiff / distance) * zombie.speed;
+                rat.marker.setLatLng([newLat, newLng]);
+                rat.age++;
+                
+                // Comprobar reproducción
+                if (!rat.pregnant && rat.age > 5) {
+                    checkReproduction(rat);
+                }
+                
+                // Comprobar si la rata está preñada
+                if (rat.pregnant) {
+                    rat.birthCountdown--;
                     
-                    // Actualizar posición del zombie
-                    zombie.lat += latMove;
-                    zombie.lng += lngMove;
-                    
-                    // Actualizar marcador en el mapa
-                    zombie.marker.setLatLng([zombie.lat, zombie.lng]);
-                }
-            });
-        }
-        
-        // Comprobar colisiones con suministros, power-ups y zombies
-        function checkCollisions() {
-            // Colisión con suministros
-            supplies.forEach((supply, index) => {
-                if (!supply.collected) {
-                    const distance = calculateDistance(playerLocation, { lat: supply.lat, lng: supply.lng });
-                    if (distance < 0.0002) { // Radio de colisión
-                        supply.collected = true;
-                        map.removeLayer(supply.marker);
-                        
-                        // Efecto visual
-                        createCollectEffect(supply.lat, supply.lng);
-                        
-                        // Actualizar puntuación y suministros
-                        score += 10;
-                        suppliesCollected += 1;
-                        scoreDisplay.textContent = score;
-                        suppliesDisplay.textContent = suppliesCollected;
-                        upgradeSupplies.textContent = suppliesCollected;
-                        
-                        // Mostrar notificación
-                        showNotification("+1 Suministro", "#ffcc00");
-                    }
-                }
-            });
-            
-            // Colisión con power-ups
-            powerups.forEach((powerup, index) => {
-                if (!powerup.collected) {
-                    const distance = calculateDistance(playerLocation, { lat: powerup.lat, lng: powerup.lng });
-                    if (distance < 0.0002) { // Radio de colisión
-                        powerup.collected = true;
-                        map.removeLayer(powerup.marker);
-                        
-                        // Efecto visual
-                        createCollectEffect(powerup.lat, powerup.lng);
-                        
-                        // Activar power-up
-                        activatePowerup(powerup.type);
-                    }
-                }
-            });
-            
-            // Colisión con botiquines
-            medkits.forEach((medkit, index) => {
-                if (!medkit.collected) {
-                    const distance = calculateDistance(playerLocation, { lat: medkit.lat, lng: medkit.lng });
-                    if (distance < 0.0002) { // Radio de colisión
-                        medkit.collected = true;
-                        map.removeLayer(medkit.marker);
-                        
-                        // Efecto visual
-                        createCollectEffect(medkit.lat, medkit.lng);
-                        
-                        // Añadir botiquín
-                        let medkitsCount = parseInt(medkitsDisplay.textContent);
-                        medkitsDisplay.textContent = medkitsCount + 1;
-                        
-                        // Mostrar notificación
-                        showNotification("+1 Botiquín", "#ff00ff");
-                    }
-                }
-            });
-            
-            // Colisión con zombies
-            zombies.forEach((zombie, index) => {
-                const distance = calculateDistance(playerLocation, { lat: zombie.lat, lng: zombie.lng });
-                if (distance < 0.0003) { // Radio de colisión
-                    // El jugador pierde salud
-                    takeDamage(5);
-                    
-                    // El zombie recibe daño (si el jugador tiene power-up de arma)
-                    if (activePowerup === 'weapon') {
-                        zombie.health -= 1 * playerStats.damage;
-                        
-                        if (zombie.health <= 0) {
-                            // Eliminar zombie
-                            map.removeLayer(zombie.marker);
-                            zombies.splice(index, 1);
-                            zombieCountDisplay.textContent = zombies.length;
-                            score += 20;
-                            scoreDisplay.textContent = score;
-                            zombiesKilled++;
-                            
-                            // Mostrar notificación
-                            showNotification("Zombie eliminado!", "#00cc00");
-                        }
+                    if (rat.birthCountdown <= 0) {
+                        giveBirth(rat);
                     }
                 }
             });
         }
         
-        // El jugador recibe daño
-        function takeDamage(amount) {
-            health -= amount;
-            if (health < 0) health = 0;
+        // Comprobar reproducción entre ratas
+        function checkReproduction(rat) {
+            // Solo las hembras pueden quedar preñadas
+            if (rat.sex !== 'female') return;
             
-            // Actualizar barra de salud
-            healthBar.style.width = (health / maxHealth * 100) + '%';
-            healthText.textContent = Math.round(health) + '%';
+            const currentPos = rat.marker.getLatLng();
             
-            // Efecto visual de daño
-            damageEffect.classList.add('active');
-            setTimeout(() => {
-                damageEffect.classList.remove('active');
-            }, 300);
+            // Buscar machos cercanos
+            const nearbyMales = rats.filter(otherRat => {
+                if (otherRat.sex !== 'male' || otherRat === rat) return false;
+                
+                const otherPos = otherRat.marker.getLatLng();
+                const distance = map.distance(currentPos, otherPos);
+                
+                return distance < 50; // 50 metros
+            });
             
-            // Comprobar si el juego ha terminado
-            if (health <= 0) {
-                gameOver();
+            if (nearbyMales.length > 0 && Math.random() < GAME_CONFIG.reproductionProbability) {
+                rat.pregnant = true;
+                rat.birthCountdown = 5;
+                addMessage('¡Una rata hembra ha quedado preñada!');
             }
         }
         
-        // Usar botiquín
-        function useMedkit() {
-            let medkitsCount = parseInt(medkitsDisplay.textContent);
-            if (medkitsCount > 0 && health < maxHealth) {
-                medkitsCount--;
-                medkitsDisplay.textContent = medkitsCount;
-                
-                // Curar al jugador
-                health = Math.min(health + 30, maxHealth);
-                healthBar.style.width = (health / maxHealth * 100) + '%';
-                healthText.textContent = Math.round(health) + '%';
-                
-                // Efecto visual
-                showNotification("Salud recuperada", "#00ff00");
-            }
-        }
-        
-        // Activar un power-up
-        function activatePowerup(type) {
-            // Desactivar power-up anterior si existe
-            if (activePowerup) {
-                clearTimeout(powerupTimer);
-            }
+        // Una rata da a luz
+        function giveBirth(rat) {
+            rat.pregnant = false;
             
-            activePowerup = type;
-            powerupEndTime = Date.now() + 15000; // 15 segundos
+            // Nacer entre 1 y 3 crías
+            const offspringCount = Math.floor(Math.random() * 3) + 1;
             
-            if (type === 'weapon') {
-                powerupInfo.textContent = '¡Arma activada! Puedes eliminar zombies.';
-                powerupInfo.style.color = '#0066ff';
-                
-                // Mostrar timer
-                powerupTimerEl.style.display = 'block';
-                
-            } else if (type === 'speed') {
-                powerupInfo.textContent = '¡Velocidad aumentada! Te mueves más rápido.';
-                powerupInfo.style.color = '#00ff00';
-                
-                // Aumentar velocidad en modo mock
-                if (mockMode) {
-                    playerStats.speed = 1.5;
-                }
-                
-                // Mostrar timer
-                powerupTimerEl.style.display = 'block';
-            }
-            
-            // Desactivar power-up después de 15 segundos
-            powerupTimer = setTimeout(() => {
-                if (type === 'weapon') {
-                    // Nada que restaurar
-                } else if (type === 'speed') {
-                    // Restaurar velocidad normal
-                    playerStats.speed = 1.0;
-                }
-                activePowerup = null;
-                powerupInfo.textContent = 'No hay power-ups activos';
-                powerupInfo.style.color = '#f0f0f0';
-                powerupTimerEl.style.display = 'none';
-            }, 15000);
-            
-            // Mostrar notificación
-            showNotification(`Power-up activado: ${type === 'weapon' ? 'Arma' : 'Velocidad'}`, type === 'weapon' ? '#0066ff' : '#00ff00');
-        }
-        
-        // Actualizar temporizador de power-up
-        function updatePowerupTimer() {
-            if (activePowerup) {
-                const remaining = powerupEndTime - Date.now();
-                const percentage = (remaining / 15000) * 100;
-                powerupProgress.style.width = percentage + '%';
-            }
-        }
-        
-        // Crear efecto visual al recoger items
-        function createCollectEffect(lat, lng) {
-            const effect = L.circleMarker([lat, lng], {
-                radius: 10,
-                color: '#ffcc00',
-                fillOpacity: 0.5
-            }).addTo(map);
-            
-            setTimeout(() => {
-                map.removeLayer(effect);
-            }, 500);
-        }
-        
-        // Mostrar notificación
-        function showNotification(message, color) {
-            const notification = document.createElement('div');
-            notification.className = 'notification';
-            notification.textContent = message;
-            notification.style.borderColor = color;
-            notification.style.color = color;
-            
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.classList.add('show');
-            }, 10);
-            
-            setTimeout(() => {
-                notification.classList.remove('show');
-                setTimeout(() => {
-                    document.body.removeChild(notification);
-                }, 300);
-            }, 3000);
-        }
-        
-        // Comprobar si es hora de una nueva oleada
-        function checkNewWave() {
-            // Cada 60 segundos, aumentar la oleada
-            if (gameTime > 0 && gameTime % 60 === 0) {
-                wave++;
-                waveDisplay.textContent = `Oleada: ${wave}`;
-                
-                // Generar nuevos zombies
-                const newZombiesCount = 2 + Math.floor(wave / 2);
-                for (let i = 0; i < newZombiesCount; i++) {
-                    const offsetLat = (Math.random() - 0.5) * 0.02;
-                    const offsetLng = (Math.random() - 0.5) * 0.02;
+            for (let i = 0; i < offspringCount; i++) {
+                if (rats.length < GAME_CONFIG.maxRats) {
+                    const currentPos = rat.marker.getLatLng();
+                    const offset = 0.0001;
+                    const newLat = currentPos.lat + (Math.random() * offset * 2) - offset;
+                    const newLng = currentPos.lng + (Math.random() * offset * 2) - offset;
                     
-                    let zombieType = "normal";
-                    if (Math.random() < 0.1 + (wave * 0.05)) zombieType = "fast";
-                    if (Math.random() < 0.05 + (wave * 0.03)) zombieType = "big";
+                    // Determinar sexo aleatoriamente
+                    const isMale = Math.random() > 0.5;
+                    const sex = isMale ? 'male' : 'female';
                     
-                    const zombie = L.marker([playerLocation.lat + offsetLat, playerLocation.lng + offsetLng], {
+                    // Crear marcador para la cría
+                    const offspringMarker = L.marker([newLat, newLng], {
                         icon: L.divIcon({
-                            className: `zombie-marker ${zombieType}`,
-                            iconSize: zombieType === "big" ? [22, 22] : [16, 16]
+                            className: `rat-marker ${sex}`,
+                            iconSize: [15, 15]
                         })
                     }).addTo(map);
                     
-                    // Añadir al minimapa
-                    L.marker([playerLocation.lat + offsetLat, playerLocation.lng + offsetLng], {
-                        icon: L.divIcon({
-                            className: `zombie-marker ${zombieType}`,
-                            iconSize: zombieType === "big" ? [8, 8] : [6, 6]
-                        })
-                    }).addTo(miniMap);
-                    
-                    let speed, health;
-                    switch(zombieType) {
-                        case "fast":
-                            speed = 0.00003 + Math.random() * 0.00002;
-                            health = 1;
-                            break;
-                        case "big":
-                            speed = 0.000015 + Math.random() * 0.00001;
-                            health = 3;
-                            break;
-                        default:
-                            speed = 0.00002 + Math.random() * 0.00002;
-                            health = 2;
-                    }
-                    
-                    // Aumentar velocidad y salud según la oleada
-                    speed *= (1 + (wave * 0.1));
-                    health += Math.floor(wave * 0.5);
-                    
-                    zombies.push({
-                        marker: zombie,
-                        miniMap: miniMap,
-                        lat: playerLocation.lat + offsetLat,
-                        lng: playerLocation.lng + offsetLng,
-                        speed: speed,
-                        health: health,
-                        type: zombieType
+                    // Añadir la nueva rata
+                    rats.push({
+                        marker: offspringMarker,
+                        sex: sex,
+                        age: 0,
+                        pregnant: false,
+                        birthCountdown: 0
                     });
+                    
+                    ratCount++;
                 }
-                
-                zombieCountDisplay.textContent = zombies.length;
-                
-                // Mostrar notificación
-                showNotification(`¡Oleada ${wave}! Llegan más zombies.`, "#ff0000");
+            }
+            
+            document.getElementById('rat-count').textContent = ratCount;
+            addMessage(`¡Una rata ha dado a luz a ${offspringCount} crías!`);
+            
+            // Comprobar si hay demasiadas ratas (condición de derrota)
+            if (ratCount >= GAME_CONFIG.maxRats) {
+                endGame();
             }
         }
         
-        // Iniciar temporizador del juego
-        function startGameTimer() {
-            gameTime = 0;
-            clearInterval(gameTimeInterval);
+        // Configurar event listeners
+        function setupEventListeners() {
+            // Selección de herramientas
+            document.querySelectorAll('.tool').forEach(tool => {
+                tool.addEventListener('click', () => {
+                    document.querySelectorAll('.tool').forEach(t => t.classList.remove('tool-selected'));
+                    tool.classList.add('tool-selected');
+                    selectedTool = tool.dataset.tool;
+                });
+            });
             
-            gameTimeInterval = setInterval(() => {
-                if (gameActive) {
-                    gameTime++;
+            // Evento para colocar herramientas en el mapa
+            map.on('click', e => {
+                if (!selectedTool || !gameActive) return;
+                
+                const toolCountEl = document.querySelector(`.tool[data-tool="${selectedTool}"] .tool-count`);
+                let count = parseInt(toolCountEl.textContent);
+                
+                if (count > 0) {
+                    count--;
+                    toolCountEl.textContent = count;
                     
-                    const minutes = Math.floor(gameTime / 60);
-                    const seconds = gameTime % 60;
+                    switch(selectedTool) {
+                        case 'insecticide':
+                            useInsecticide(e.latlng);
+                            break;
+                        case 'poison':
+                            usePoison(e.latlng);
+                            break;
+                        case 'trap':
+                            useTrap(e.latlng);
+                            break;
+                        case 'block':
+                            useBlock(e.latlng);
+                            break;
+                    }
                     
-                    timeDisplay.textContent = `Tiempo: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    // Si se acaban las herramientas de este tipo, deseleccionar
+                    if (count === 0) {
+                        document.querySelectorAll('.tool').forEach(t => t.classList.remove('tool-selected'));
+                        selectedTool = null;
+                    }
                 }
+            });
+            
+            // Botón de reinicio
+            document.getElementById('restart-btn').addEventListener('click', initGame);
+        }
+        
+        // Usar insecticida
+        function useInsecticide(latlng) {
+            // Eliminar ratas en un radio
+            let ratsKilled = 0;
+            
+            rats.forEach(rat => {
+                const ratPos = rat.marker.getLatLng();
+                const distance = map.distance(latlng, ratPos);
+                
+                if (distance < 30) { // 30 metros de radio
+                    removeRat(rat);
+                    ratsKilled++;
+                }
+            });
+            
+            if (ratsKilled > 0) {
+                addPoints(ratsKilled * GAME_CONFIG.pointsPerRat);
+                addMessage(`¡Has eliminado ${ratsKilled} ratas con insecticida!`);
+                
+                // Marcar el área de efecto temporalmente
+                const area = L.circle(latlng, { radius: 30, color: '#e94560', fillOpacity: 0.2 }).addTo(map);
+                setTimeout(() => map.removeLayer(area), 1000);
+            }
+        }
+        
+        // Usar veneno
+        function usePoison(latlng) {
+            // Envenenar ratas en un radio más grande pero con efecto retardado
+            let ratsPoisoned = 0;
+            
+            rats.forEach(rat => {
+                const ratPos = rat.marker.getLatLng();
+                const distance = map.distance(latlng, ratPos);
+                
+                if (distance < 50) { // 50 metros de radio
+                    // La rata morirá después de un tiempo
+                    setTimeout(() => {
+                        if (rats.includes(rat)) {
+                            removeRat(rat);
+                            addPoints(GAME_CONFIG.pointsPerRat);
+                            addMessage('¡Una rata ha muerto por envenenamiento!');
+                        }
+                    }, 5000);
+                    
+                    ratsPoisoned++;
+                }
+            });
+            
+            if (ratsPoisoned > 0) {
+                addMessage(`¡Has envenenado a ${ratsPoisoned} ratas! El efecto tardará unos segundos.`);
+                
+                // Marcar el área de efecto temporalmente
+                const area = L.circle(latlng, { radius: 50, color: '#9b59b6', fillOpacity: 0.2 }).addTo(map);
+                setTimeout(() => map.removeLayer(area), 1000);
+            }
+        }
+        
+        // Usar trampa
+        function useTrap(latlng) {
+            // Colocar una trampa que atrapará ratas que pasen cerca
+            const trap = L.marker(latlng, {
+                icon: L.divIcon({
+                    className: 'trap-marker',
+                    html: '🧩',
+                    iconSize: [25, 25]
+                })
+            }).addTo(map);
+            
+            // La trampa permanecerá activa por un tiempo
+            setTimeout(() => {
+                map.removeLayer(trap);
+            }, 15000);
+            
+            // Comprobar cada segundo si alguna rata pasa cerca
+            const trapInterval = setInterval(() => {
+                if (!map.hasLayer(trap)) {
+                    clearInterval(trapInterval);
+                    return;
+                }
+                
+                rats.forEach(rat => {
+                    const ratPos = rat.marker.getLatLng();
+                    const distance = map.distance(latlng, ratPos);
+                    
+                    if (distance < 10) { // 10 metros de radio
+                        removeRat(rat);
+                        addPoints(GAME_CONFIG.pointsPerRat);
+                        addMessage('¡Una rata ha caído en tu trampa!');
+                        map.removeLayer(trap);
+                        clearInterval(trapInterval);
+                    }
+                });
             }, 1000);
-        }
-        
-        // Calcular distancia entre dos puntos
-        function calculateDistance(point1, point2) {
-            const latDiff = point1.lat - point2.lat;
-            const lngDiff = point1.lng - point2.lng;
-            return Math.sqrt(latDiff * latDiff + lngDiff * lngDiff);
-        }
-        
-        // Inicializar controles de teclado para modo mock
-        function initKeyboardControls() {
-            // Detectar teclas presionadas
-            document.addEventListener('keydown', function(e) {
-                if (!gameActive) return;
-                
-                keys[e.key] = true;
-                
-                // Tecla para usar botiquín (H)
-                if (e.key === 'h' || e.key === 'H') {
-                    useMedkit();
-                }
-                
-                // Tecla para abrir menu de mejoras (M)
-                if ((e.key === 'm' || e.key === 'M') && upgradeBtn.style.display === 'block') {
-                    toggleUpgradeMenu();
-                }
-            });
             
-            document.addEventListener('keyup', function(e) {
-                keys[e.key] = false;
-            });
-            
-            // Movimiento continuo
-            clearInterval(moveInterval);
-            moveInterval = setInterval(() => {
-                if (!gameActive) return;
-                
-                const moveDistance = 0.0001 * playerStats.speed;
-                
-                if (keys['w'] || keys['ArrowUp']) {
-                    playerLocation.lat += moveDistance;
-                }
-                if (keys['s'] || keys['ArrowDown']) {
-                    playerLocation.lat -= moveDistance;
-                }
-                if (keys['a'] || keys['ArrowLeft']) {
-                    playerLocation.lng -= moveDistance;
-                }
-                if (keys['d'] || keys['ArrowRight']) {
-                    playerLocation.lng += moveDistance;
-                }
-                
-                // Actualizar marcador del jugador
-                playerMarker.setLatLng([playerLocation.lat, playerLocation.lng]);
-                
-                // Actualizar minimapa
-                miniMap.setView([playerLocation.lat, playerLocation.lng], 14);
-                
-                // Centrar mapa en el jugador
-                map.setView([playerLocation.lat, playerLocation.lng]);
-            }, 16); // ~60 FPS
+            addMessage('¡Has colocado una trampa! Atrapará ratas que pasen cerca.');
         }
         
-        // Abrir/cerrar menú de mejoras
-        function toggleUpgradeMenu() {
-            if (upgradeMenu.style.display === 'block') {
-                upgradeMenu.style.display = 'none';
-            } else {
-                upgradeMenu.style.display = 'block';
-                upgradeSupplies.textContent = suppliesCollected;
+        // Usar bloqueo de camino
+        function useBlock(latlng) {
+            // Bloquear el paso para las ratas
+            const block = L.marker(latlng, {
+                icon: L.divIcon({
+                    className: 'block-marker',
+                    html: '🚧',
+                    iconSize: [25, 25]
+                })
+            }).addTo(map);
+            
+            // El bloqueo permanecerá por un tiempo
+            setTimeout(() => {
+                map.removeLayer(block);
+            }, 20000);
+            
+            addMessage('¡Has bloqueado un camino! Las ratas evitarán esta zona.');
+        }
+        
+        // Añadir puntos
+        function addPoints(amount) {
+            points += amount;
+            document.getElementById('points').textContent = points;
+            
+            // Comprobar si se sube de nivel
+            if (points >= level * GAME_CONFIG.pointsPerLevel) {
+                levelUp();
             }
         }
         
-        // Comprar mejora
-        function buyUpgrade(type) {
-            let cost = 0;
+        // Subir de nivel
+        function levelUp() {
+            level++;
+            document.getElementById('level').textContent = level;
             
-            switch(type) {
-                case "health":
-                    cost = 5;
-                    if (suppliesCollected >= cost) {
-                        suppliesCollected -= cost;
-                        maxHealth = Math.round(maxHealth * 1.2);
-                        health = Math.round(health * 1.2);
-                        healthBar.style.width = (health / maxHealth * 100) + '%';
-                        healthText.textContent = Math.round(health) + '%';
-                        suppliesDisplay.textContent = suppliesCollected;
-                        upgradeSupplies.textContent = suppliesCollected;
-                        showNotification("Vida máxima aumentada", "#ff0000");
-                    }
-                    break;
-                case "speed":
-                    cost = 7;
-                    if (suppliesCollected >= cost) {
-                        suppliesCollected -= cost;
-                        playerStats.speed *= 1.15;
-                        suppliesDisplay.textContent = suppliesCollected;
-                        upgradeSupplies.textContent = suppliesCollected;
-                        showNotification("Velocidad aumentada", "#00ff00");
-                    }
-                    break;
-                case "damage":
-                    cost = 10;
-                    if (suppliesCollected >= cost) {
-                        suppliesCollected -= cost;
-                        playerStats.damage *= 1.25;
-                        suppliesDisplay.textContent = suppliesCollected;
-                        upgradeSupplies.textContent = suppliesCollected;
-                        showNotification("Daño aumentado", "#0066ff");
-                    }
-                    break;
+            // Añadir más herramientas
+            document.querySelectorAll('.tool').forEach(tool => {
+                const toolType = tool.dataset.tool;
+                const countEl = tool.querySelector('.tool-count');
+                let count = parseInt(countEl.textContent);
+                
+                // Añadir herramientas según el tipo
+                switch(toolType) {
+                    case 'insecticide':
+                        count += 2;
+                        break;
+                    case 'poison':
+                        count += 1;
+                        break;
+                    case 'trap':
+                        count += 1;
+                        break;
+                    case 'block':
+                        count += 2;
+                        break;
+                }
+                
+                countEl.textContent = count;
+            });
+            
+            addMessage(`¡Has subido al nivel ${level}! Se han añadido más herramientas.`);
+        }
+        
+        // Añadir mensaje al log
+        function addMessage(text) {
+            const messagesContainer = document.getElementById('messages');
+            const message = document.createElement('div');
+            message.className = 'message';
+            message.textContent = text;
+            
+            messagesContainer.appendChild(message);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            // Limitar el número de mensajes
+            if (messagesContainer.children.length > 20) {
+                messagesContainer.removeChild(messagesContainer.children[0]);
             }
         }
         
         // Finalizar el juego
-        function gameOver() {
+        function endGame() {
             gameActive = false;
-            clearInterval(gameTimeInterval);
-            clearInterval(moveInterval);
-            
-            if (powerupTimer) {
-                clearTimeout(powerupTimer);
-            }
-            
-            const minutes = Math.floor(gameTime / 60);
-            const seconds = gameTime % 60;
-            
-            finalScore.textContent = score;
-            finalSupplies.textContent = suppliesCollected;
-            finalZombies.textContent = zombiesKilled;
-            finalTime.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            
-            gameOverModal.classList.remove('hidden');
+            document.getElementById('game-over').style.display = 'flex';
+            addMessage('¡Game Over! Las ratas han tomado el control de la ciudad.');
         }
         
-        // Reiniciar el juego
-        function restartGame() {
-            // Limpiar elementos existentes
-            zombies.forEach(zombie => map.removeLayer(zombie.marker));
-            supplies.forEach(supply => map.removeLayer(supply.marker));
-            powerups.forEach(powerup => map.removeLayer(powerup.marker));
-            medkits.forEach(medkit => map.removeLayer(medkit.marker));
-            
-            // Limpiar minimapa
-            miniMap.eachLayer(layer => {
-                if (layer instanceof L.Marker) {
-                    miniMap.removeLayer(layer);
-                }
-            });
-            
-            // Reiniciar variables
-            zombies = [];
-            supplies = [];
-            powerups = [];
-            medkits = [];
-            score = 0;
-            health = 100;
-            maxHealth = 100;
-            suppliesCollected = 0;
-            zombiesKilled = 0;
-            activePowerup = null;
-            gameTime = 0;
-            wave = 1;
-            playerStats = {
-                speed: 1.0,
-                damage: 1.0
-            };
-            
-            // Actualizar HUD
-            scoreDisplay.textContent = '0';
-            suppliesDisplay.textContent = '0';
-            medkitsDisplay.textContent = '0';
-            healthBar.style.width = '100%';
-            healthText.textContent = '100%';
-            powerupInfo.textContent = 'No hay power-ups activos';
-            powerupInfo.style.color = '#f0f0f0';
-            powerupTimerEl.style.display = 'none';
-            waveDisplay.textContent = 'Oleada: 1';
-            timeDisplay.textContent = 'Tiempo: 00:00';
-            
-            // Ocultar modal de game over
-            gameOverModal.classList.add('hidden');
-            
-            // Reiniciar juego
-            if (mockMode) {
-                startMockMode();
-            } else {
-                startGame();
-            }
-        }
-        
-        // Event listeners
-        startBtn.addEventListener('click', startGame);
-        mockBtn.addEventListener('click', startMockMode);
-        startGameBtn.addEventListener('click', startGame);
-        restartBtn.addEventListener('click', restartGame);
-        upgradeBtn.addEventListener('click', toggleUpgradeMenu);
-        closeUpgrades.addEventListener('click', toggleUpgradeMenu);
-        
-        // Event listeners para mejoras
-        document.querySelectorAll('.upgrade-option').forEach(option => {
-            option.addEventListener('click', () => {
-                buyUpgrade(option.dataset.upgrade);
-            });
-        });
-        
-        // Iniciar con el modal de inicio visible
-        startModal.classList.remove('hidden');
+        // Iniciar el juego cuando se carga la página
+        window.onload = initGame;
     </script>
 </body>
 </html>
