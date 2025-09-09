@@ -269,6 +269,7 @@
         let gameActive = true;
         let paused = false;
         let lastSpawnTime = 0;
+        let mapBounds = null;
 
         // Tipos de monstruos con características únicas
         const MONSTER_TYPES = [
@@ -377,6 +378,9 @@
                 maxZoom: 19
             }).addTo(map);
 
+            // Obtener los límites del mapa
+            mapBounds = map.getBounds();
+            
             // Marcador del usuario
             userMarker = L.marker(userLocation, {
                 icon: L.divIcon({
@@ -392,7 +396,7 @@
             }, 100);
         }
 
-        // Generar un nuevo monstruo
+        // Generar un nuevo monstruo en una ubicación aleatoria del mapa
         function spawnMonster() {
             if (!gameActive || paused || monsters.length >= 25) return;
 
@@ -409,12 +413,10 @@
                 }
             }
             
-            // Generar ubicación aleatoria cerca del usuario
-            const radius = 0.015;
-            const angle = Math.random() * Math.PI * 2;
-            const distance = Math.random() * radius;
-            const lat = userLocation[0] + Math.cos(angle) * distance;
-            const lng = userLocation[1] + Math.sin(angle) * distance;
+            // Generar ubicación aleatoria en todo el mapa, no solo cerca del jugador
+            const bounds = map.getBounds();
+            const lat = bounds.getSouth() + Math.random() * (bounds.getNorth() - bounds.getSouth());
+            const lng = bounds.getWest() + Math.random() * (bounds.getEast() - bounds.getWest());
 
             // Crear marcador para el monstruo
             const monsterMarker = L.marker([lat, lng], {
@@ -433,8 +435,14 @@
                 speed: monsterType.speed * (0.8 + Math.random() * 0.4),
                 direction: Math.random() * Math.PI * 2,
                 directionChangeTime: 0,
-                points: monsterType.points
+                points: monsterType.points,
+                waypoints: [],
+                currentWaypoint: 0,
+                pauseTime: 0
             };
+
+            // Generar waypoints para una ruta más interesante
+            generateWaypoints(monster);
 
             monsters.push(monster);
             updateUI();
@@ -448,6 +456,27 @@
             monsterMarker.getElement().style.animation = 'appear 0.5s forwards';
 
             return monster;
+        }
+
+        // Generar waypoints para que el monstruo siga una ruta
+        function generateWaypoints(monster) {
+            const bounds = map.getBounds();
+            const currentPos = monster.marker.getLatLng();
+            
+            // Limpiar waypoints anteriores
+            monster.waypoints = [];
+            monster.currentWaypoint = 0;
+            
+            // El primer waypoint es la posición actual
+            monster.waypoints.push(currentPos);
+            
+            // Generar 3-5 waypoints adicionales en el mapa
+            const numWaypoints = 3 + Math.floor(Math.random() * 3);
+            for (let i = 0; i < numWaypoints; i++) {
+                const lat = bounds.getSouth() + Math.random() * (bounds.getNorth() - bounds.getSouth());
+                const lng = bounds.getWest() + Math.random() * (bounds.getEast() - bounds.getWest());
+                monster.waypoints.push(L.latLng(lat, lng));
+            }
         }
 
         // Eliminar un monstruo
@@ -477,39 +506,49 @@
             updateUI();
         }
 
-        // Mover los monstruos
+        // Mover los monstruos siguiendo sus waypoints
         function moveMonsters(deltaTime) {
             const now = Date.now();
             const moveFactor = deltaTime / 16;
             
             monsters.forEach(monster => {
-                // Cambiar dirección ocasionalmente
-                if (now - monster.directionChangeTime > 2000 + Math.random() * 3000) {
-                    monster.direction = Math.random() * Math.PI * 2;
-                    monster.directionChangeTime = now;
+                // Si el monstruo está en pausa (esperando en un waypoint)
+                if (monster.pauseTime > now) {
+                    return;
                 }
-
-                // Mover el monstruo en su dirección actual
+                
+                // Obtener el waypoint actual
+                const currentWaypoint = monster.waypoints[monster.currentWaypoint];
                 const currentPos = monster.marker.getLatLng();
+                
+                // Calcular la dirección hacia el waypoint
+                const dx = currentWaypoint.lng - currentPos.lng;
+                const dy = currentWaypoint.lat - currentPos.lat;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                // Si está lo suficientemente cerca del waypoint, pasar al siguiente
+                if (distance < 0.0005) {
+                    monster.currentWaypoint = (monster.currentWaypoint + 1) % monster.waypoints.length;
+                    
+                    // Pausa aleatoria en el waypoint (0-3 segundos)
+                    monster.pauseTime = now + Math.random() * 3000;
+                    return;
+                }
+                
+                // Calcular el movimiento hacia el waypoint
                 const moveDistance = monster.speed * moveFactor;
-                const newLat = currentPos.lat + Math.cos(monster.direction) * moveDistance;
-                const newLng = currentPos.lng + Math.sin(monster.direction) * moveDistance;
+                const ratio = moveDistance / distance;
                 
-                // Mantener a los monstruos dentro de un área razonable
-                const maxDistance = 0.02;
-                const distFromCenter = Math.sqrt(
-                    Math.pow(newLat - userLocation[0], 2) + 
-                    Math.pow(newLng - userLocation[1], 2)
-                );
+                const newLat = currentPos.lat + dy * ratio;
+                const newLng = currentPos.lng + dx * ratio;
                 
-                if (distFromCenter > maxDistance) {
-                    // Cambiar dirección hacia el centro
-                    monster.direction = Math.atan2(
-                        userLocation[0] - currentPos.lat,
-                        userLocation[1] - currentPos.lng
-                    );
-                } else {
+                // Mantener a los monstruos dentro de los límites del mapa
+                const bounds = map.getBounds();
+                if (bounds.contains([newLat, newLng])) {
                     monster.marker.setLatLng([newLat, newLng]);
+                } else {
+                    // Si se sale del mapa, generar nuevos waypoints
+                    generateWaypoints(monster);
                 }
             });
         }
@@ -583,6 +622,8 @@
         window.addEventListener('resize', () => {
             if (map) {
                 map.invalidateSize();
+                // Actualizar los límites del mapa después del redimensionamiento
+                mapBounds = map.getBounds();
             }
         });
     </script>
