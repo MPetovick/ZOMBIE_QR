@@ -71,12 +71,65 @@
             position: relative;
             height: 100%;
             width: 100%;
+            overflow: hidden;
         }
 
         #map {
             height: 100%;
             width: 100%;
             z-index: 1;
+        }
+
+        #monster-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .monster {
+            position: absolute;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            animation: pulse 2s infinite;
+            box-shadow: 0 0 15px currentColor;
+            transition: all 0.3s ease;
+            pointer-events: auto;
+            cursor: pointer;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+        }
+
+        .goblin {
+            background-color: #27ae60;
+            border: 2px solid #2ecc71;
+            color: #2ecc71;
+        }
+
+        .orc {
+            background-color: #e74c3c;
+            border: 2px solid #c0392b;
+            color: #c0392b;
+        }
+
+        .troll {
+            background-color: #8e44ad;
+            border: 2px solid #9b59b6;
+            color: #9b59b6;
+        }
+
+        .dragon {
+            background-color: #f39c12;
+            border: 2px solid #f1c40f;
+            color: #f1c40f;
         }
 
         #controls {
@@ -107,48 +160,33 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         }
 
-        .monster-marker {
-            width: 32px;
-            height: 32px;
+        .explosion {
+            position: absolute;
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 18px;
-            animation: pulse 2s infinite;
-            box-shadow: 0 0 15px currentColor;
-            transition: all 0.3s ease;
+            background: radial-gradient(circle, #ff8800 0%, #ff0000 70%, transparent 100%);
+            opacity: 0.8;
+            pointer-events: none;
+            z-index: 20;
+            animation: explode 0.5s forwards;
+            transform: translate(-50%, -50%);
         }
 
-        .goblin {
-            background-color: #27ae60;
-            border: 2px solid #2ecc71;
-            color: #2ecc71;
+        @keyframes pulse {
+            0% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.1); }
+            100% { transform: translate(-50%, -50%) scale(1); }
         }
 
-        .orc {
-            background-color: #e74c3c;
-            border: 2px solid #c0392b;
-            color: #c0392b;
+        @keyframes explode {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 0.8; }
+            100% { transform: translate(-50%, -50%) scale(3); opacity: 0; }
         }
 
-        .troll {
-            background-color: #8e44ad;
-            border: 2px solid #9b59b6;
-            color: #9b59b6;
-        }
-
-        .dragon {
-            background-color: #f39c12;
-            border: 2px solid #f1c40f;
-            color: #f1c40f;
-        }
-
-        .user-marker {
-            font-size: 24px;
-            color: #3498db;
-            text-align: center;
-            line-height: 24px;
+        @keyframes appear {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
         }
 
         #monster-info {
@@ -174,17 +212,6 @@
             width: 15px;
             height: 15px;
             border-radius: 50%;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-
-        @keyframes appear {
-            0% { transform: scale(0); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
         }
 
         @media (max-width: 768px) {
@@ -230,6 +257,7 @@
         
         <div id="map-container">
             <div id="map"></div>
+            <div id="monster-layer"></div>
             
             <div id="monster-info">
                 <h3>Tipos de Monstruos</h3>
@@ -277,7 +305,7 @@
                 name: "goblin", 
                 icon: "fas fa-ghost", 
                 color: "goblin", 
-                speed: 0.00015,
+                speed: 2,
                 points: 10,
                 spawnChance: 0.4
             },
@@ -285,7 +313,7 @@
                 name: "orc", 
                 icon: "fas fa-hat-cowboy-side", 
                 color: "orc", 
-                speed: 0.00012,
+                speed: 1.5,
                 points: 15,
                 spawnChance: 0.3
             },
@@ -293,7 +321,7 @@
                 name: "troll", 
                 icon: "fas fa-mountain", 
                 color: "troll", 
-                speed: 0.00008,
+                speed: 1,
                 points: 20,
                 spawnChance: 0.2
             },
@@ -301,7 +329,7 @@
                 name: "dragon", 
                 icon: "fas fa-dragon", 
                 color: "dragon", 
-                speed: 0.00025,
+                speed: 3,
                 points: 30,
                 spawnChance: 0.1
             }
@@ -316,6 +344,9 @@
             gameActive = true;
             paused = false;
             lastSpawnTime = 0;
+
+            // Limpiar la capa de monstruos
+            document.getElementById('monster-layer').innerHTML = '';
 
             // Actualizar UI
             updateUI();
@@ -390,10 +421,29 @@
                 })
             }).addTo(map).bindPopup('¡Tu ubicación!').openPopup();
 
+            // Evento para actualizar posiciones cuando se mueve el mapa
+            map.on('move', updateMonsterPositions);
+            map.on('zoom', updateMonsterPositions);
+
             // Invalidar el tamaño del mapa para asegurar que se renderice correctamente
             setTimeout(() => {
                 map.invalidateSize();
             }, 100);
+        }
+
+        // Convertir coordenadas a píxeles en el contenedor del mapa
+        function latLngToContainerPoint(latLng) {
+            const point = map.latLngToContainerPoint(latLng);
+            return point;
+        }
+
+        // Actualizar las posiciones de todos los monstruos
+        function updateMonsterPositions() {
+            monsters.forEach(monster => {
+                const point = latLngToContainerPoint(monster.position);
+                monster.element.style.left = `${point.x}px`;
+                monster.element.style.top = `${point.y}px`;
+            });
         }
 
         // Generar un nuevo monstruo en una ubicación aleatoria del mapa
@@ -413,24 +463,30 @@
                 }
             }
             
-            // Generar ubicación aleatoria en todo el mapa, no solo cerca del jugador
+            // Generar ubicación aleatoria en todo el mapa
             const bounds = map.getBounds();
             const lat = bounds.getSouth() + Math.random() * (bounds.getNorth() - bounds.getSouth());
             const lng = bounds.getWest() + Math.random() * (bounds.getEast() - bounds.getWest());
+            const position = L.latLng(lat, lng);
 
-            // Crear marcador para el monstruo
-            const monsterMarker = L.marker([lat, lng], {
-                icon: L.divIcon({
-                    className: `monster-marker ${monsterType.color}`,
-                    html: `<i class="${monsterType.icon}"></i>`,
-                    iconSize: [32, 32],
-                    iconAnchor: [16, 16]
-                })
-            }).addTo(map);
+            // Crear elemento HTML para el monstruo
+            const monsterElement = document.createElement('div');
+            monsterElement.className = `monster ${monsterType.color}`;
+            monsterElement.innerHTML = `<i class="${monsterType.icon}"></i>`;
+            
+            // Posicionar el monstruo
+            const point = latLngToContainerPoint(position);
+            monsterElement.style.left = `${point.x}px`;
+            monsterElement.style.top = `${point.y}px`;
+            monsterElement.style.animation = 'appear 0.5s forwards';
+            
+            // Añadir a la capa de monstruos
+            document.getElementById('monster-layer').appendChild(monsterElement);
 
             // Añadir información del monstruo
             const monster = {
-                marker: monsterMarker,
+                element: monsterElement,
+                position: position,
                 type: monsterType.name,
                 speed: monsterType.speed * (0.8 + Math.random() * 0.4),
                 direction: Math.random() * Math.PI * 2,
@@ -448,12 +504,9 @@
             updateUI();
 
             // Añadir evento para eliminar monstruo al hacer clic
-            monsterMarker.on('click', () => {
+            monsterElement.addEventListener('click', () => {
                 removeMonster(monster, true);
             });
-
-            // Animación de aparición
-            monsterMarker.getElement().style.animation = 'appear 0.5s forwards';
 
             return monster;
         }
@@ -461,14 +514,13 @@
         // Generar waypoints para que el monstruo siga una ruta
         function generateWaypoints(monster) {
             const bounds = map.getBounds();
-            const currentPos = monster.marker.getLatLng();
             
             // Limpiar waypoints anteriores
             monster.waypoints = [];
             monster.currentWaypoint = 0;
             
             // El primer waypoint es la posición actual
-            monster.waypoints.push(currentPos);
+            monster.waypoints.push(monster.position);
             
             // Generar 3-5 waypoints adicionales en el mapa
             const numWaypoints = 3 + Math.floor(Math.random() * 3);
@@ -481,27 +533,30 @@
 
         // Eliminar un monstruo
         function removeMonster(monster, addPoints = false) {
-            if (!monster || !monster.marker) return;
+            if (!monster || !monster.element) return;
             
             if (addPoints) {
                 points += monster.points;
                 kills++;
                 
                 // Efecto visual al eliminar
-                const pos = monster.marker.getLatLng();
-                const explosion = L.circleMarker(pos, {
-                    radius: 15,
-                    color: '#ff0000',
-                    fillColor: '#ff8800',
-                    fillOpacity: 0.7
-                }).addTo(map);
+                const point = latLngToContainerPoint(monster.position);
+                const explosion = document.createElement('div');
+                explosion.className = 'explosion';
+                explosion.style.left = `${point.x}px`;
+                explosion.style.top = `${point.y}px`;
+                document.getElementById('monster-layer').appendChild(explosion);
                 
                 setTimeout(() => {
-                    map.removeLayer(explosion);
+                    if (explosion.parentNode) {
+                        explosion.parentNode.removeChild(explosion);
+                    }
                 }, 500);
             }
             
-            map.removeLayer(monster.marker);
+            if (monster.element.parentNode) {
+                monster.element.parentNode.removeChild(monster.element);
+            }
             monsters = monsters.filter(m => m !== monster);
             updateUI();
         }
@@ -519,11 +574,10 @@
                 
                 // Obtener el waypoint actual
                 const currentWaypoint = monster.waypoints[monster.currentWaypoint];
-                const currentPos = monster.marker.getLatLng();
                 
                 // Calcular la dirección hacia el waypoint
-                const dx = currentWaypoint.lng - currentPos.lng;
-                const dy = currentWaypoint.lat - currentPos.lat;
+                const dx = currentWaypoint.lng - monster.position.lng;
+                const dy = currentWaypoint.lat - monster.position.lat;
                 const distance = Math.sqrt(dx * dx + dy * dy);
                 
                 // Si está lo suficientemente cerca del waypoint, pasar al siguiente
@@ -536,19 +590,25 @@
                 }
                 
                 // Calcular el movimiento hacia el waypoint
-                const moveDistance = monster.speed * moveFactor;
+                const moveDistance = (monster.speed * 0.00001) * moveFactor;
                 const ratio = moveDistance / distance;
                 
-                const newLat = currentPos.lat + dy * ratio;
-                const newLng = currentPos.lng + dx * ratio;
+                const newLat = monster.position.lat + dy * ratio;
+                const newLng = monster.position.lng + dx * ratio;
+                
+                // Actualizar la posición del monstruo
+                monster.position = L.latLng(newLat, newLng);
                 
                 // Mantener a los monstruos dentro de los límites del mapa
                 const bounds = map.getBounds();
-                if (bounds.contains([newLat, newLng])) {
-                    monster.marker.setLatLng([newLat, newLng]);
-                } else {
+                if (!bounds.contains(monster.position)) {
                     // Si se sale del mapa, generar nuevos waypoints
                     generateWaypoints(monster);
+                } else {
+                    // Actualizar la posición visual
+                    const point = latLngToContainerPoint(monster.position);
+                    monster.element.style.left = `${point.x}px`;
+                    monster.element.style.top = `${point.y}px`;
                 }
             });
         }
@@ -602,7 +662,9 @@
         // Limpiar monstruos
         function clearMonsters() {
             monsters.forEach(monster => {
-                map.removeLayer(monster.marker);
+                if (monster.element.parentNode) {
+                    monster.element.parentNode.removeChild(monster.element);
+                }
             });
             monsters = [];
             updateUI();
@@ -624,6 +686,8 @@
                 map.invalidateSize();
                 // Actualizar los límites del mapa después del redimensionamiento
                 mapBounds = map.getBounds();
+                // Actualizar posiciones de monstruos
+                updateMonsterPositions();
             }
         });
     </script>
